@@ -33,7 +33,7 @@ export function TambahBeritaModal() {
    return (
       <Dialog open={open} onOpenChange={setOpen}>
          <DialogTrigger asChild>
-         <Button>
+         <Button className="w-min bg-[#004D40] hover:bg-[#00695C] text-white py-2 rounded-md">
             <svg
                xmlns="http://www.w3.org/2000/svg"
                width="24"
@@ -52,7 +52,7 @@ export function TambahBeritaModal() {
             Tambah Berita
          </Button>
          </DialogTrigger>
-         <DialogContent className="sm:max-w-[600px]">
+         <DialogContent className="sm:max-w-[500px]">
          <DialogHeader>
             <DialogTitle>Tambah Berita Desa</DialogTitle>
             <DialogDescription>Tambahkan berita atau informasi desa baru</DialogDescription>
@@ -63,7 +63,7 @@ export function TambahBeritaModal() {
                <Label htmlFor="judul" className="text-right">
                   Judul Berita
                </Label>
-               <Input id="judul" placeholder="Masukkan judul berita" className="col-span-3" required />
+               <Input id="judul" placeholder="Masukkan judul berita" className="col-span-4" required />
                </div>
                <div className="grid grid-cols-4 items-center gap-4">
                <Label htmlFor="kategori" className="text-right">
@@ -87,7 +87,7 @@ export function TambahBeritaModal() {
                <Label htmlFor="gambar" className="text-right">
                   Gambar
                </Label>
-               <Input id="gambar" type="file" accept="image/*" className="col-span-3" />
+               <Input id="gambar" type="file" accept="image/*" className="col-span-4" />
                </div>
                <div className="grid grid-cols-4 items-start gap-4">
                <Label htmlFor="konten" className="text-right pt-2">
@@ -118,7 +118,7 @@ export function TambahBeritaModal() {
                <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                Batal
                </Button>
-               <Button type="submit" disabled={isLoading}>
+               <Button type="submit" className="w-min" variant="ghost" disabled={isLoading}>
                {isLoading ? "Menyimpan..." : "Simpan"}
                </Button>
             </DialogFooter>

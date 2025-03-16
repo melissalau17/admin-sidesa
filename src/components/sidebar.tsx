@@ -3,7 +3,7 @@
 import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
-import { Button } from "@/components/ui/buttom"
+import { Button } from "../components/ui/buttom";
 import { useAuth } from "@/components/auth-provider"
 import { LayoutDashboard, FileText, MessageSquare, Newspaper, DollarSign, LogOut, type LucideIcon } from "lucide-react"
 

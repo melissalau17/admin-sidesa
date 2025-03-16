@@ -2,8 +2,6 @@
 
 import { useState } from "react";
 import { Button } from "../../components/ui/buttom";
-import { Input } from "../../components/ui/input";
-
 
 export default function LoginPage() {
    const [username, setUsername] = useState("");
@@ -22,14 +20,14 @@ export default function LoginPage() {
 
       if (username === "admin" && password === "admin") {
          try {
-         localStorage.setItem("isAuthenticated", "true");
-         alert("Login berhasil! Selamat datang di panel administrasi desa");
-         setTimeout(() => {
-            window.location.href = "/dashboard";
-         }, 100);
+            localStorage.setItem("isAuthenticated", "true");
+            alert("Login berhasil! Selamat datang di panel administrasi desa");
+            setTimeout(() => {
+               window.location.href = "/dashboard";
+            }, 100);
          } catch (error) {
-         console.error("Redirect error:", error);
-         alert("Terjadi kesalahan saat login");
+            console.error("Redirect error:", error);
+            alert("Terjadi kesalahan saat login");
          }
       } else {
          alert("Login gagal! Username atau password salah");
@@ -38,43 +36,46 @@ export default function LoginPage() {
    };
 
    return (
-      <div className="flex h-screen w-full items-center justify-center bg-gray-50">
-         <div className="w-full max-w-md bg-white p-6 shadow-md rounded-lg">
-         <h2 className="text-2xl font-bold text-center text-[#004D40]">Admin Desa</h2>
-         <p className="text-center text-gray-600">Masuk ke panel administrasi desa</p>
-         <form onSubmit={handleLogin} className="space-y-4 mt-4">
-            <div className="space-y-2">
-            <Input
-               id="username"
-               label="Username"
-               placeholder=" "
-               value={username}
-               onChange={(e) => setUsername(e.target.value)}
-               disabled={isLoading}
-            />
-            </div>
-            <div className="space-y-2">
-            <Input
-               id="password"
-               type="password"
-               label="Password"
-               placeholder=" "
-               value={password}
-               onChange={(e) => setPassword(e.target.value)}
-               disabled={isLoading}
-               />
-            </div>
-            <Button
-               type="submit"
-               className="w-full bg-[#004D40] hover:bg-[#00695C] text-white py-2 rounded-md"
-               disabled={isLoading}
-            >
-               {isLoading ? "Memproses..." : "Masuk"}
-            </Button>
-         </form>
-         <p className="text-center text-sm text-gray-500 mt-4">
-            Gunakan username: admin, password: admin
-         </p>
+      <div className="flex h-screen w-full items-center justify-center">
+         <div className="w-full max-w-md bg-white p-8 border-1 rounded-xl">
+            <h2 className="text-3xl font-bold text-center text-[#004D40]">Admin Desa</h2>
+            <p className="text-center text-gray-600">Masuk ke panel administrasi desa</p>
+            
+            <form onSubmit={handleLogin} className="space-y-5 mt-5">
+               <div>
+                  <label htmlFor="username" className="block text-gray-700 font-medium mb-2">Username</label>
+                  <input
+                     id="username"
+                     placeholder="Masukkan username"
+                     value={username}
+                     onChange={(e) => setUsername(e.target.value)}
+                     disabled={isLoading}
+                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#004D40] focus:outline-none"
+                  />
+               </div>
+               <div>
+                  <label htmlFor="password" className="block text-gray-700 font-medium mb-2">Password</label>
+                  <input
+                     id="password"
+                     type="password"
+                     placeholder="Masukkan password"
+                     value={password}
+                     onChange={(e) => setPassword(e.target.value)}
+                     disabled={isLoading}
+                     className="w-full p-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-[#004D40] focus:outline-none"
+                  />
+               </div>
+               <Button
+                  type="submit"
+                  className="w-full bg-[#004D40] hover:bg-[#00695C] text-white py-3 rounded-lg transition duration-300 ease-in-out shadow-md hover:shadow-lg"
+                  disabled={isLoading}>
+                  {isLoading ? "Memproses..." : "Masuk"}
+               </Button>
+            </form>
+
+            <p className="text-center text-sm text-gray-500 mt-5">
+               Gunakan username: <span className="font-semibold">admin</span>, password: <span className="font-semibold">admin</span>
+            </p>
          </div>
       </div>
    );

@@ -2,15 +2,7 @@
 
 import { useState, type FormEvent } from "react"
 import { Button } from "@/components/ui/buttom"
-import {
-   Dialog,
-   DialogContent,
-   DialogDescription,
-   DialogFooter,
-   DialogHeader,
-   DialogTitle,
-   DialogTrigger,
-} from "@/components/ui/dialog"
+import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger } from "@/components/ui/dialog"
 import { Input } from "@/components/ui/input"
 import { Label } from "@/components/ui/label"
 import { Select, SelectContent, SelectItem, SelectTrigger, SelectValue } from "@/components/ui/select"
@@ -40,7 +32,7 @@ export function TambahSuratModal() {
    return (
       <Dialog open={open} onOpenChange={setOpen}>
          <DialogTrigger asChild>
-         <Button>
+         <Button className="w-min bg-[#004D40] hover:bg-[#00695C] text-white py-2 rounded-md">
             <svg
                xmlns="http://www.w3.org/2000/svg"
                width="24"
@@ -51,8 +43,7 @@ export function TambahSuratModal() {
                strokeWidth="2"
                strokeLinecap="round"
                strokeLinejoin="round"
-               className="mr-2 h-4 w-4"
-            >
+               className="mr-2 h-4 w-4 ">
                <path d="M5 12h14"></path>
                <path d="M12 5v14"></path>
             </svg>
@@ -112,7 +103,7 @@ export function TambahSuratModal() {
                <Button type="button" variant="outline" onClick={() => setOpen(false)}>
                Batal
                </Button>
-               <Button type="submit" disabled={isLoading}>
+               <Button type="submit" className="w-min" variant="ghost" disabled={isLoading}>
                {isLoading ? "Menyimpan..." : "Simpan"}
                </Button>
             </DialogFooter>

@@ -1,7 +1,7 @@
 "use client"
 
 import { Bell, User } from "lucide-react"
-import { Button } from "@/components/ui/buttom"
+import { Button } from "../components/ui/buttom";
 import { DropdownMenu, DropdownMenuContent, DropdownMenuItem, DropdownMenuTrigger } from "@/components/ui/dropdown-menu"
 import { useAuth } from "@/components/auth-provider"
 
