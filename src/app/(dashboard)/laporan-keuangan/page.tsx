@@ -1,3 +1,6 @@
+"use client"
+
+import { useState, type ChangeEvent } from "react"
 import { Button } from "@/components/ui/buttom"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
@@ -6,6 +9,7 @@ import { Download, FileText, Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TambahTransaksiModal } from "@/components/modals/tambah-transaksi-modal"
+import { useToast } from "@/hooks/use-toast"
 
 interface KeuanganItem {
    id: number
@@ -15,7 +19,7 @@ interface KeuanganItem {
    jumlah: string
 }
 
-const keuanganData: KeuanganItem[] = [
+const initialKeuanganData: KeuanganItem[] = [
    {
       id: 1,
       keterangan: "Dana Desa",
@@ -53,6 +57,34 @@ const keuanganData: KeuanganItem[] = [
    },
 ]
 
+interface LaporanBulananItem {
+   bulan: string
+   pemasukan: string
+   pengeluaran: string
+   saldo: string
+}
+
+const laporanBulananData: LaporanBulananItem[] = [
+   {
+      bulan: "Maret 2025",
+      pemasukan: "Rp 45,000,000",
+      pengeluaran: "Rp 27,000,000",
+      saldo: "Rp 18,000,000",
+   },
+   {
+      bulan: "Februari 2025",
+      pemasukan: "Rp 40,000,000",
+      pengeluaran: "Rp 25,000,000",
+      saldo: "Rp 15,000,000",
+   },
+   {
+      bulan: "Januari 2025",
+      pemasukan: "Rp 38,000,000",
+      pengeluaran: "Rp 22,000,000",
+      saldo: "Rp 16,000,000",
+   },
+]
+
 const getJenisColor = (jenis: string): string => {
    switch (jenis) {
       case "Pemasukan":
@@ -65,6 +97,160 @@ const getJenisColor = (jenis: string): string => {
 }
 
 export default function LaporanKeuanganPage() {
+   const [keuanganData, setKeuanganData] = useState<KeuanganItem[]>(initialKeuanganData)
+   const [searchTransaksiQuery, setSearchTransaksiQuery] = useState<string>("")
+   const [searchLaporanQuery, setSearchLaporanQuery] = useState<string>("")
+   const [activeTab, setActiveTab] = useState<string>("transaksi")
+   const [isDownloading, setIsDownloading] = useState<boolean>(false)
+   const { toast } = useToast()
+
+   // Function to handle search input changes for transaksi
+   const handleSearchTransaksiChange = (e: ChangeEvent<HTMLInputElement>) => {
+      setSearchTransaksiQuery(e.target.value)
+   }
+
+   // Function to handle search input changes for laporan
+   const handleSearchLaporanChange = (e: ChangeEvent<HTMLInputElement>) => {
+      setSearchLaporanQuery(e.target.value)
+   }
+
+   // Function to handle tab change
+   const handleTabChange = (value: string) => {
+      setActiveTab(value)
+   }
+
+   // Function to download report as CSV
+   const handleDownloadReport = () => {
+      setIsDownloading(true)
+
+      try {
+         let csvContent = ""
+         let filename = ""
+
+         if (activeTab === "transaksi") {
+         // Create CSV for transactions
+         csvContent = "No,Keterangan,Tanggal,Jenis,Jumlah\n"
+
+         // Add filtered data to CSV
+         filteredTransaksiData.forEach((item) => {
+            csvContent += `${item.id},"${item.keterangan}","${item.tanggal}","${item.jenis}","${item.jumlah}"\n`
+         })
+
+         filename = "transaksi_keuangan_desa.csv"
+         } else {
+         // Create CSV for monthly reports
+         csvContent = "Bulan,Pemasukan,Pengeluaran,Saldo\n"
+
+         // Add filtered data to CSV
+         filteredLaporanData.forEach((item) => {
+            csvContent += `"${item.bulan}","${item.pemasukan}","${item.pengeluaran}","${item.saldo}"\n`
+         })
+
+         filename = "laporan_bulanan_desa.csv"
+         }
+
+         // Create a blob and download link
+         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
+         const url = URL.createObjectURL(blob)
+         const link = document.createElement("a")
+         link.setAttribute("href", url)
+         link.setAttribute("download", filename)
+         link.style.visibility = "hidden"
+         document.body.appendChild(link)
+         link.click()
+         document.body.removeChild(link)
+
+         toast({
+         title: "Berhasil",
+         description: `Laporan berhasil diunduh sebagai ${filename}`,
+         })
+      } catch (error) {
+         console.error("Error downloading report:", error)
+         toast({
+         title: "Error",
+         description: "Terjadi kesalahan saat mengunduh laporan",
+         variant: "destructive",
+         })
+      } finally {
+         setIsDownloading(false)
+      }
+   }
+
+   // Function to download a specific monthly report
+   const handleDownloadMonthlyReport = (month: string) => {
+      try {
+         // Find the report data for the specified month
+         const reportData = laporanBulananData.find((item) => item.bulan === month)
+
+         if (!reportData) {
+         throw new Error("Report data not found")
+         }
+
+         // Create CSV content
+         let csvContent = "Bulan,Pemasukan,Pengeluaran,Saldo\n"
+         csvContent += `"${reportData.bulan}","${reportData.pemasukan}","${reportData.pengeluaran}","${reportData.saldo}"\n\n`
+
+         // Add detailed transactions for this month (simplified for demo)
+         csvContent += "Detail Transaksi:\n"
+         csvContent += "No,Keterangan,Tanggal,Jenis,Jumlah\n"
+
+         // Filter transactions for this month (simplified logic for demo)
+         const monthTransactions = keuanganData.filter(
+         (item) => item.tanggal.includes(month.split(" ")[0]), // Simple check if transaction date includes month name
+         )
+
+         monthTransactions.forEach((item) => {
+         csvContent += `${item.id},"${item.keterangan}","${item.tanggal}","${item.jenis}","${item.jumlah}"\n`
+         })
+
+         // Create a blob and download link
+         const filename = `laporan_${month.toLowerCase().replace(" ", "_")}.csv`
+         const blob = new Blob([csvContent], { type: "text/csv;charset=utf-8;" })
+         const url = URL.createObjectURL(blob)
+         const link = document.createElement("a")
+         link.setAttribute("href", url)
+         link.setAttribute("download", filename)
+         link.style.visibility = "hidden"
+         document.body.appendChild(link)
+         link.click()
+         document.body.removeChild(link)
+
+         toast({
+         title: "Berhasil",
+         description: `Laporan ${month} berhasil diunduh`,
+         })
+      } catch (error) {
+         console.error("Error downloading monthly report:", error)
+         toast({
+         title: "Error",
+         description: "Terjadi kesalahan saat mengunduh laporan",
+         variant: "destructive",
+         })
+      }
+   }
+
+   // Filter transaksi data based on search query
+   const filteredTransaksiData = keuanganData.filter((item) => {
+      const query = searchTransaksiQuery.toLowerCase()
+      return (
+         item.keterangan.toLowerCase().includes(query) ||
+         item.tanggal.toLowerCase().includes(query) ||
+         item.jenis.toLowerCase().includes(query) ||
+         item.jumlah.toLowerCase().includes(query)
+      )
+   })
+
+   // Filter laporan data based on search query
+   const filteredLaporanData = laporanBulananData.filter((item) => {
+      const query = searchLaporanQuery.toLowerCase()
+      return (
+         item.bulan.toLowerCase().includes(query) ||
+         item.pemasukan.toLowerCase().includes(query) ||
+         item.pengeluaran.toLowerCase().includes(query) ||
+         item.saldo.toLowerCase().includes(query)
+      )
+   })
+
    return (
       <div className="space-y-6">
          <div className="flex items-center justify-between">
@@ -73,9 +259,9 @@ export default function LaporanKeuanganPage() {
             <p className="text-muted-foreground">Kelola laporan keuangan desa</p>
          </div>
          <div className="flex gap-2">
-            <Button variant="outline">
+            <Button variant="destructive" onClick={handleDownloadReport} disabled={isDownloading}>
                <Download className="mr-2 h-4 w-4" />
-               Unduh Laporan
+               {isDownloading ? "Mengunduh..." : "Unduh Laporan"}
             </Button>
             <TambahTransaksiModal />
          </div>
@@ -111,7 +297,7 @@ export default function LaporanKeuanganPage() {
          </Card>
          </div>
 
-         <Tabs defaultValue="transaksi">
+         <Tabs defaultValue="transaksi" value={activeTab} onValueChange={handleTabChange}>
          <TabsList>
             <TabsTrigger value="transaksi">Transaksi</TabsTrigger>
             <TabsTrigger value="laporan">Laporan Bulanan</TabsTrigger>
@@ -127,7 +313,13 @@ export default function LaporanKeuanganPage() {
                   <div className="flex items-center gap-2">
                      <div className="relative">
                      <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                     <Input type="search" placeholder="Cari..." className="pl-8 w-[250px]" />
+                     <Input
+                        type="search"
+                        placeholder="Cari..."
+                        className="pl-8 w-[250px]"
+                        value={searchTransaksiQuery}
+                        onChange={handleSearchTransaksiChange}
+                     />
                      </div>
                   </div>
                </div>
@@ -145,23 +337,31 @@ export default function LaporanKeuanganPage() {
                      </TableRow>
                   </TableHeader>
                   <TableBody>
-                     {keuanganData.map((item) => (
-                     <TableRow key={item.id}>
-                        <TableCell>{item.id}</TableCell>
-                        <TableCell>{item.keterangan}</TableCell>
-                        <TableCell>{item.tanggal}</TableCell>
-                        <TableCell>
+                     {filteredTransaksiData.length > 0 ? (
+                     filteredTransaksiData.map((item) => (
+                        <TableRow key={item.id}>
+                           <TableCell>{item.id}</TableCell>
+                           <TableCell>{item.keterangan}</TableCell>
+                           <TableCell>{item.tanggal}</TableCell>
+                           <TableCell>
                            <Badge className={getJenisColor(item.jenis)}>{item.jenis}</Badge>
-                        </TableCell>
-                        <TableCell>{item.jumlah}</TableCell>
-                        <TableCell className="text-right">
+                           </TableCell>
+                           <TableCell>{item.jumlah}</TableCell>
+                           <TableCell className="text-right">
                            <Button variant="ghost" size="sm">
-                           <FileText className="h-4 w-4" />
-                           <span className="sr-only">Detail</span>
+                              <FileText className="h-4 w-4" />
+                              <span className="sr-only">Detail</span>
                            </Button>
+                           </TableCell>
+                        </TableRow>
+                     ))
+                     ) : (
+                     <TableRow>
+                        <TableCell colSpan={6} className="text-center py-4">
+                           Tidak ada data yang sesuai dengan pencarian
                         </TableCell>
                      </TableRow>
-                     ))}
+                     )}
                   </TableBody>
                </Table>
                </CardContent>
@@ -170,8 +370,24 @@ export default function LaporanKeuanganPage() {
          <TabsContent value="laporan">
             <Card>
                <CardHeader>
-               <CardTitle>Laporan Bulanan</CardTitle>
-               <CardDescription>Laporan keuangan desa per bulan</CardDescription>
+               <div className="flex items-center justify-between">
+                  <div>
+                     <CardTitle>Laporan Bulanan</CardTitle>
+                     <CardDescription>Laporan keuangan desa per bulan</CardDescription>
+                  </div>
+                  <div className="flex items-center gap-2">
+                     <div className="relative">
+                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                     <Input
+                        type="search"
+                        placeholder="Cari..."
+                        className="pl-8 w-[250px]"
+                        value={searchLaporanQuery}
+                        onChange={handleSearchLaporanChange}
+                     />
+                     </div>
+                  </div>
+               </div>
                </CardHeader>
                <CardContent>
                <Table>
@@ -185,42 +401,28 @@ export default function LaporanKeuanganPage() {
                      </TableRow>
                   </TableHeader>
                   <TableBody>
+                     {filteredLaporanData.length > 0 ? (
+                     filteredLaporanData.map((item, index) => (
+                        <TableRow key={index}>
+                           <TableCell>{item.bulan}</TableCell>
+                           <TableCell>{item.pemasukan}</TableCell>
+                           <TableCell>{item.pengeluaran}</TableCell>
+                           <TableCell>{item.saldo}</TableCell>
+                           <TableCell className="text-right">
+                           <Button variant="ghost" size="sm" onClick={() => handleDownloadMonthlyReport(item.bulan)}>
+                              <Download className="h-4 w-4" />
+                              <span className="sr-only">Unduh</span>
+                           </Button>
+                           </TableCell>
+                        </TableRow>
+                     ))
+                     ) : (
                      <TableRow>
-                     <TableCell>Maret 2025</TableCell>
-                     <TableCell>Rp 45,000,000</TableCell>
-                     <TableCell>Rp 27,000,000</TableCell>
-                     <TableCell>Rp 18,000,000</TableCell>
-                     <TableCell className="text-right">
-                        <Button variant="ghost" size="sm">
-                           <Download className="h-4 w-4" />
-                           <span className="sr-only">Unduh</span>
-                        </Button>
-                     </TableCell>
+                        <TableCell colSpan={5} className="text-center py-4">
+                           Tidak ada data yang sesuai dengan pencarian
+                        </TableCell>
                      </TableRow>
-                     <TableRow>
-                     <TableCell>Februari 2025</TableCell>
-                     <TableCell>Rp 40,000,000</TableCell>
-                     <TableCell>Rp 25,000,000</TableCell>
-                     <TableCell>Rp 15,000,000</TableCell>
-                     <TableCell className="text-right">
-                        <Button variant="ghost" size="sm">
-                           <Download className="h-4 w-4" />
-                           <span className="sr-only">Unduh</span>
-                        </Button>
-                     </TableCell>
-                     </TableRow>
-                     <TableRow>
-                     <TableCell>Januari 2025</TableCell>
-                     <TableCell>Rp 38,000,000</TableCell>
-                     <TableCell>Rp 22,000,000</TableCell>
-                     <TableCell>Rp 16,000,000</TableCell>
-                     <TableCell className="text-right">
-                        <Button variant="ghost" size="sm">
-                           <Download className="h-4 w-4" />
-                           <span className="sr-only">Unduh</span>
-                        </Button>
-                     </TableCell>
-                     </TableRow>
+                     )}
                   </TableBody>
                </Table>
                </CardContent>

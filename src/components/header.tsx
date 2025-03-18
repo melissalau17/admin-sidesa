@@ -23,7 +23,7 @@ export function Header() {
               <span className="sr-only">User</span>
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end">
+          <DropdownMenuContent align="end" className="bg-white text-red-500 hover:bg-red-500 hover:text-white">
             <DropdownMenuItem onClick={logout}>Logout</DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

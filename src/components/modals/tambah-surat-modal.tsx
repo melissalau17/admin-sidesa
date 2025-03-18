@@ -100,7 +100,7 @@ export function TambahSuratModal() {
                </div>
             </div>
             <DialogFooter>
-               <Button type="button" variant="outline" onClick={() => setOpen(false)}>
+               <Button type="button" variant="destructive" onClick={() => setOpen(false)}>
                Batal
                </Button>
                <Button type="submit" className="w-min" variant="ghost" disabled={isLoading}>

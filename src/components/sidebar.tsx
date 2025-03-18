@@ -67,7 +67,7 @@ export function Sidebar() {
          ))}
          </nav>
          <div className="p-4">
-         <Button variant="destructive" className="w-full" onClick={logout}>
+         <Button variant="secondary" className="w-full" onClick={logout}>
             <LogOut className="mr-2 h-4 w-4" />
             Logout
          </Button>

@@ -112,7 +112,7 @@ export function TambahTransaksiModal() {
                         <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
                            <PopoverTrigger asChild>
                               <Button
-                                 variant={"outline"}
+                                 variant={"default"}
                                  onClick={() => setIsDatePickerOpen(!isDatePickerOpen)}
                                  className={cn("w-full justify-start text-left font-normal", !date && "text-muted-foreground")}
                               >
@@ -163,7 +163,7 @@ export function TambahTransaksiModal() {
                   </div>
                </div>
                <DialogFooter>
-                  <Button type="button" variant="outline" onClick={() => setOpen(false)}>Batal</Button>
+                  <Button type="button" variant="destructive" onClick={() => setOpen(false)}>Batal</Button>
                   <Button type="submit" className="w-min" variant="ghost" disabled={isLoading}>
                      {isLoading ? "Menyimpan..." : "Simpan"}
                   </Button>
