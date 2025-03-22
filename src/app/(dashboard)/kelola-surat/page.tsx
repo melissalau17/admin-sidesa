@@ -8,6 +8,7 @@ import { Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { TambahSuratModal } from "@/components/modals/tambah-surat-modal"
 import { UbahStatusSuratModal } from "@/components/modals/ubah-status-surat-modal"
+import { LihatSuratModal } from "@/components/modals/lihat-surat-modal"
 
 interface SuratItem {
    id: number
@@ -15,6 +16,11 @@ interface SuratItem {
    jenis: string
    tanggal: string
    status: string
+   nik: string
+   alamat: string
+   keperluan: string
+   ktpImage?: string
+   kkImage?: string
 }
 
 const initialSuratData: SuratItem[] = [
@@ -24,6 +30,11 @@ const initialSuratData: SuratItem[] = [
       jenis: "Surat Keterangan Domisili",
       tanggal: "12 Mar 2025",
       status: "Menunggu",
+      nik: "3507112509870001",
+      alamat: "Dusun Sukamaju RT 03/RW 02, Desa Contoh",
+      keperluan: "Untuk keperluan administrasi di kantor kecamatan terkait pengurusan izin usaha.",
+      ktpImage: "/placeholder.svg?height=300&width=500",
+      kkImage: "/placeholder.svg?height=300&width=500",
    },
    {
       id: 2,
@@ -31,6 +42,11 @@ const initialSuratData: SuratItem[] = [
       jenis: "Surat Keterangan Usaha",
       tanggal: "10 Mar 2025",
       status: "Diproses",
+      nik: "3507112509880002",
+      alamat: "Dusun Harapan Jaya RT 05/RW 03, Desa Contoh",
+      keperluan: "Untuk keperluan pengajuan kredit usaha di Bank BRI.",
+      ktpImage: "/placeholder.svg?height=300&width=500",
+      kkImage: "/placeholder.svg?height=300&width=500",
    },
    {
       id: 3,
@@ -38,6 +54,11 @@ const initialSuratData: SuratItem[] = [
       jenis: "Surat Keterangan Tidak Mampu",
       tanggal: "8 Mar 2025",
       status: "Selesai",
+      nik: "3507112509890003",
+      alamat: "Dusun Makmur RT 02/RW 01, Desa Contoh",
+      keperluan: "Untuk keperluan pengajuan beasiswa pendidikan anak.",
+      ktpImage: "/placeholder.svg?height=300&width=500",
+      kkImage: "/placeholder.svg?height=300&width=500",
    },
    {
       id: 4,
@@ -45,6 +66,11 @@ const initialSuratData: SuratItem[] = [
       jenis: "Surat Pengantar KTP",
       tanggal: "5 Mar 2025",
       status: "Selesai",
+      nik: "3507112509900004",
+      alamat: "Dusun Sukamaju RT 01/RW 02, Desa Contoh",
+      keperluan: "Untuk keperluan pembuatan KTP baru karena hilang.",
+      ktpImage: "/placeholder.svg?height=300&width=500",
+      kkImage: "/placeholder.svg?height=300&width=500",
    },
    {
       id: 5,
@@ -52,6 +78,11 @@ const initialSuratData: SuratItem[] = [
       jenis: "Surat Keterangan Domisili",
       tanggal: "1 Mar 2025",
       status: "Selesai",
+      nik: "3507112509910005",
+      alamat: "Dusun Harapan Jaya RT 04/RW 03, Desa Contoh",
+      keperluan: "Untuk keperluan administrasi di tempat kerja.",
+      ktpImage: "/placeholder.svg?height=300&width=500",
+      kkImage: "/placeholder.svg?height=300&width=500",
    },
 ]
 
@@ -84,6 +115,12 @@ export default function KelolaSuratPage() {
       setSearchQuery(e.target.value)
    }
 
+   // Function to add new surat
+   const handleAddSurat = (newSurat: Omit<SuratItem, "id">) => {
+      const newId = suratData.length > 0 ? Math.max(...suratData.map((item) => item.id)) + 1 : 1
+      setSuratData((prev) => [...prev, { id: newId, ...newSurat }])
+   }
+
    // Filter data based on search query
    const filteredData = suratData.filter((surat) => {
       const query = searchQuery.toLowerCase()
@@ -91,7 +128,8 @@ export default function KelolaSuratPage() {
          surat.nama.toLowerCase().includes(query) ||
          surat.jenis.toLowerCase().includes(query) ||
          surat.tanggal.toLowerCase().includes(query) ||
-         surat.status.toLowerCase().includes(query)
+         surat.status.toLowerCase().includes(query) ||
+         surat.nik.toLowerCase().includes(query)
       )
    })
 
@@ -102,7 +140,7 @@ export default function KelolaSuratPage() {
             <h1 className="text-2xl font-bold">Kelola Surat</h1>
             <p className="text-muted-foreground">Kelola permohonan surat dari masyarakat</p>
          </div>
-         <TambahSuratModal />
+         <TambahSuratModal onAddSurat={handleAddSurat} />
          </div>
 
          <Card>
@@ -150,13 +188,27 @@ export default function KelolaSuratPage() {
                         <Badge className={getStatusColor(surat.status)}>{surat.status}</Badge>
                      </TableCell>
                      <TableCell className="text-right">
-                        <UbahStatusSuratModal
+                        <div className="flex justify-end gap-2">
+                           <LihatSuratModal
+                           id={surat.id}
+                           nama={surat.nama}
+                           jenis={surat.jenis}
+                           tanggal={surat.tanggal}
+                           status={surat.status}
+                           nik={surat.nik}
+                           alamat={surat.alamat}
+                           keperluan={surat.keperluan}
+                           ktpImage={surat.ktpImage}
+                           kkImage={surat.kkImage}
+                           />
+                           <UbahStatusSuratModal
                            id={surat.id}
                            nama={surat.nama}
                            jenis={surat.jenis}
                            status={surat.status}
                            onStatusChange={handleStatusChange}
-                        />
+                           />
+                        </div>
                      </TableCell>
                      </TableRow>
                   ))

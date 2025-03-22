@@ -72,7 +72,7 @@ export function EditBeritaModal({ id, judul, kategori, status, konten, onBeritaU
             <span className="sr-only">Edit</span>
          </Button>
          </DialogTrigger>
-         <DialogContent className="sm:max-w-[600px]">
+         <DialogContent className="sm:max-w-[750px] max-h-[90vh] overflow-y-auto">
          <DialogHeader>
             <DialogTitle>Edit Berita</DialogTitle>
             <DialogDescription>Edit berita atau informasi desa</DialogDescription>
@@ -123,7 +123,7 @@ export function EditBeritaModal({ id, judul, kategori, status, konten, onBeritaU
                <Textarea
                   id="konten"
                   placeholder="Masukkan konten berita"
-                  className="col-span-3 min-h-[150px]"
+                  className="col-span-3 min-h-[250px]"
                   required
                   value={formData.konten}
                   onChange={(e) => handleChange("konten", e.target.value)}

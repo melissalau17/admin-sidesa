@@ -52,7 +52,7 @@ export function TambahBeritaModal() {
             Tambah Berita
          </Button>
          </DialogTrigger>
-         <DialogContent className="sm:max-w-[500px]">
+         <DialogContent className="sm:max-w-[700px]">
          <DialogHeader>
             <DialogTitle>Tambah Berita Desa</DialogTitle>
             <DialogDescription>Tambahkan berita atau informasi desa baru</DialogDescription>
@@ -70,7 +70,7 @@ export function TambahBeritaModal() {
                   Kategori
                </Label>
                <Select required>
-                  <SelectTrigger id="kategori" className="col-span-3">
+                  <SelectTrigger id="kategori" className="col-span-1">
                      <SelectValue placeholder="Pilih kategori" />
                   </SelectTrigger>
                   <SelectContent>
@@ -127,4 +127,3 @@ export function TambahBeritaModal() {
       </Dialog>
    )
 }
-
