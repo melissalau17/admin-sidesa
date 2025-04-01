@@ -9,7 +9,11 @@ const inter = Inter({ subsets: ["latin"] })
 export const metadata = {
   title: "Admin Desa - Panel Administrasi",
   description: "Panel administrasi desa",
-    generator: 'v0.dev'
+    generator: 'v0.dev',
+  icons: {
+    icon: '/homestay.svg',
+
+  },
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
@@ -24,7 +28,5 @@ export default function RootLayout({ children }: { children: ReactNode }) {
     </html>
   )
 }
-
-
 
 import './globals.css'
