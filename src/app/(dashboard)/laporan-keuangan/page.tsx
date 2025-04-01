@@ -97,7 +97,7 @@ const getJenisColor = (jenis: string): string => {
 }
 
 export default function LaporanKeuanganPage() {
-   const [keuanganData, setKeuanganData] = useState<KeuanganItem[]>(initialKeuanganData)
+   const [keuanganData] = useState<KeuanganItem[]>(initialKeuanganData)
    const [searchTransaksiQuery, setSearchTransaksiQuery] = useState<string>("")
    const [searchLaporanQuery, setSearchLaporanQuery] = useState<string>("")
    const [activeTab, setActiveTab] = useState<string>("transaksi")

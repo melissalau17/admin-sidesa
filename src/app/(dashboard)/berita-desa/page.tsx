@@ -13,221 +13,214 @@ import { EditBeritaModal } from "@/components/modals/edit-berita-modal"
 import { useToast } from "@/hooks/use-toast"
 
 interface BeritaItem {
-   id: number
-   judul: string
-   kategori: string
-   tanggal: string
-   status: string
-   konten: string
+    id: number
+    judul: string
+    kategori: string
+    tanggal: string
+    status: string
+    konten: string
 }
 
 const initialBeritaData: BeritaItem[] = [
-   {
-      id: 1,
-      judul: "Pembangunan Jembatan Desa Dimulai",
-      kategori: "Infrastruktur",
-      tanggal: "12 Mar 2025",
-      status: "Dipublikasikan",
-      konten:
-         "Pembangunan jembatan penghubung antar dusun telah dimulai pada hari Senin, 10 Maret 2025. Jembatan ini akan menghubungkan Dusun Sukamaju dan Dusun Harapan Jaya yang selama ini terpisah oleh sungai.\n\nProyek ini dibiayai oleh dana desa dan diperkirakan akan selesai dalam waktu 3 bulan. Jembatan sepanjang 15 meter ini akan mempermudah mobilitas warga dan meningkatkan aktivitas ekonomi antar dusun.",
-   },
-   {
-      id: 2,
-      judul: "Hasil Panen Padi Meningkat 20%",
-      kategori: "Pertanian",
-      tanggal: "10 Mar 2025",
-      status: "Dipublikasikan",
-      konten:
-         "Hasil panen padi di desa kita pada musim tanam tahun ini mengalami peningkatan sebesar 20% dibandingkan tahun lalu. Peningkatan ini berkat program intensifikasi pertanian yang telah dijalankan sejak tahun lalu.\n\nProgram tersebut meliputi penyuluhan teknik bertani modern, bantuan bibit unggul, dan perbaikan sistem irigasi. Petani desa kini bisa menikmati hasil panen yang lebih melimpah dan berkualitas lebih baik.",
-   },
-   {
-      id: 3,
-      judul: "Program Vaksinasi Lansia Sukses",
-      kategori: "Kesehatan",
-      tanggal: "8 Mar 2025",
-      status: "Dipublikasikan",
-      konten:
-         "Program vaksinasi untuk warga lansia di desa kita telah berhasil mencapai target 95% dari total populasi lansia. Program yang berlangsung selama dua minggu ini mendapat sambutan positif dari masyarakat.\n\nTim kesehatan desa bekerja sama dengan Puskesmas setempat melakukan kunjungan dari rumah ke rumah untuk memastikan semua lansia mendapatkan vaksin. Hal ini merupakan bagian dari upaya meningkatkan kualitas kesehatan masyarakat desa.",
-   },
-   {
-      id: 4,
-      judul: "Pelatihan UMKM untuk Warga Desa",
-      kategori: "Ekonomi",
-      tanggal: "5 Mar 2025",
-      status: "Draft",
-      konten:
-         "Pemerintah desa akan mengadakan pelatihan UMKM bagi warga desa pada tanggal 15-17 Maret 2025. Pelatihan ini bertujuan untuk meningkatkan kapasitas warga dalam mengelola usaha kecil dan menengah.\n\nMateri yang akan diberikan meliputi manajemen keuangan sederhana, strategi pemasaran produk, dan pemanfaatan media sosial untuk promosi. Pendaftaran dibuka mulai tanggal 6 Maret 2025 di kantor desa.",
-   },
-   {
-      id: 5,
-      judul: "Persiapan Festival Desa Tahunan",
-      kategori: "Budaya",
-      tanggal: "1 Mar 2025",
-      status: "Draft",
-      konten:
-         "Persiapan Festival Desa Tahunan telah dimulai. Festival yang akan diselenggarakan pada bulan April mendatang ini akan menampilkan berbagai kesenian dan budaya lokal desa kita.\n\nPanitia festival telah dibentuk dan mulai melakukan koordinasi dengan berbagai kelompok seni di desa. Festival ini diharapkan dapat menjadi ajang promosi potensi desa sekaligus melestarikan budaya lokal yang kita miliki.",
-   },
+    {
+        id: 1,
+        judul: "Pembangunan Jembatan Desa Dimulai",
+        kategori: "Infrastruktur",
+        tanggal: "12 Mar 2025",
+        status: "Dipublikasikan",
+        konten:
+            "Pembangunan jembatan penghubung antar dusun telah dimulai pada hari Senin, 10 Maret 2025. Jembatan ini akan menghubungkan Dusun Sukamaju dan Dusun Harapan Jaya yang selama ini terpisah oleh sungai.\n\nProyek ini dibiayai oleh dana desa dan diperkirakan akan selesai dalam waktu 3 bulan. Jembatan sepanjang 15 meter ini akan mempermudah mobilitas warga dan meningkatkan aktivitas ekonomi antar dusun.",
+    },
+    {
+        id: 2,
+        judul: "Hasil Panen Padi Meningkat 20%",
+        kategori: "Pertanian",
+        tanggal: "10 Mar 2025",
+        status: "Dipublikasikan",
+        konten:
+            "Hasil panen padi di desa kita pada musim tanam tahun ini mengalami peningkatan sebesar 20% dibandingkan tahun lalu. Peningkatan ini berkat program intensifikasi pertanian yang telah dijalankan sejak tahun lalu.\n\nProgram tersebut meliputi penyuluhan teknik bertani modern, bantuan bibit unggul, dan perbaikan sistem irigasi. Petani desa kini bisa menikmati hasil panen yang lebih melimpah dan berkualitas lebih baik.",
+    },
+    {
+        id: 3,
+        judul: "Program Vaksinasi Lansia Sukses",
+        kategori: "Kesehatan",
+        tanggal: "8 Mar 2025",
+        status: "Dipublikasikan",
+        konten:
+            "Program vaksinasi untuk warga lansia di desa kita telah berhasil mencapai target 95% dari total populasi lansia. Program yang berlangsung selama dua minggu ini mendapat sambutan positif dari masyarakat.\n\nTim kesehatan desa bekerja sama dengan Puskesmas setempat melakukan kunjungan dari rumah ke rumah untuk memastikan semua lansia mendapatkan vaksin. Hal ini merupakan bagian dari upaya meningkatkan kualitas kesehatan masyarakat desa.",
+    },
+    {
+        id: 4,
+        judul: "Pelatihan UMKM untuk Warga Desa",
+        kategori: "Ekonomi",
+        tanggal: "5 Mar 2025",
+        status: "Draft",
+        konten:
+            "Pemerintah desa akan mengadakan pelatihan UMKM bagi warga desa pada tanggal 15-17 Maret 2025. Pelatihan ini bertujuan untuk meningkatkan kapasitas warga dalam mengelola usaha kecil dan menengah.\n\nMateri yang akan diberikan meliputi manajemen keuangan sederhana, strategi pemasaran produk, dan pemanfaatan media sosial untuk promosi. Pendaftaran dibuka mulai tanggal 6 Maret 2025 di kantor desa.",
+    },
+    {
+        id: 5,
+        judul: "Persiapan Festival Desa Tahunan",
+        kategori: "Budaya",
+        tanggal: "1 Mar 2025",
+        status: "Draft",
+        konten:
+            "Persiapan Festival Desa Tahunan telah dimulai. Festival yang akan diselenggarakan pada bulan April mendatang ini akan menampilkan berbagai kesenian dan budaya lokal desa kita.\n\nPanitia festival telah dibentuk dan mulai melakukan koordinasi dengan berbagai kelompok seni di desa. Festival ini diharapkan dapat menjadi ajang promosi potensi desa sekaligus melestarikan budaya lokal yang kita miliki.",
+    },
 ]
 
 const getStatusColor = (status: string): string => {
-   switch (status) {
-      case "Dipublikasikan":
-         return "bg-green-100 text-green-800"
-      case "Draft":
-         return "bg-gray-100 text-gray-800"
-      default:
-         return "bg-gray-100 text-gray-800"
-   }
+    switch (status) {
+        case "Dipublikasikan":
+            return "bg-green-100 text-green-800"
+        case "Draft":
+            return "bg-gray-100 text-gray-800"
+        default:
+            return "bg-gray-100 text-gray-800"
+    }
 }
 
 export default function BeritaDesaPage() {
-   const [beritaData, setBeritaData] = useState<BeritaItem[]>(initialBeritaData)
-   const [searchQuery, setSearchQuery] = useState<string>("")
-   const { toast } = useToast()
+    const [beritaData, setBeritaData] = useState<BeritaItem[]>(initialBeritaData)
+    const [searchQuery, setSearchQuery] = useState<string>("")
+    const { toast } = useToast()
 
-   // Function to handle search input changes
-   const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-      setSearchQuery(e.target.value)
-   }
+    // Function to handle search input changes
+    const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
+        setSearchQuery(e.target.value)
+    }
 
-   // Function to update berita
-   const handleBeritaUpdate = (
-      id: number,
-      updatedBerita: {
-         judul: string
-         kategori: string
-         status: string
-         konten: string
-      },
-   ) => {
-      setBeritaData((prevData) => prevData.map((berita) => (berita.id === id ? { ...berita, ...updatedBerita } : berita)))
-   }
+    // Function to update berita
+    const handleBeritaUpdate = (
+        id: number,
+        updatedBerita: {
+            judul: string
+            kategori: string
+            status: string
+            konten: string
+        },
+    ) => {
+        setBeritaData((prevData) => prevData.map((berita) => (berita.id === id ? { ...berita, ...updatedBerita } : berita)))
+    }
 
-   // Function to delete berita directly from the table
-   const handleDirectDelete = (id: number) => {
-      // Remove the item from the beritaData state
-      setBeritaData((prevData) => prevData.filter((berita) => berita.id !== id))
+    // Function to delete berita directly from the table
+    const handleDirectDelete = (id: number) => {
+        // Remove the item from the beritaData state
+        setBeritaData((prevData) => prevData.filter((berita) => berita.id !== id))
 
-      // Show success notification
-      toast({
-         title: "Berhasil",
-         description: "Berita berhasil dihapus",
-      })
-   }
+        // Show success notification
+        toast({
+            title: "Berhasil",
+            description: "Berita berhasil dihapus",
+        })
+    }
 
-   // Function to delete berita (used by the modal)
-   const handleBeritaDelete = (id: number) => {
-      setBeritaData((prevData) => prevData.filter((berita) => berita.id !== id))
-   }
+    // Filter data based on search query
+    const filteredData = beritaData.filter((berita) => {
+        const query = searchQuery.toLowerCase()
+        return (
+            berita.judul.toLowerCase().includes(query) ||
+            berita.kategori.toLowerCase().includes(query) ||
+            berita.tanggal.toLowerCase().includes(query) ||
+            berita.status.toLowerCase().includes(query)
+        )
+    })
 
-   // Filter data based on search query
-   const filteredData = beritaData.filter((berita) => {
-      const query = searchQuery.toLowerCase()
-      return (
-         berita.judul.toLowerCase().includes(query) ||
-         berita.kategori.toLowerCase().includes(query) ||
-         berita.tanggal.toLowerCase().includes(query) ||
-         berita.status.toLowerCase().includes(query)
-      )
-   })
-
-   return (
-      <div className="space-y-6">
-         <div className="flex items-center justify-between">
-         <div>
-            <h1 className="text-2xl font-bold">Berita Desa</h1>
-            <p className="text-muted-foreground">Kelola berita dan informasi desa</p>
-         </div>
-         <TambahBeritaModal />
-         </div>
-
-         <Card>
-         <CardHeader className="pb-2">
+    return (
+        <div className="space-y-6">
             <div className="flex items-center justify-between">
-               <div>
-               <CardTitle>Daftar Berita</CardTitle>
-               <CardDescription>Daftar berita dan informasi desa</CardDescription>
-               </div>
-               <div className="flex items-center gap-2">
-               <div className="relative">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                     type="search"
-                     placeholder="Cari..."
-                     className="pl-8 w-[250px]"
-                     value={searchQuery}
-                     onChange={handleSearchChange}
-                  />
-               </div>
-               </div>
+                <div>
+                    <h1 className="text-2xl font-bold">Berita Desa</h1>
+                    <p className="text-muted-foreground">Kelola berita dan informasi desa</p>
+                </div>
+                <TambahBeritaModal />
             </div>
-         </CardHeader>
-         <CardContent>
-            <Table>
-               <TableHeader>
-               <TableRow>
-                  <TableHead>No</TableHead>
-                  <TableHead>Judul</TableHead>
-                  <TableHead>Kategori</TableHead>
-                  <TableHead>Tanggal</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Aksi</TableHead>
-               </TableRow>
-               </TableHeader>
-               <TableBody>
-               {filteredData.length > 0 ? (
-                  filteredData.map((berita) => (
-                     <TableRow key={berita.id}>
-                     <TableCell>{berita.id}</TableCell>
-                     <TableCell>{berita.judul}</TableCell>
-                     <TableCell>{berita.kategori}</TableCell>
-                     <TableCell>{berita.tanggal}</TableCell>
-                     <TableCell>
-                        <Badge className={getStatusColor(berita.status)}>{berita.status}</Badge>
-                     </TableCell>
-                     <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                           <LihatBeritaModal
-                           id={berita.id}
-                           judul={berita.judul}
-                           kategori={berita.kategori}
-                           tanggal={berita.tanggal}
-                           status={berita.status}
-                           konten={berita.konten}
-                           />
-                           <EditBeritaModal
-                           id={berita.id}
-                           judul={berita.judul}
-                           kategori={berita.kategori}
-                           status={berita.status}
-                           konten={berita.konten}
-                           onBeritaUpdate={handleBeritaUpdate}
-                           />
-                           <Button
-                           variant="destructive"
-                           size="sm"
-                           onClick={() => handleDirectDelete(berita.id)}
-                           className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                           >
-                           <Trash className="h-4 w-4" />
-                           <span className="sr-only">Hapus</span>
-                           </Button>
-                        </div>
-                     </TableCell>
-                     </TableRow>
-                  ))
-               ) : (
-                  <TableRow>
-                     <TableCell colSpan={6} className="text-center py-4">
-                     Tidak ada data yang sesuai dengan pencarian
-                     </TableCell>
-                  </TableRow>
-               )}
-               </TableBody>
-            </Table>
-         </CardContent>
-         </Card>
-      </div>
-   )
-}
 
+            <Card>
+                <CardHeader className="pb-2">
+                    <div className="flex items-center justify-between">
+                        <div>
+                            <CardTitle>Daftar Berita</CardTitle>
+                            <CardDescription>Daftar berita dan informasi desa</CardDescription>
+                        </div>
+                        <div className="flex items-center gap-2">
+                            <div className="relative">
+                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                                <Input
+                                    type="search"
+                                    placeholder="Cari..."
+                                    className="pl-8 w-[250px]"
+                                    value={searchQuery}
+                                    onChange={handleSearchChange}
+                                />
+                            </div>
+                        </div>
+                    </div>
+                </CardHeader>
+                <CardContent>
+                    <Table>
+                        <TableHeader>
+                            <TableRow>
+                                <TableHead>No</TableHead>
+                                <TableHead>Judul</TableHead>
+                                <TableHead>Kategori</TableHead>
+                                <TableHead>Tanggal</TableHead>
+                                <TableHead>Status</TableHead>
+                                <TableHead className="text-right">Aksi</TableHead>
+                            </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                            {filteredData.length > 0 ? (
+                                filteredData.map((berita) => (
+                                    <TableRow key={berita.id}>
+                                        <TableCell>{berita.id}</TableCell>
+                                        <TableCell>{berita.judul}</TableCell>
+                                        <TableCell>{berita.kategori}</TableCell>
+                                        <TableCell>{berita.tanggal}</TableCell>
+                                        <TableCell>
+                                            <Badge className={getStatusColor(berita.status)}>{berita.status}</Badge>
+                                        </TableCell>
+                                        <TableCell className="text-right">
+                                            <div className="flex justify-end gap-2">
+                                                <LihatBeritaModal
+                                                    judul={berita.judul}
+                                                    kategori={berita.kategori}
+                                                    tanggal={berita.tanggal}
+                                                    status={berita.status}
+                                                    konten={berita.konten}
+                                                />
+                                                <EditBeritaModal
+                                                    id={berita.id}
+                                                    judul={berita.judul}
+                                                    kategori={berita.kategori}
+                                                    status={berita.status}
+                                                    konten={berita.konten}
+                                                    onBeritaUpdate={handleBeritaUpdate}
+                                                />
+                                                <Button
+                                                    variant="destructive"
+                                                    size="sm"
+                                                    onClick={() => handleDirectDelete(berita.id)}
+                                                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
+                                                >
+                                                    <Trash className="h-4 w-4" />
+                                                    <span className="sr-only">Hapus</span>
+                                                </Button>
+                                            </div>
+                                        </TableCell>
+                                    </TableRow>
+                                ))
+                            ) : (
+                                <TableRow>
+                                    <TableCell colSpan={6} className="text-center py-4">
+                                        Tidak ada data yang sesuai dengan pencarian
+                                    </TableCell>
+                                </TableRow>
+                            )}
+                        </TableBody>
+                    </Table>
+                </CardContent>
+            </Card>
+        </div>
+    )
+}

@@ -10,7 +10,6 @@ import { Textarea } from "@/components/ui/textarea"
 import { useToast } from "@/hooks/use-toast"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { CalendarIcon } from "lucide-react"
-import { Calendar } from "@/components/ui/calendar"
 import { Popover, PopoverContent, PopoverTrigger } from "@/components/ui/popover"
 import { format } from "date-fns"
 import { id } from "date-fns/locale"
@@ -19,7 +18,7 @@ import { cn } from "@/lib/utils"
 export function TambahTransaksiModal() {
    const [open, setOpen] = useState<boolean>(false)
    const [isLoading, setIsLoading] = useState<boolean>(false)
-   const [date, setDate] = useState<Date>(new Date())
+   const [date] = useState<Date>(new Date())
    const [isDatePickerOpen, setIsDatePickerOpen] = useState<boolean>(false) // State untuk kontrol modal tanggal
    const { toast } = useToast()
 
