@@ -14,7 +14,6 @@ import {
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useToast } from "@/hooks/use-toast"
-import { Eye } from "lucide-react"
 import { ClipboardCheck } from "lucide-react"
 
 interface UbahStatusLaporanModalProps {
