@@ -15,6 +15,7 @@ import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useToast } from "@/hooks/use-toast"
 import { Eye } from "lucide-react"
+import { ClipboardCheck } from "lucide-react"
 
 interface UbahStatusLaporanModalProps {
   id: number
@@ -52,7 +53,7 @@ export function UbahStatusLaporanModal({ id, nama, judul, status, onStatusChange
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
         <Button variant="ghost" size="sm">
-          <Eye className="h-4 w-4" />
+          <ClipboardCheck className="h-4 w-4" />
           <span className="sr-only">Ubah Status</span>
         </Button>
       </DialogTrigger>

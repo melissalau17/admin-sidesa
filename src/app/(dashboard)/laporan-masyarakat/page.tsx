@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { Search } from "lucide-react"
 import { Input } from "@/components/ui/input"
 import { UbahStatusLaporanModal } from "../../../components/modals/ubah-status-laporan"
+import { LihatLaporanModal } from "@/components/modals/lihat-laporan-modal"
 
 interface LaporanItem {
    id: number
@@ -15,55 +16,76 @@ interface LaporanItem {
    kategori: string
    tanggal: string
    status: string
+   isi: string
+   lokasi?: string
+   kontak?: string
+   gambar?: string
 }
 
 const initialLaporanData: LaporanItem[] = [
-  {
-    id: 1,
-    nama: "Agus Setiawan",
-    judul: "Jalan Rusak di RT 03",
-    kategori: "Infrastruktur",
-    tanggal: "11 Mar 2025",
-    status: "Belum Direspon",
-  },
-  {
-    id: 2,
-    nama: "Rina Wati",
-    judul: "Lampu Jalan Mati di Perempatan",
-    kategori: "Infrastruktur",
-    tanggal: "9 Mar 2025",
-    status: "Diproses",
-  },
-  {
-    id: 3,
-    nama: "Hendra Gunawan",
-    judul: "Sampah Menumpuk di Pasar",
-    kategori: "Lingkungan",
-    tanggal: "7 Mar 2025",
-    status: "Selesai",
-  },
-  {
-    id: 4,
-    nama: "Sri Wahyuni",
-    judul: "Kegiatan Mencurigakan di Rumah Kosong",
-    kategori: "Keamanan",
-    tanggal: "5 Mar 2025",
-    status: "Diproses",
-  },
-  {
-    id: 5,
-    nama: "Dedi Kurniawan",
-    judul: "Saluran Air Tersumbat",
-    kategori: "Lingkungan",
-    tanggal: "2 Mar 2025",
-    status: "Selesai",
-  },
+   {
+      id: 1,
+      nama: "Agus Setiawan",
+      judul: "Jalan Rusak di RT 03",
+      kategori: "Infrastruktur",
+      tanggal: "11 Mar 2025",
+      status: "Diproses",
+      isi: "Jalan di RT 03 RW 02 rusak parah dan berlubang. Sudah beberapa kali motor warga terjatuh karena lubang tersebut, terutama saat malam hari karena penerangan jalan yang kurang memadai.\n\nMohon agar segera diperbaiki untuk menghindari kecelakaan yang lebih parah.",
+      lokasi: "Jl. Mawar RT 03 RW 02",
+      kontak: "081234567890",
+      gambar: "/placeholder.svg?height=300&width=500",
+   },
+   {
+      id: 2,
+      nama: "Rina Wati",
+      judul: "Lampu Jalan Mati di Perempatan",
+      kategori: "Infrastruktur",
+      tanggal: "9 Mar 2025",
+      status: "Diproses",
+      isi: "Lampu jalan di perempatan Jl. Melati dan Jl. Anggrek mati sejak 3 hari yang lalu. Kondisi malam hari menjadi sangat gelap dan membahayakan pengguna jalan.\n\nMohon segera diperbaiki untuk keamanan warga yang melintas di malam hari.",
+      lokasi: "Perempatan Jl. Melati dan Jl. Anggrek",
+      kontak: "081234567891",
+      gambar: "/placeholder.svg?height=300&width=500",
+   },
+   {
+      id: 3,
+      nama: "Hendra Gunawan",
+      judul: "Sampah Menumpuk di Pasar",
+      kategori: "Lingkungan",
+      tanggal: "7 Mar 2025",
+      status: "Selesai",
+      isi: "Terjadi penumpukan sampah di area belakang pasar desa yang menimbulkan bau tidak sedap dan berpotensi menjadi sarang penyakit. Sampah sudah menumpuk selama seminggu dan belum diangkut.\n\nMohon agar petugas kebersihan segera mengangkut sampah tersebut dan menjadwalkan pengangkutan sampah secara rutin.",
+      lokasi: "Pasar Desa, belakang blok B",
+      kontak: "081234567892",
+      gambar: "/placeholder.svg?height=300&width=500",
+   },
+   {
+      id: 4,
+      nama: "Sri Wahyuni",
+      judul: "Kegiatan Mencurigakan di Rumah Kosong",
+      kategori: "Keamanan",
+      tanggal: "5 Mar 2025",
+      status: "Diproses",
+      isi: "Saya ingin melaporkan adanya kegiatan mencurigakan di rumah kosong di Jl. Dahlia No. 15. Beberapa hari terakhir terlihat orang-orang yang tidak dikenal keluar masuk rumah tersebut pada malam hari.\n\nMohon agar petugas keamanan desa dapat melakukan patroli dan pengecekan untuk memastikan tidak ada kegiatan ilegal yang dilakukan.",
+      lokasi: "Jl. Dahlia No. 15",
+      kontak: "081234567893",
+   },
+   {
+      id: 5,
+      nama: "Dedi Kurniawan",
+      judul: "Saluran Air Tersumbat",
+      kategori: "Lingkungan",
+      tanggal: "2 Mar 2025",
+      status: "Selesai",
+      isi: "Saluran air di depan rumah saya tersumbat dan menyebabkan genangan air saat hujan. Kondisi ini sudah berlangsung selama dua minggu dan semakin parah.\n\nMohon agar segera dibersihkan untuk mencegah banjir saat musim hujan.",
+      lokasi: "Jl. Kenanga RT 05 RW 03 No. 7",
+      kontak: "081234567894",
+      gambar: "/placeholder.svg?height=300&width=500",
+   },
 ]
 
 const getStatusColor = (status: string): string => {
    switch (status) {
-      case "Belum Direspon":
-         return "bg-red-100 text-red-800"
       case "Diproses":
          return "bg-blue-100 text-blue-800"
       case "Selesai":
@@ -157,12 +179,27 @@ export default function LaporanMasyarakatPage() {
                         <Badge className={getStatusColor(laporan.status)}>{laporan.status}</Badge>
                      </TableCell>
                      <TableCell className="text-right">
-                        <UbahStatusLaporanModal
-                           id={laporan.id}
-                           nama={laporan.nama}
-                           judul={laporan.judul}
-                           status={laporan.status}
-                           onStatusChange={handleStatusChange}/>
+                        <div className="flex justify-end gap-2">
+                           <LihatLaporanModal
+                              id={laporan.id}
+                              nama={laporan.nama}
+                              judul={laporan.judul}
+                              kategori={laporan.kategori}
+                              tanggal={laporan.tanggal}
+                              status={laporan.status}
+                              isi={laporan.isi}
+                              lokasi={laporan.lokasi}
+                              kontak={laporan.kontak}
+                              gambar={laporan.gambar}
+                           />
+                           <UbahStatusLaporanModal
+                              id={laporan.id}
+                              nama={laporan.nama}
+                              judul={laporan.judul}
+                              status={laporan.status}
+                              onStatusChange={handleStatusChange}
+                           />
+                        </div>
                      </TableCell>
                      </TableRow>
                   ))
