@@ -68,28 +68,16 @@ export function UbahStatusLaporanModal({ id, nama, judul, status, onStatusChange
             <div className="space-y-2">
               <Label>Status Laporan</Label>
               <RadioGroup value={selectedStatus} onValueChange={setSelectedStatus} className="flex flex-col space-y-2">
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="Belum Direspon" id="belum-direspon" />
-                  <Label htmlFor="belum-direspon" className="font-normal">
-                    Belum Direspon
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
+                <div className="flex items-center mt-2 space-x-2">
                   <RadioGroupItem value="Diproses" id="diproses" />
                   <Label htmlFor="diproses" className="font-normal">
-                    Diproses
+                    Sedang Diproses
                   </Label>
                 </div>
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="Selesai" id="selesai" />
                   <Label htmlFor="selesai" className="font-normal">
                     Selesai
-                  </Label>
-                </div>
-                <div className="flex items-center space-x-2">
-                  <RadioGroupItem value="Ditolak" id="ditolak" />
-                  <Label htmlFor="ditolak" className="font-normal">
-                    Ditolak
                   </Label>
                 </div>
               </RadioGroup>

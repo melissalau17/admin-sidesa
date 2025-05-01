@@ -144,26 +144,26 @@ export default function KelolaSuratPage() {
          </div>
 
          <Card>
-         <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-               <div>
-               <CardTitle>Daftar Permohonan Surat</CardTitle>
-               <CardDescription>Daftar permohonan surat yang masuk</CardDescription>
+            <CardHeader className="pb-2">
+               <div className="flex items-center justify-between">
+                  <div>
+                  <CardTitle>Daftar Permohonan Surat</CardTitle>
+                  <CardDescription>Daftar permohonan surat yang masuk</CardDescription>
+                  </div>
+                  <div className="flex items-center gap-2">
+                  <div className="relative">
+                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
+                     <Input
+                        type="search"
+                        placeholder="Cari..."
+                        className="pl-8 w-[250px]"
+                        value={searchQuery}
+                        onChange={handleSearchChange}
+                     />
+                  </div>
+                  </div>
                </div>
-               <div className="flex items-center gap-2">
-               <div className="relative">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                     type="search"
-                     placeholder="Cari..."
-                     className="pl-8 w-[250px]"
-                     value={searchQuery}
-                     onChange={handleSearchChange}
-                  />
-               </div>
-               </div>
-            </div>
-         </CardHeader>
+            </CardHeader>
          <CardContent>
             <Table>
                <TableHeader>

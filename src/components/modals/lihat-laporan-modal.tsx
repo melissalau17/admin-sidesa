@@ -46,23 +46,19 @@ export function LihatLaporanModal({
       switch (status) {
          case "Belum Direspon":
          return "bg-red-100 text-red-800"
-         case "Diproses":
+         case "Sedang Diproses":
          return "bg-blue-100 text-blue-800"
          case "Selesai":
          return "bg-green-100 text-green-800"
-         case "Ditolak":
-         return "bg-gray-100 text-gray-800"
          default:
          return "bg-gray-100 text-gray-800"
       }
    }
 
    const keterangan =
-      status === "Ditolak"
-         ? "Laporan ditolak karena tidak sesuai dengan kriteria atau di luar wewenang desa."
-         : status === "Selesai"
+      status === "Selesai"
          ? "Laporan telah ditindaklanjuti dan diselesaikan oleh petugas desa."
-         : status === "Diproses"
+         : status === "Sedang Diproses"
             ? "Laporan sedang dalam proses penanganan oleh petugas desa."
             : "Laporan belum ditindaklanjuti dan sedang menunggu untuk diproses."
 
@@ -141,7 +137,7 @@ export function LihatLaporanModal({
                   </div>
                )}
 
-               {status === "Diproses" && (
+               {status === "Sedang Diproses" && (
                   <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
                      <p className="text-sm text-blue-800">
                      Laporan sedang dalam proses penanganan. Petugas desa akan segera menindaklanjuti laporan ini.
