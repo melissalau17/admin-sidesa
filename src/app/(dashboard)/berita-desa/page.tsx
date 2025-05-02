@@ -5,12 +5,12 @@ import { Button } from "@/components/ui/buttom"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Search, Trash } from "lucide-react"
-import { Input } from "@/components/ui/input"
+import { Trash } from "lucide-react"
 import { TambahBeritaModal } from "@/components/modals/tambah-berita-modal"
 import { LihatBeritaModal } from "@/components/modals/lihat-berita-modal"
 import { EditBeritaModal } from "@/components/modals/edit-berita-modal"
 import { useToast } from "@/hooks/use-toast"
+import { SearchComponent } from "@/components/ui/SearchComponent"
 
 interface BeritaItem {
     id: number
@@ -145,17 +145,15 @@ export default function BeritaDesaPage() {
                         </div>
                         <div className="flex items-center gap-2">
                             <div className="relative">
-                                <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                                <Input
-                                    type="search"
-                                    placeholder="Cari..."
-                                    className="pl-8 w-[250px]"
-                                    value={searchQuery}
-                                    onChange={handleSearchChange}
+                                <SearchComponent
+                                    searchQuery={searchQuery}
+                                    onSearchChange={handleSearchChange}
+                                    placeholder="Cari berita..."
                                 />
                             </div>
                         </div>
                     </div>
+                    
                 </CardHeader>
                 <CardContent>
                     <Table>

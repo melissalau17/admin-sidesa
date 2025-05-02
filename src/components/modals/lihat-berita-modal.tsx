@@ -6,14 +6,13 @@ import {
    Dialog,
    DialogContent,
    DialogDescription,
-   DialogFooter,
    DialogHeader,
    DialogTitle,
    DialogTrigger,
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
 import { Eye } from "lucide-react"
-import Image from "next/image" // Import komponen Image
+import Image from "next/image"
 
 interface LihatBeritaModalProps {
    judul: string
@@ -62,17 +61,14 @@ export function LihatBeritaModal({ judul, kategori, tanggal, status, konten }: L
                         src="/placeholder.svg?height=200&width=600"
                         alt={judul}
                         className="w-full h-48 object-cover rounded-md"
-                        width={600} // Tambahkan width sesuai kebutuhan
-                        height={200} // Tambahkan height sesuai kebutuhan
+                        width={600} 
+                        height={200} 
                   />
                </div>
-               <div className="space-y-4">
-                  <p className="text-sm text-gray-700 whitespace-pre-line">{konten}</p>
+               <div className="space-y-4 pr-6">
+                  <p className="text-sm text-gray-700 whitespace-pre-line text-wrap text-justify">{konten}</p>
                </div>
             </div>
-            <DialogFooter>
-               <Button variant="destructive" onClick={() => setOpen(false)}>Tutup</Button>
-            </DialogFooter>
          </DialogContent>
       </Dialog>
    )

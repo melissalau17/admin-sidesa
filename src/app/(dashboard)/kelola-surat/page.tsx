@@ -4,8 +4,7 @@ import { useState, type ChangeEvent } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Search } from "lucide-react"
-import { Input } from "@/components/ui/input"
+import { SearchComponent } from "@/components/ui/SearchComponent"
 import { TambahSuratModal } from "@/components/modals/tambah-surat-modal"
 import { UbahStatusSuratModal } from "@/components/modals/ubah-status-surat-modal"
 import { LihatSuratModal } from "@/components/modals/lihat-surat-modal"
@@ -151,16 +150,13 @@ export default function KelolaSuratPage() {
                   <CardDescription>Daftar permohonan surat yang masuk</CardDescription>
                   </div>
                   <div className="flex items-center gap-2">
-                  <div className="relative">
-                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                     <Input
-                        type="search"
-                        placeholder="Cari..."
-                        className="pl-8 w-[250px]"
-                        value={searchQuery}
-                        onChange={handleSearchChange}
-                     />
-                  </div>
+                     <div className="relative">
+                        <SearchComponent 
+                           searchQuery={searchQuery}
+                           onSearchChange={handleSearchChange}
+                           placeholder="Cari nama, jenis, status..."
+                        />
+                     </div>
                   </div>
                </div>
             </CardHeader>

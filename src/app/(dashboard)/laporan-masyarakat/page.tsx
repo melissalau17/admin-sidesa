@@ -4,8 +4,7 @@ import { useState, type ChangeEvent } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Search } from "lucide-react"
-import { Input } from "@/components/ui/input"
+import { SearchComponent } from "@/components/ui/SearchComponent"
 import { UbahStatusLaporanModal } from "../../../components/modals/ubah-status-laporan"
 import { LihatLaporanModal } from "@/components/modals/lihat-laporan-modal"
 
@@ -133,26 +132,22 @@ export default function LaporanMasyarakatPage() {
          </div>
 
          <Card>
-         <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
-               <div>
-               <CardTitle>Daftar Laporan</CardTitle>
-               <CardDescription>Daftar laporan dan aduan dari masyarakat</CardDescription>
+            <CardHeader className="pb-2">
+               <div className="flex items-center justify-between">
+                  <div>
+                     <CardTitle>Daftar Laporan</CardTitle>
+                     <CardDescription>Daftar laporan dan aduan dari masyarakat</CardDescription>
+                  </div>
+                  <div className="flex items-center gap-2">
+                     <div className="relative">
+                        <SearchComponent 
+                           searchQuery={searchQuery}
+                           onSearchChange={handleSearchChange}
+                        />
+                     </div>
+                  </div>
                </div>
-               <div className="flex items-center gap-2">
-               <div className="relative">
-                  <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                  <Input
-                     type="search"
-                     placeholder="Cari..."
-                     className="pl-8 w-[250px]"
-                     value={searchQuery}
-                     onChange={handleSearchChange}
-                  />
-               </div>
-               </div>
-            </div>
-         </CardHeader>
+            </CardHeader>
          <CardContent>
             <Table>
                <TableHeader>

@@ -119,7 +119,7 @@ export function LihatLaporanModal({
                <div className="space-y-1">
                   <p className="text-sm font-medium text-muted-foreground">Isi Laporan</p>
                   <div className="text-sm p-3 bg-gray-50 rounded-md border">
-                     <p className="whitespace-pre-line">{isi}</p>
+                     <p className="whitespace-pre-line text-justify">{isi}</p>
                   </div>
                </div>
 
@@ -137,7 +137,7 @@ export function LihatLaporanModal({
                   </div>
                )}
 
-               {status === "Sedang Diproses" && (
+               {status === "Diproses" && (
                   <div className="mt-4 p-3 bg-blue-50 border border-blue-200 rounded-md">
                      <p className="text-sm text-blue-800">
                      Laporan sedang dalam proses penanganan. Petugas desa akan segera menindaklanjuti laporan ini.

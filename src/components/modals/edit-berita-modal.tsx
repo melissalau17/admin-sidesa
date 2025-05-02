@@ -123,7 +123,7 @@ export function EditBeritaModal({ id, judul, kategori, status, konten, onBeritaU
                <Textarea
                   id="konten"
                   placeholder="Masukkan konten berita"
-                  className="col-span-3 min-h-[250px]"
+                  className="col-span-3 min-h-[250px] text-justify"
                   required
                   value={formData.konten}
                   onChange={(e) => handleChange("konten", e.target.value)}

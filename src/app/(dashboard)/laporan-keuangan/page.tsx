@@ -5,11 +5,12 @@ import { Button } from "@/components/ui/buttom"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
-import { Download, FileText, Search } from "lucide-react"
-import { Input } from "@/components/ui/input"
+import { Download, FileText } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import { TambahTransaksiModal } from "@/components/modals/tambah-transaksi-modal"
 import { useToast } from "@/hooks/use-toast"
+import { SearchComponent } from "@/components/ui/SearchComponent"
+import { LihatTransaksiModal } from "@/components/modals/lihat-transaksi-modal"
 
 interface KeuanganItem {
    id: number
@@ -17,6 +18,8 @@ interface KeuanganItem {
    tanggal: string
    jenis: string
    jumlah: string
+   kategori?: string
+   catatan?: string
 }
 
 const initialKeuanganData: KeuanganItem[] = [
@@ -26,6 +29,8 @@ const initialKeuanganData: KeuanganItem[] = [
       tanggal: "1 Mar 2025",
       jenis: "Pemasukan",
       jumlah: "Rp 25,000,000",
+      kategori: "Dana Desa",
+      catatan: "Penerimaan dana desa tahap pertama tahun anggaran 2025.",
    },
    {
       id: 2,
@@ -33,6 +38,8 @@ const initialKeuanganData: KeuanganItem[] = [
       tanggal: "5 Mar 2025",
       jenis: "Pengeluaran",
       jumlah: "Rp 15,000,000",
+      kategori: "Infrastruktur",
+      catatan: "Pembayaran tahap awal untuk pembangunan jembatan penghubung Dusun Sukamaju dan Dusun Harapan Jaya.",
    },
    {
       id: 3,
@@ -40,6 +47,8 @@ const initialKeuanganData: KeuanganItem[] = [
       tanggal: "8 Mar 2025",
       jenis: "Pemasukan",
       jumlah: "Rp 5,000,000",
+      kategori: "Retribusi",
+      catatan: "Penerimaan retribusi pasar desa bulan Maret 2025.",
    },
    {
       id: 4,
@@ -47,6 +56,8 @@ const initialKeuanganData: KeuanganItem[] = [
       tanggal: "10 Mar 2025",
       jenis: "Pengeluaran",
       jumlah: "Rp 12,000,000",
+      kategori: "Gaji",
+      catatan: "Pembayaran gaji perangkat desa bulan Maret 2025.",
    },
    {
       id: 5,
@@ -54,6 +65,8 @@ const initialKeuanganData: KeuanganItem[] = [
       tanggal: "12 Mar 2025",
       jenis: "Pemasukan",
       jumlah: "Rp 15,000,000",
+      kategori: "Bantuan",
+      catatan: "Penerimaan bantuan dari pemerintah provinsi untuk program pemberdayaan masyarakat desa.",
    },
 ]
 
@@ -254,182 +267,184 @@ export default function LaporanKeuanganPage() {
    return (
       <div className="space-y-6">
          <div className="flex items-center justify-between">
-         <div>
-            <h1 className="text-2xl font-bold">Laporan Keuangan</h1>
-            <p className="text-muted-foreground">Kelola laporan keuangan desa</p>
-         </div>
-         <div className="flex gap-2">
-            <Button variant="destructive" onClick={handleDownloadReport} disabled={isDownloading}>
-               <Download className="mr-2 h-4 w-4" />
-               {isDownloading ? "Mengunduh..." : "Unduh Laporan"}
-            </Button>
-            <TambahTransaksiModal />
-         </div>
+            <div>
+               <h1 className="text-2xl font-bold">Laporan Keuangan</h1>
+               <p className="text-muted-foreground">Kelola laporan keuangan desa</p>
+            </div>
+            <div className="flex gap-2">
+               <Button variant="destructive" onClick={handleDownloadReport} disabled={isDownloading}>
+                  <Download className="mr-2 h-4 w-4" />
+                  {isDownloading ? "Mengunduh..." : "Unduh Laporan"}
+               </Button>
+               <TambahTransaksiModal />
+            </div>
          </div>
 
          <div className="grid gap-4 md:grid-cols-3">
-         <Card>
-            <CardHeader className="pb-2">
-               <CardTitle className="text-sm font-medium">Total Pemasukan</CardTitle>
-            </CardHeader>
-            <CardContent>
-               <div className="text-2xl font-bold text-green-600">Rp 45,000,000</div>
-               <p className="text-xs text-muted-foreground mt-1">Bulan Maret 2025</p>
-            </CardContent>
-         </Card>
-         <Card>
-            <CardHeader className="pb-2">
-               <CardTitle className="text-sm font-medium">Total Pengeluaran</CardTitle>
-            </CardHeader>
-            <CardContent>
-               <div className="text-2xl font-bold text-red-600">Rp 27,000,000</div>
-               <p className="text-xs text-muted-foreground mt-1">Bulan Maret 2025</p>
-            </CardContent>
-         </Card>
-         <Card>
-            <CardHeader className="pb-2">
-               <CardTitle className="text-sm font-medium">Saldo</CardTitle>
-            </CardHeader>
-            <CardContent>
-               <div className="text-2xl font-bold">Rp 18,000,000</div>
-               <p className="text-xs text-muted-foreground mt-1">Bulan Maret 2025</p>
-            </CardContent>
-         </Card>
+            <Card>
+               <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Total Pemasukan</CardTitle>
+               </CardHeader>
+               <CardContent>
+                  <div className="text-2xl font-bold text-green-600">Rp 45,000,000</div>
+                  <p className="text-xs text-muted-foreground mt-1">Bulan Maret 2025</p>
+               </CardContent>
+            </Card>
+            <Card>
+               <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Total Pengeluaran</CardTitle>
+               </CardHeader>
+               <CardContent>
+                  <div className="text-2xl font-bold text-red-600">Rp 27,000,000</div>
+                  <p className="text-xs text-muted-foreground mt-1">Bulan Maret 2025</p>
+               </CardContent>
+            </Card>
+            <Card>
+               <CardHeader className="pb-2">
+                  <CardTitle className="text-sm font-medium">Saldo</CardTitle>
+               </CardHeader>
+               <CardContent>
+                  <div className="text-2xl font-bold">Rp 18,000,000</div>
+                  <p className="text-xs text-muted-foreground mt-1">Bulan Maret 2025</p>
+               </CardContent>
+            </Card>
          </div>
 
          <Tabs defaultValue="transaksi" value={activeTab} onValueChange={handleTabChange}>
-         <TabsList>
-            <TabsTrigger value="transaksi">Transaksi</TabsTrigger>
-            <TabsTrigger value="laporan">Laporan Bulanan</TabsTrigger>
-         </TabsList>
-         <TabsContent value="transaksi">
-            <Card>
-               <CardHeader className="pb-2">
-               <div className="flex items-center justify-between">
-                  <div>
-                     <CardTitle>Daftar Transaksi</CardTitle>
-                     <CardDescription>Daftar transaksi keuangan desa</CardDescription>
-                  </div>
-                  <div className="flex items-center gap-2">
-                     <div className="relative">
-                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                     <Input
-                        type="search"
-                        placeholder="Cari..."
-                        className="pl-8 w-[250px]"
-                        value={searchTransaksiQuery}
-                        onChange={handleSearchTransaksiChange}
-                     />
+            <TabsList>
+               <TabsTrigger value="transaksi">Transaksi</TabsTrigger>
+               <TabsTrigger value="laporan">Laporan Bulanan</TabsTrigger>
+            </TabsList>
+            <TabsContent value="transaksi">
+               <Card>
+                  <CardHeader className="pb-2">
+                     <div className="flex items-center justify-between">
+                        <div>
+                           <CardTitle>Daftar Transaksi</CardTitle>
+                           <CardDescription>Daftar transaksi keuangan desa</CardDescription>
+                        </div>
+                        <div className="flex items-center gap-2">
+                           <div className="relative">
+                              <SearchComponent 
+                                 searchQuery={searchTransaksiQuery}
+                                 onSearchChange={handleSearchTransaksiChange}
+                                 placeholder="Cari keterangan, tanggal, jenis..."
+                              />
+                           </div>
+                        </div>
                      </div>
-                  </div>
-               </div>
-               </CardHeader>
-               <CardContent>
-               <Table>
-                  <TableHeader>
-                     <TableRow>
-                     <TableHead>No</TableHead>
-                     <TableHead>Keterangan</TableHead>
-                     <TableHead>Tanggal</TableHead>
-                     <TableHead>Jenis</TableHead>
-                     <TableHead>Jumlah</TableHead>
-                     <TableHead className="text-right">Aksi</TableHead>
-                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                     {filteredTransaksiData.length > 0 ? (
-                     filteredTransaksiData.map((item) => (
-                        <TableRow key={item.id}>
-                           <TableCell>{item.id}</TableCell>
-                           <TableCell>{item.keterangan}</TableCell>
-                           <TableCell>{item.tanggal}</TableCell>
-                           <TableCell>
-                           <Badge className={getJenisColor(item.jenis)}>{item.jenis}</Badge>
-                           </TableCell>
-                           <TableCell>{item.jumlah}</TableCell>
-                           <TableCell className="text-right">
-                           <Button variant="ghost" size="sm">
-                              <FileText className="h-4 w-4" />
-                              <span className="sr-only">Detail</span>
-                           </Button>
-                           </TableCell>
-                        </TableRow>
-                     ))
-                     ) : (
-                     <TableRow>
-                        <TableCell colSpan={6} className="text-center py-4">
-                           Tidak ada data yang sesuai dengan pencarian
-                        </TableCell>
-                     </TableRow>
-                     )}
-                  </TableBody>
-               </Table>
-               </CardContent>
-            </Card>
-         </TabsContent>
-         <TabsContent value="laporan">
-            <Card>
-               <CardHeader>
-               <div className="flex items-center justify-between">
-                  <div>
-                     <CardTitle>Laporan Bulanan</CardTitle>
-                     <CardDescription>Laporan keuangan desa per bulan</CardDescription>
-                  </div>
-                  <div className="flex items-center gap-2">
-                     <div className="relative">
-                     <Search className="absolute left-2.5 top-2.5 h-4 w-4 text-muted-foreground" />
-                     <Input
-                        type="search"
-                        placeholder="Cari..."
-                        className="pl-8 w-[250px]"
-                        value={searchLaporanQuery}
-                        onChange={handleSearchLaporanChange}
-                     />
+                  </CardHeader>
+                  <CardContent>
+                     <Table>
+                        <TableHeader>
+                           <TableRow>
+                              <TableHead>No</TableHead>
+                              <TableHead>Keterangan</TableHead>
+                              <TableHead>Tanggal</TableHead>
+                              <TableHead>Jenis</TableHead>
+                              <TableHead>Jumlah</TableHead>
+                              <TableHead className="text-right">Aksi</TableHead>
+                           </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                           {filteredTransaksiData.length > 0 ? (
+                              filteredTransaksiData.map((item) => (
+                                 <TableRow key={item.id}>
+                                    <TableCell>{item.id}</TableCell>
+                                    <TableCell>{item.keterangan}</TableCell>
+                                    <TableCell>{item.tanggal}</TableCell>
+                                    <TableCell>
+                                       <Badge className={getJenisColor(item.jenis)}>{item.jenis}</Badge>
+                                    </TableCell>
+                                    <TableCell>{item.jumlah}</TableCell>
+                                    <TableCell className="text-right">
+                                    <LihatTransaksiModal
+                                       id={item.id}
+                                       keterangan={item.keterangan}
+                                       tanggal={item.tanggal}
+                                       jenis={item.jenis}
+                                       jumlah={item.jumlah}
+                                       kategori={item.kategori}
+                                       catatan={item.catatan}
+                                    />
+                                    </TableCell>
+                                 </TableRow>
+                              ))
+                           ) : (
+                              <TableRow>
+                                 <TableCell colSpan={6} className="text-center py-4">
+                                    Tidak ada data yang sesuai dengan pencarian
+                                 </TableCell>
+                              </TableRow>
+                           )}
+                        </TableBody>
+                     </Table>
+                  </CardContent>
+               </Card>
+            </TabsContent>
+            <TabsContent value="laporan">
+               <Card>
+                  <CardHeader>
+                     <div className="flex items-center justify-between">
+                        <div>
+                           <CardTitle>Laporan Bulanan</CardTitle>
+                           <CardDescription>Laporan keuangan desa per bulan</CardDescription>
+                        </div>
+                        <div className="flex items-center gap-2">
+                           <div className="relative">
+                              <SearchComponent 
+                                 searchQuery={searchLaporanQuery}
+                                 onSearchChange={handleSearchLaporanChange}
+                                 placeholder="Cari bulan, pemasukan, pengeluaran..."
+                              />
+                           </div>
+                        </div>
                      </div>
-                  </div>
-               </div>
-               </CardHeader>
-               <CardContent>
-               <Table>
-                  <TableHeader>
-                     <TableRow>
-                     <TableHead>Bulan</TableHead>
-                     <TableHead>Pemasukan</TableHead>
-                     <TableHead>Pengeluaran</TableHead>
-                     <TableHead>Saldo</TableHead>
-                     <TableHead className="text-right">Aksi</TableHead>
-                     </TableRow>
-                  </TableHeader>
-                  <TableBody>
-                     {filteredLaporanData.length > 0 ? (
-                     filteredLaporanData.map((item, index) => (
-                        <TableRow key={index}>
-                           <TableCell>{item.bulan}</TableCell>
-                           <TableCell>{item.pemasukan}</TableCell>
-                           <TableCell>{item.pengeluaran}</TableCell>
-                           <TableCell>{item.saldo}</TableCell>
-                           <TableCell className="text-right">
-                           <Button variant="ghost" size="sm" onClick={() => handleDownloadMonthlyReport(item.bulan)}>
-                              <Download className="h-4 w-4" />
-                              <span className="sr-only">Unduh</span>
-                           </Button>
-                           </TableCell>
-                        </TableRow>
-                     ))
-                     ) : (
-                     <TableRow>
-                        <TableCell colSpan={5} className="text-center py-4">
-                           Tidak ada data yang sesuai dengan pencarian
-                        </TableCell>
-                     </TableRow>
-                     )}
-                  </TableBody>
-               </Table>
-               </CardContent>
-            </Card>
-         </TabsContent>
+                  </CardHeader>
+                  <CardContent>
+                     <Table>
+                        <TableHeader>
+                           <TableRow>
+                              <TableHead>Bulan</TableHead>
+                              <TableHead>Pemasukan</TableHead>
+                              <TableHead>Pengeluaran</TableHead>
+                              <TableHead>Saldo</TableHead>
+                              <TableHead className="text-right">Aksi</TableHead>
+                           </TableRow>
+                        </TableHeader>
+                        <TableBody>
+                           {filteredLaporanData.length > 0 ? (
+                              filteredLaporanData.map((item, index) => (
+                                 <TableRow key={index}>
+                                    <TableCell>{item.bulan}</TableCell>
+                                    <TableCell>{item.pemasukan}</TableCell>
+                                    <TableCell>{item.pengeluaran}</TableCell>
+                                    <TableCell>{item.saldo}</TableCell>
+                                    <TableCell className="text-right">
+                                       <Button 
+                                          variant="ghost" 
+                                          size="sm" 
+                                          onClick={() => handleDownloadMonthlyReport(item.bulan)}
+                                       >
+                                          <Download className="h-4 w-4" />
+                                          <span className="sr-only">Unduh</span>
+                                       </Button>
+                                    </TableCell>
+                                 </TableRow>
+                              ))
+                           ) : (
+                              <TableRow>
+                                 <TableCell colSpan={5} className="text-center py-4">
+                                    Tidak ada data yang sesuai dengan pencarian
+                                 </TableCell>
+                              </TableRow>
+                           )}
+                        </TableBody>
+                     </Table>
+                  </CardContent>
+               </Card>
+            </TabsContent>
          </Tabs>
       </div>
    )
 }
-
