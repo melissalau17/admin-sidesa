@@ -89,7 +89,7 @@ export function TambahTransaksiModal() {
                   <div className="grid grid-cols-4 items-center gap-4">
                      <Label htmlFor="kategori" className="text-right">Kategori</Label>
                      <Select required>
-                        <SelectTrigger id="kategori" className="col-span-3">
+                        <SelectTrigger id="kategori" className="col-span-3 border-b border-gray-300">
                            <SelectValue placeholder="Pilih kategori" />
                         </SelectTrigger>
                         <SelectContent>
@@ -120,22 +120,6 @@ export function TambahTransaksiModal() {
                               </Button>
                            </PopoverTrigger>
                            <PopoverContent className="w-auto p-0">
-                              {/* <Calendar
-                                 mode="single"
-                                 selected={date}
-                                 onSelect={(selectedDate: Date | undefined) => {
-                                    if (selectedDate) {
-                                       setDate(selectedDate)
-                                       setIsDatePickerOpen(false) // Tutup modal setelah memilih tanggal
-                                    }
-                                 }}
-                                 initialFocus
-                                 className="rounded-md border shadow"
-                                 classNames={{
-                                    day_selected: "bg-primary text-white",
-                                    day_today: "bg-accent text-accent-foreground",
-                                 }}
-                              /> */}
                            </PopoverContent>
                         </Popover>
                      </div>
@@ -158,7 +142,7 @@ export function TambahTransaksiModal() {
                   {/* Catatan */}
                   <div className="grid grid-cols-4 items-start gap-4">
                      <Label htmlFor="catatan" className="text-right pt-2">Catatan</Label>
-                     <Textarea id="catatan" placeholder="Masukkan catatan tambahan (opsional)" className="col-span-3" />
+                     <Textarea id="catatan" placeholder="Masukkan catatan tambahan (opsional)" className="col-span-3 border-b border-gray-300" />
                   </div>
                </div>
                <DialogFooter>

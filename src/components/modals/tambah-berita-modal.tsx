@@ -66,52 +66,52 @@ export function TambahBeritaModal() {
                <Input id="judul" placeholder="Masukkan judul berita" className="col-span-4" required />
                </div>
                <div className="grid grid-cols-4 items-center gap-4">
-               <Label htmlFor="kategori" className="text-right">
-                  Kategori
-               </Label>
-               <Select required>
-                  <SelectTrigger id="kategori" className="col-span-1">
-                     <SelectValue placeholder="Pilih kategori" />
-                  </SelectTrigger>
-                  <SelectContent>
-                     <SelectItem value="infrastruktur">Infrastruktur</SelectItem>
-                     <SelectItem value="pertanian">Pertanian</SelectItem>
-                     <SelectItem value="kesehatan">Kesehatan</SelectItem>
-                     <SelectItem value="ekonomi">Ekonomi</SelectItem>
-                     <SelectItem value="budaya">Budaya</SelectItem>
-                     <SelectItem value="pendidikan">Pendidikan</SelectItem>
-                  </SelectContent>
-               </Select>
+                  <Label htmlFor="kategori" className="text-right">
+                     Kategori
+                  </Label>
+                  <Select required>
+                     <SelectTrigger id="kategori" className="col-span-1 border-b border-gray-300">
+                        <SelectValue placeholder="Pilih kategori" />
+                     </SelectTrigger>
+                     <SelectContent>
+                        <SelectItem value="infrastruktur">Infrastruktur</SelectItem>
+                        <SelectItem value="pertanian">Pertanian</SelectItem>
+                        <SelectItem value="kesehatan">Kesehatan</SelectItem>
+                        <SelectItem value="ekonomi">Ekonomi</SelectItem>
+                        <SelectItem value="budaya">Budaya</SelectItem>
+                        <SelectItem value="pendidikan">Pendidikan</SelectItem>
+                     </SelectContent>
+                  </Select>
                </div>
                <div className="grid grid-cols-4 items-center gap-4">
-               <Label htmlFor="gambar" className="text-right">
-                  Gambar
-               </Label>
-               <Input id="gambar" type="file" accept="image/*" className="col-span-4" />
+                  <Label htmlFor="gambar" className="text-right">
+                     Gambar
+                  </Label>
+                  <Input id="gambar" type="file" accept="image/*" className="col-span-4" />
                </div>
                <div className="grid grid-cols-4 items-start gap-4">
-               <Label htmlFor="konten" className="text-right pt-2">
-                  Konten Berita
-               </Label>
-               <Textarea
-                  id="konten"
-                  placeholder="Masukkan konten berita"
-                  className="col-span-3 min-h-[150px]"
-                  required
-               />
+                  <Label htmlFor="konten" className="text-right pt-2">
+                     Konten Berita
+                  </Label>
+                  <Textarea
+                     id="konten"
+                     placeholder="Masukkan konten berita"
+                     className="col-span-3 min-h-[150px] border-b border-gray-300"
+                     required
+                  />
                </div>
                <div className="grid grid-cols-4 items-center gap-4">
-               <Label className="text-right">Status</Label>
-               <RadioGroup defaultValue="draft" className="col-span-3">
-                  <div className="flex items-center space-x-2">
-                     <RadioGroupItem value="draft" id="draft" />
-                     <Label htmlFor="draft">Draft</Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                     <RadioGroupItem value="publish" id="publish" />
-                     <Label htmlFor="publish">Publikasikan Sekarang</Label>
-                  </div>
-               </RadioGroup>
+                  <Label className="text-right">Status</Label>
+                  <RadioGroup defaultValue="draft" className="col-span-3">
+                     <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="draft" id="draft" />
+                        <Label htmlFor="draft">Draft</Label>
+                     </div>
+                     <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="publish" id="publish" />
+                        <Label htmlFor="publish">Publikasikan Sekarang</Label>
+                     </div>
+                  </RadioGroup>
                </div>
             </div>
             <DialogFooter>

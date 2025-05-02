@@ -97,7 +97,7 @@ export function EditBeritaModal({ id, judul, kategori, status, konten, onBeritaU
                   Kategori
                </Label>
                <Select required value={formData.kategori} onValueChange={(value) => handleChange("kategori", value)}>
-                  <SelectTrigger id="kategori" className="col-span-3">
+                  <SelectTrigger id="kategori" className="col-span-3 border-b border-gray-300">
                      <SelectValue placeholder="Pilih kategori" />
                   </SelectTrigger>
                   <SelectContent>
@@ -117,17 +117,17 @@ export function EditBeritaModal({ id, judul, kategori, status, konten, onBeritaU
                <Input id="gambar" type="file" accept="image/*" className="col-span-3" />
                </div>
                <div className="grid grid-cols-4 items-start gap-4">
-               <Label htmlFor="konten" className="text-right pt-2">
-                  Konten Berita
-               </Label>
-               <Textarea
-                  id="konten"
-                  placeholder="Masukkan konten berita"
-                  className="col-span-3 min-h-[250px] text-justify"
-                  required
-                  value={formData.konten}
-                  onChange={(e) => handleChange("konten", e.target.value)}
-               />
+                  <Label htmlFor="konten" className="text-right pt-2">
+                     Konten Berita
+                  </Label>
+                  <Textarea
+                     id="konten"
+                     placeholder="Masukkan konten berita"
+                     className="col-span-3 min-h-[250px] text-justify border-b border-gray-300"
+                     required
+                     value={formData.konten}
+                     onChange={(e) => handleChange("konten", e.target.value)}
+                  />
                </div>
                <div className="grid grid-cols-4 items-center gap-4">
                <Label className="text-right">Status</Label>

@@ -45,8 +45,6 @@ export function LihatLaporanModal({
 
    const getStatusColor = (status: string): string => {
       switch (status) {
-         case "Belum Direspon":
-            return "bg-red-100 text-red-800"
          case "Sedang Diproses":
             return "bg-blue-100 text-blue-800"
          case "Selesai":
@@ -84,9 +82,9 @@ export function LihatLaporanModal({
             </DialogHeader>
 
             <Tabs defaultValue="info" className="w-full">
-               <TabsList className="grid w-full grid-cols-2">
-                  <TabsTrigger value="info">Informasi</TabsTrigger>
-                  <TabsTrigger value="gambar">Foto Laporan</TabsTrigger>
+               <TabsList className="grid w-full bg-gray-300 grid-cols-2">
+                  <TabsTrigger value="info" className="data-[state=active]:bg-white data-[state=active]:text-black text-gray-600 rounded-lg">Informasi</TabsTrigger>
+                  <TabsTrigger value="gambar" className="data-[state=active]:bg-white data-[state=active]:text-black text-gray-600 rounded-lg">Foto Laporan</TabsTrigger>
                </TabsList>
 
                <TabsContent value="info" className="py-4">
@@ -176,7 +174,7 @@ export function LihatLaporanModal({
             </Tabs>
 
             <DialogFooter>
-               <Button onClick={() => setOpen(false)}>Tutup</Button>
+               <Button variant="ghost" onClick={() => setOpen(false)}>Tutup</Button>
             </DialogFooter>
          </DialogContent>
       </Dialog>

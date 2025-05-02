@@ -80,10 +80,10 @@ export function LihatSuratModal({
          </DialogHeader>
 
          <Tabs defaultValue="info" className="w-full">
-            <TabsList className="grid w-full grid-cols-3">
-               <TabsTrigger value="info">Informasi</TabsTrigger>
-               <TabsTrigger value="ktp">Scan KTP</TabsTrigger>
-               <TabsTrigger value="kk">Scan Kartu Keluarga</TabsTrigger>
+            <TabsList className="grid w-full bg-gray-300 grid-cols-3">
+               <TabsTrigger value="info" className="data-[state=active]:bg-white data-[state=active]:text-black text-gray-600 rounded-lg">Informasi</TabsTrigger>
+               <TabsTrigger value="ktp" className="data-[state=active]:bg-white data-[state=active]:text-black text-gray-600 rounded-lg">Scan KTP</TabsTrigger>
+               <TabsTrigger value="kk" className="data-[state=active]:bg-white data-[state=active]:text-black text-gray-600 rounded-lg">Scan Kartu Keluarga</TabsTrigger>
             </TabsList>
 
             <TabsContent value="info" className="py-4">
@@ -179,7 +179,7 @@ export function LihatSuratModal({
          </Tabs>
 
          <DialogFooter>
-            <Button onClick={() => setOpen(false)}>Tutup</Button>
+            <Button variant="ghost" onClick={() => setOpen(false)}>Tutup</Button>
          </DialogFooter>
          </DialogContent>
       </Dialog>
