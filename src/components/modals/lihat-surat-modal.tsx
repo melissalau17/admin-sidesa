@@ -1,6 +1,7 @@
 "use client"
 
 import { useState } from "react"
+import Image from "next/image"
 import { Button } from "@/components/ui/buttom"
 import { Dialog, DialogContent, DialogDescription, DialogFooter, DialogHeader, DialogTitle, DialogTrigger,} from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
@@ -134,11 +135,15 @@ export function LihatSuratModal({
                <div className="flex flex-col items-center space-y-3">
                   <h3 className="text-lg font-medium">Scan KTP</h3>
                   <div className="border rounded-md overflow-hidden">
-                     <img
-                     src={ktpImage || "/placeholder.svg"}
-                     alt="Scan KTP"
-                     className="max-w-full h-auto object-contain"
+                     <Image
+                        src={ktpImage || "/placeholder.svg"}
+                        alt="Scan KTP"
+                        width={600}
+                        height={400}
+                        className="max-w-full h-auto object-contain"
+                        style={{ maxWidth: "100%", height: "auto" }}
                      />
+                     
                   </div>
                </div>
                ) : (
@@ -154,10 +159,13 @@ export function LihatSuratModal({
                <div className="flex flex-col items-center space-y-3">
                   <h3 className="text-lg font-medium">Scan Kartu Keluarga</h3>
                   <div className="border rounded-md overflow-hidden">
-                     <img
-                     src={kkImage || "/placeholder.svg"}
-                     alt="Scan Kartu Keluarga"
-                     className="max-w-full h-auto object-contain"
+                     <Image
+                        src={kkImage || "@/public/default-image.jpg"}
+                        alt="Scan Kartu Keluarga"
+                        width={600}
+                        height={400}
+                        className="max-w-full h-auto object-contain"
+                        style={{ maxWidth: "100%", height: "auto" }}
                      />
                   </div>
                </div>

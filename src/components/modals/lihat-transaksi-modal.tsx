@@ -6,14 +6,12 @@ import {
    Dialog,
    DialogContent,
    DialogDescription,
-   DialogFooter,
    DialogHeader,
    DialogTitle,
    DialogTrigger,
 } from "@/components/ui/dialog"
 import { Badge } from "@/components/ui/badge"
-import { FileText, Download } from "lucide-react"
-import { useToast } from "@/hooks/use-toast"
+import { FileText } from "lucide-react"
 
 interface LihatTransaksiModalProps {
    id: number
@@ -35,8 +33,6 @@ export function LihatTransaksiModal({
    catatan = "-",
 }: LihatTransaksiModalProps) {
    const [open, setOpen] = useState<boolean>(false)
-   const [isDownloading, setIsDownloading] = useState<boolean>(false)
-   const { toast } = useToast()
 
    const getJenisColor = (jenis: string): string => {
       switch (jenis) {
@@ -47,19 +43,6 @@ export function LihatTransaksiModal({
          default:
          return "bg-gray-100 text-gray-800"
       }
-   }
-
-   const handleDownloadReceipt = () => {
-      setIsDownloading(true)
-
-      // Simulate download process
-      setTimeout(() => {
-         setIsDownloading(false)
-         toast({
-         title: "Berhasil",
-         description: `Bukti transaksi ${keterangan} berhasil diunduh`,
-         })
-      }, 1000)
    }
 
    return (
