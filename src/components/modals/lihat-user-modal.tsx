@@ -11,7 +11,6 @@ import {
    DialogTitle,
    DialogTrigger,
 } from "@/components/ui/dialog"
-import { Badge } from "@/components/ui/badge"
 import { Eye } from "lucide-react"
 import { Avatar, AvatarImage, AvatarFallback } from "@/components/ui/avatar"
 
@@ -25,7 +24,6 @@ interface UserItem {
    alamat: string
    jenis_kelamin: "Laki-laki" | "Perempuan"
    no_hp: string
-   role: "Masyarakat"
 }
 
 interface LihatUserModalProps {
@@ -35,14 +33,6 @@ interface LihatUserModalProps {
 export function LihatUserModal({ user }: LihatUserModalProps) {
    const [open, setOpen] = useState<boolean>(false)
 
-   const getRoleBadgeColor = (role: string): string => {
-      switch (role) {
-         case "Masyarakat":
-         return "bg-green-100 text-green-800"
-         default:
-         return "bg-gray-100 text-gray-800"
-      }
-   }
 
    return (
       <Dialog open={open} onOpenChange={setOpen}>
@@ -65,7 +55,6 @@ export function LihatUserModal({ user }: LihatUserModalProps) {
                <AvatarFallback className="text-2xl">{user.nama.charAt(0)}</AvatarFallback>
                </Avatar>
                <h3 className="text-xl font-bold">{user.nama}</h3>
-               <Badge className={`mt-2 ${getRoleBadgeColor(user.role)}`}>{user.role}</Badge>
             </div>
 
             <div className="space-y-4">

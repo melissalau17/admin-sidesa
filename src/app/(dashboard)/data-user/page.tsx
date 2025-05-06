@@ -3,7 +3,6 @@
 import { useState, type ChangeEvent } from "react"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
 import { TambahUserModal } from "@/components/modals/tambah-user-modal"
 import { LihatUserModal } from "@/components/modals/lihat-user-modal"
 import { EditUserModal } from "@/components/modals/edit-user-modal"
@@ -23,7 +22,6 @@ interface UserItem {
    alamat: string
    jenis_kelamin: "Laki-laki" | "Perempuan"
    no_hp: string
-   role: "Masyarakat"
 }
 
 const initialUserData: UserItem[] = [
@@ -37,7 +35,6 @@ const initialUserData: UserItem[] = [
       alamat: "Jl. Desa No. 1, Dusun Sukamaju",
       jenis_kelamin: "Laki-laki",
       no_hp: "081234567890",
-      role: "Masyarakat",
    },
    {
       id: 2,
@@ -48,8 +45,7 @@ const initialUserData: UserItem[] = [
       nik: "3507112509870002",
       alamat: "Jl. Mawar No. 15, Dusun Harapan Jaya",
       jenis_kelamin: "Laki-laki",
-      no_hp: "081234567891",
-      role: "Masyarakat",
+      no_hp: "081234567891"
    },
    {
       id: 3,
@@ -60,8 +56,7 @@ const initialUserData: UserItem[] = [
       nik: "3507112509870003",
       alamat: "Jl. Melati No. 7, Dusun Sukamaju",
       jenis_kelamin: "Perempuan",
-      no_hp: "081234567892",
-      role: "Masyarakat",
+      no_hp: "081234567892"
    },
    {
       id: 4,
@@ -72,19 +67,9 @@ const initialUserData: UserItem[] = [
       nik: "3507112509870004",
       alamat: "Jl. Anggrek No. 23, Dusun Harapan Jaya",
       jenis_kelamin: "Laki-laki",
-      no_hp: "081234567893",
-      role: "Masyarakat",
+      no_hp: "081234567893"
    },
 ]
-
-const getRoleBadgeColor = (role: string): string => {
-   switch (role) {
-      case "Masyarakat":
-         return "bg-green-100 text-green-800"
-      default:
-         return "bg-gray-100 text-gray-800"
-   }
-}
 
 export default function DataUserPage() {
    const [userData, setUserData] = useState<UserItem[]>(initialUserData)
@@ -132,8 +117,7 @@ export default function DataUserPage() {
          user.username.toLowerCase().includes(query) ||
          user.nik.toLowerCase().includes(query) ||
          user.alamat.toLowerCase().includes(query) ||
-         user.no_hp.includes(query) ||
-         user.role.toLowerCase().includes(query)
+         user.no_hp.includes(query)
       )
    })
 
@@ -194,7 +178,6 @@ export default function DataUserPage() {
                   <TableHead>Username</TableHead>
                   <TableHead>NIK</TableHead>
                   <TableHead>No. HP</TableHead>
-                  <TableHead>Role</TableHead>
                   <TableHead className="text-right">Aksi</TableHead>
                </TableRow>
                </TableHeader>
@@ -215,9 +198,6 @@ export default function DataUserPage() {
                      <TableCell>{user.username}</TableCell>
                      <TableCell>{user.nik}</TableCell>
                      <TableCell>{user.no_hp}</TableCell>
-                     <TableCell>
-                        <Badge className={getRoleBadgeColor(user.role)}>{user.role}</Badge>
-                     </TableCell>
                      <TableCell className="text-right">
                         <div className="flex justify-end gap-2">
                            <Tooltip.Provider delayDuration={300}>
@@ -283,7 +263,7 @@ export default function DataUserPage() {
                   ))
                ) : (
                   <TableRow>
-                     <TableCell colSpan={7} className="text-center py-4">
+                     <TableCell colSpan={6} className="text-center py-4">
                      Tidak ada data yang sesuai dengan pencarian
                      </TableCell>
                   </TableRow>

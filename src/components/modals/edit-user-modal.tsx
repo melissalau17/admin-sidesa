@@ -27,7 +27,6 @@ interface UserItem {
    alamat: string
    jenis_kelamin: "Laki-laki" | "Perempuan"
    no_hp: string
-   role: "Masyarakat"
 }
 
 interface EditUserModalProps {
@@ -175,12 +174,6 @@ export function EditUserModal({ user, onUpdateUser }: EditUserModalProps) {
                </RadioGroup>
                </div>
                <div className="grid grid-cols-4 items-center gap-4">
-               <Label htmlFor="role" className="text-right">
-                  Role
-               </Label>
-               <div className="col-span-3">
-                  <Input id="role" value="Masyarakat" disabled className="bg-gray-100" />
-               </div>
                </div>
                <div className="grid grid-cols-4 items-start gap-4">
                <Label htmlFor="alamat" className="text-right pt-2">
