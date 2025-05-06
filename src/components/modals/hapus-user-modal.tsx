@@ -56,7 +56,7 @@ export function HapusUserModal({ id, nama, onDeleteUser }: HapusUserModalProps) 
          <AlertDialogHeader>
             <AlertDialogTitle>Hapus User</AlertDialogTitle>
             <AlertDialogDescription>
-               Apakah Anda yakin ingin menghapus user "{nama}"? Tindakan ini tidak dapat dibatalkan.
+            Apakah Anda yakin ingin menghapus user &quot;{nama}&quot;? Tindakan ini tidak dapat dibatalkan.
             </AlertDialogDescription>
          </AlertDialogHeader>
          <AlertDialogFooter>

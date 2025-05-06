@@ -14,6 +14,8 @@ const buttonVariants = cva(
           "bg-[#F1EFEF] hover:bg-[#7D7C7C] text-dark hover:text-white py-2 rounded-md",
         ghost: 
           "bg-[#004D40] hover:bg-[#00695C] text-white py-2 rounded-md",
+        secondary:
+          "bg-red-500 hover:bg-red-100 hover:text-red-500 text-red-100 py-2 rounded-md"
       },
       size: {
         default: "h-10 px-4 py-2",
