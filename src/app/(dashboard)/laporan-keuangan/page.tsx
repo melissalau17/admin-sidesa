@@ -11,6 +11,7 @@ import { TambahTransaksiModal } from "@/components/modals/tambah-transaksi-modal
 import { useToast } from "@/hooks/use-toast"
 import { SearchComponent } from "@/components/ui/SearchComponent"
 import { LihatTransaksiModal } from "@/components/modals/lihat-transaksi-modal"
+import * as Tooltip from "@radix-ui/react-tooltip"
 
 interface KeuanganItem {
    id: number
@@ -272,13 +273,53 @@ export default function LaporanKeuanganPage() {
                <p className="text-muted-foreground">Kelola laporan keuangan desa</p>
             </div>
             <div className="flex gap-2">
-               <Button variant="destructive" onClick={handleDownloadReport} disabled={isDownloading}>
-                  <Download className="mr-2 h-4 w-4" />
-                  {isDownloading ? "Mengunduh..." : "Unduh Laporan"}
-               </Button>
-               <TambahTransaksiModal />
+               <Tooltip.Provider delayDuration={200}>
+                  {/* Tooltip untuk tombol download */}
+                  <Tooltip.Root>
+                  <Tooltip.Trigger asChild>
+                     <Button variant="destructive" onClick={handleDownloadReport} disabled={isDownloading}>
+                        <Download className="mr-2 h-4 w-4" />
+                        {isDownloading ? "Mengunduh..." : "Unduh Laporan"}
+                     </Button>
+                  </Tooltip.Trigger>
+                  <Tooltip.Portal>
+                     <Tooltip.Content 
+                        side="bottom" 
+                        sideOffset={6}
+                        className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
+                        avoidCollisions
+                        collisionPadding={8}
+                     >
+                        Download Transaksi
+                        <Tooltip.Arrow className="fill-white" width={10} height={5} />
+                     </Tooltip.Content>
+                  </Tooltip.Portal>
+                  </Tooltip.Root>
+
+                  {/* Tooltip untuk tombol tambah transaksi */}
+                  <Tooltip.Root>
+                  <Tooltip.Trigger asChild>
+                     <div>
+                        <TambahTransaksiModal />
+                     </div>
+                  </Tooltip.Trigger>
+                  <Tooltip.Portal>
+                     <Tooltip.Content 
+                        side="bottom" 
+                        sideOffset={6}
+                        className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
+                        avoidCollisions
+                        collisionPadding={8}
+                     >
+                        Tambah Transaksi Baru
+                        <Tooltip.Arrow className="fill-white" width={10} height={5} />
+                     </Tooltip.Content>
+                  </Tooltip.Portal>
+                  </Tooltip.Root>
+               </Tooltip.Provider>
             </div>
          </div>
+
 
          <div className="grid gap-4 md:grid-cols-3">
             <Card>
@@ -358,17 +399,38 @@ export default function LaporanKeuanganPage() {
                                     </TableCell>
                                     <TableCell>{item.jumlah}</TableCell>
                                     <TableCell className="text-right">
-                                    <LihatTransaksiModal
-                                       id={item.id}
-                                       keterangan={item.keterangan}
-                                       tanggal={item.tanggal}
-                                       jenis={item.jenis}
-                                       jumlah={item.jumlah}
-                                       kategori={item.kategori}
-                                       catatan={item.catatan}
-                                    />
+                                       <Tooltip.Provider delayDuration={300}>
+                                          <Tooltip.Root>
+                                          <Tooltip.Trigger asChild>
+                                             <div className="inline-block cursor-pointer">
+                                                <LihatTransaksiModal
+                                                id={item.id}
+                                                keterangan={item.keterangan}
+                                                tanggal={item.tanggal}
+                                                jenis={item.jenis}
+                                                jumlah={item.jumlah}
+                                                kategori={item.kategori}
+                                                catatan={item.catatan}
+                                                />
+                                             </div>
+                                          </Tooltip.Trigger>
+                                          <Tooltip.Portal>
+                                             <Tooltip.Content 
+                                                side="top" 
+                                                sideOffset={6}
+                                                className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
+                                                avoidCollisions
+                                                collisionPadding={8}
+                                             >
+                                                Lihat Detail Transaksi
+                                                <Tooltip.Arrow className="fill-white" width={10} height={5} />
+                                             </Tooltip.Content>
+                                          </Tooltip.Portal>
+                                          </Tooltip.Root>
+                                       </Tooltip.Provider>
                                     </TableCell>
                                  </TableRow>
+
                               ))
                            ) : (
                               <TableRow>
@@ -416,30 +478,49 @@ export default function LaporanKeuanganPage() {
                            {filteredLaporanData.length > 0 ? (
                               filteredLaporanData.map((item, index) => (
                                  <TableRow key={index}>
-                                    <TableCell>{item.bulan}</TableCell>
-                                    <TableCell>{item.pemasukan}</TableCell>
-                                    <TableCell>{item.pengeluaran}</TableCell>
-                                    <TableCell>{item.saldo}</TableCell>
-                                    <TableCell className="text-right">
-                                       <Button 
-                                          variant="ghost" 
-                                          size="sm" 
-                                          onClick={() => handleDownloadMonthlyReport(item.bulan)}
-                                       >
-                                          <Download className="h-4 w-4" />
-                                          <span className="sr-only">Unduh</span>
-                                       </Button>
-                                    </TableCell>
+                                 <TableCell>{item.bulan}</TableCell>
+                                 <TableCell>{item.pemasukan}</TableCell>
+                                 <TableCell>{item.pengeluaran}</TableCell>
+                                 <TableCell>{item.saldo}</TableCell>
+                                 <TableCell className="text-right">
+                                    <Tooltip.Provider delayDuration={300}>
+                                       <Tooltip.Root>
+                                       <Tooltip.Trigger asChild>
+                                          <Button 
+                                             variant="ghost" 
+                                             size="sm" 
+                                             onClick={() => handleDownloadMonthlyReport(item.bulan)}
+                                          >
+                                             <Download className="h-4 w-4" />
+                                             <span className="sr-only">Unduh</span>
+                                          </Button>
+                                       </Tooltip.Trigger>
+                                       <Tooltip.Portal>
+                                          <Tooltip.Content 
+                                             side="top" 
+                                             sideOffset={6}
+                                             className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
+                                             avoidCollisions
+                                             collisionPadding={8}
+                                          >
+                                             Unduh Laporan Bulanan
+                                             <Tooltip.Arrow className="fill-white" width={10} height={5} />
+                                          </Tooltip.Content>
+                                       </Tooltip.Portal>
+                                       </Tooltip.Root>
+                                    </Tooltip.Provider>
+                                 </TableCell>
                                  </TableRow>
                               ))
                            ) : (
                               <TableRow>
                                  <TableCell colSpan={5} className="text-center py-4">
-                                    Tidak ada data yang sesuai dengan pencarian
+                                 Tidak ada data yang sesuai dengan pencarian
                                  </TableCell>
                               </TableRow>
                            )}
                         </TableBody>
+
                      </Table>
                   </CardContent>
                </Card>

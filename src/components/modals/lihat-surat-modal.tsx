@@ -62,7 +62,7 @@ export function LihatSuratModal({
    return (
       <Dialog open={open} onOpenChange={setOpen}>
          <DialogTrigger asChild>
-         <Button variant="ghost" size="sm">
+         <Button className="bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-blue-100" size="sm">
             <Eye className="h-4 w-4" />
             <span className="sr-only">Lihat</span>
          </Button>

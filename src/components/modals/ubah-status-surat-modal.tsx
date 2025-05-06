@@ -14,7 +14,7 @@ import {
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { useToast } from "@/hooks/use-toast"
-import { FileText } from "lucide-react"
+import { ClipboardCheck } from "lucide-react"
 
 interface UbahStatusSuratModalProps {
    id: number
@@ -51,8 +51,8 @@ export function UbahStatusSuratModal({ id, nama, jenis, status, onStatusChange }
    return (
       <Dialog open={open} onOpenChange={setOpen}>
          <DialogTrigger asChild>
-         <Button variant="ghost" size="sm">
-            <FileText className="h-4 w-4" />
+         <Button className="bg-purple-100 text-purple-600 hover:bg-purple-600 hover:text-purple-100" size="sm">
+            <ClipboardCheck className="h-4 w-4" />
             <span className="sr-only">Ubah Status</span>
          </Button>
          </DialogTrigger>

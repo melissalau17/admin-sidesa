@@ -165,7 +165,7 @@ export function TambahSuratModal({ onAddSurat }: TambahSuratModalProps) {
                   Jenis Surat
                </Label>
                <Select required value={formData.jenis} onValueChange={handleSelectChange}>
-                  <SelectTrigger id="jenis-surat" className="col-span-3">
+                  <SelectTrigger id="jenis-surat" className="col-span-3 border-b border-gray-300">
                      <SelectValue placeholder="Pilih jenis surat" />
                   </SelectTrigger>
                   <SelectContent>
@@ -184,7 +184,7 @@ export function TambahSuratModal({ onAddSurat }: TambahSuratModalProps) {
                <Textarea
                   id="alamat"
                   placeholder="Masukkan alamat lengkap"
-                  className="col-span-3"
+                  className="col-span-3 border-b border-gray-300"
                   required
                   value={formData.alamat}
                   onChange={handleInputChange}
@@ -197,7 +197,7 @@ export function TambahSuratModal({ onAddSurat }: TambahSuratModalProps) {
                <Textarea
                   id="keperluan"
                   placeholder="Masukkan keperluan"
-                  className="col-span-3"
+                  className="col-span-3 border-b border-gray-300"
                   required
                   value={formData.keperluan}
                   onChange={handleInputChange}

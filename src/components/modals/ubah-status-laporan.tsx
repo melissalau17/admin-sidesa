@@ -51,7 +51,7 @@ export function UbahStatusLaporanModal({ id, nama, judul, status, onStatusChange
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button variant="ghost" size="sm">
+        <Button className="bg-purple-100 text-purple-600 hover:bg-purple-600 hover:text-purple-100" size="sm">
           <ClipboardCheck className="h-4 w-4" />
           <span className="sr-only">Ubah Status</span>
         </Button>

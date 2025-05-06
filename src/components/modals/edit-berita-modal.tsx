@@ -67,7 +67,7 @@ export function EditBeritaModal({ id, judul, kategori, status, konten, onBeritaU
    return (
       <Dialog open={open} onOpenChange={setOpen}>
          <DialogTrigger asChild>
-         <Button variant="ghost" size="sm">
+         <Button className="bg-amber-100 text-amber-600 hover:bg-amber-600 hover:text-amber-100" size="sm">
             <Edit className="h-4 w-4" />
             <span className="sr-only">Edit</span>
          </Button>

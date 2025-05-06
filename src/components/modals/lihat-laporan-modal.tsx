@@ -46,7 +46,7 @@ export function LihatLaporanModal({
    const getStatusColor = (status: string): string => {
       switch (status) {
          case "Sedang Diproses":
-            return "bg-blue-100 text-blue-800"
+            return "bg-red-100 text-red-800"
          case "Selesai":
             return "bg-green-100 text-green-800"
          default:
@@ -64,7 +64,7 @@ export function LihatLaporanModal({
    return (
       <Dialog open={open} onOpenChange={setOpen}>
          <DialogTrigger asChild>
-            <Button variant="ghost" size="sm">
+            <Button className="bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-blue-100" size="sm">
                <Eye className="h-4 w-4" />
                <span className="sr-only">Lihat</span>
             </Button>

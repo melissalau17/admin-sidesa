@@ -5,7 +5,7 @@ import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "../components/ui/buttom";
 import { useAuth } from "@/components/auth-provider"
-import { LayoutDashboard, FileText, MessageSquare, Newspaper, DollarSign, LogOut, type LucideIcon } from "lucide-react"
+import { LayoutDashboard, FileText, MessageSquare, Newspaper, DollarSign, LogOut,Users, type LucideIcon } from "lucide-react"
 
 interface MenuItem {
    name: string
@@ -18,6 +18,11 @@ const menuItems: MenuItem[] = [
       name: "Dashboard",
       href: "/dashboard",
       icon: LayoutDashboard,
+   },
+   {
+      name: "Data User",
+      href: "/data-user",
+      icon: Users,
    },
    {
       name: "Kelola Surat",

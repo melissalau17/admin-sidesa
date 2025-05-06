@@ -8,6 +8,7 @@ import { SearchComponent } from "@/components/ui/SearchComponent"
 import { TambahSuratModal } from "@/components/modals/tambah-surat-modal"
 import { UbahStatusSuratModal } from "@/components/modals/ubah-status-surat-modal"
 import { LihatSuratModal } from "@/components/modals/lihat-surat-modal"
+import * as Tooltip from "@radix-ui/react-tooltip"
 
 interface SuratItem {
    id: number
@@ -28,7 +29,7 @@ const initialSuratData: SuratItem[] = [
       nama: "Ahmad Suparjo",
       jenis: "Surat Keterangan Domisili",
       tanggal: "12 Mar 2025",
-      status: "Menunggu",
+      status: "Diproses",
       nik: "3507112509870001",
       alamat: "Dusun Sukamaju RT 03/RW 02, Desa Contoh",
       keperluan: "Untuk keperluan administrasi di kantor kecamatan terkait pengurusan izin usaha.",
@@ -90,7 +91,7 @@ const getStatusColor = (status: string): string => {
       case "Menunggu":
          return "bg-yellow-100 text-yellow-800"
       case "Diproses":
-         return "bg-blue-100 text-blue-800"
+         return "bg-gray-100 text-gray-800"
       case "Selesai":
          return "bg-green-100 text-green-800"
       case "Ditolak":
@@ -135,19 +136,40 @@ export default function KelolaSuratPage() {
    return (
       <div className="space-y-6">
          <div className="flex items-center justify-between">
-         <div>
-            <h1 className="text-2xl font-bold">Kelola Surat</h1>
-            <p className="text-muted-foreground">Kelola permohonan surat dari masyarakat</p>
-         </div>
-         <TambahSuratModal onAddSurat={handleAddSurat} />
+            <div>
+               <h1 className="text-2xl font-bold">Kelola Surat</h1>
+               <p className="text-muted-foreground">Kelola permohonan surat dari masyarakat</p>
+            </div>
+            {/* Tambahkan Tooltip untuk Tombol Tambah Surat */}
+            <Tooltip.Provider delayDuration={200}>
+               <Tooltip.Root>
+                  <Tooltip.Trigger asChild>
+                     <div className="relative inline-block">
+                        <TambahSuratModal onAddSurat={handleAddSurat} />
+                     </div>
+                  </Tooltip.Trigger>
+                  <Tooltip.Portal>
+                     <Tooltip.Content 
+                        side="bottom" 
+                        sideOffset={6}
+                        className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
+                        avoidCollisions
+                        collisionPadding={8}
+                     >
+                        Tambah Surat Baru
+                        <Tooltip.Arrow className="fill-white" width={10} height={5} />
+                     </Tooltip.Content>
+                  </Tooltip.Portal>
+               </Tooltip.Root>
+            </Tooltip.Provider>
          </div>
 
          <Card>
             <CardHeader className="pb-2">
                <div className="flex items-center justify-between">
                   <div>
-                  <CardTitle>Daftar Permohonan Surat</CardTitle>
-                  <CardDescription>Daftar permohonan surat yang masuk</CardDescription>
+                     <CardTitle>Daftar Permohonan Surat</CardTitle>
+                     <CardDescription>Daftar permohonan surat yang masuk</CardDescription>
                   </div>
                   <div className="flex items-center gap-2">
                      <div className="relative">
@@ -160,66 +182,108 @@ export default function KelolaSuratPage() {
                   </div>
                </div>
             </CardHeader>
-         <CardContent>
-            <Table>
-               <TableHeader>
-               <TableRow>
-                  <TableHead>No</TableHead>
-                  <TableHead>Nama</TableHead>
-                  <TableHead>Jenis Surat</TableHead>
-                  <TableHead>Tanggal</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Aksi</TableHead>
-               </TableRow>
-               </TableHeader>
-               <TableBody>
-               {filteredData.length > 0 ? (
-                  filteredData.map((surat) => (
-                     <TableRow key={surat.id}>
-                     <TableCell>{surat.id}</TableCell>
-                     <TableCell>{surat.nama}</TableCell>
-                     <TableCell>{surat.jenis}</TableCell>
-                     <TableCell>{surat.tanggal}</TableCell>
-                     <TableCell>
-                        <Badge className={getStatusColor(surat.status)}>{surat.status}</Badge>
-                     </TableCell>
-                     <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                           <LihatSuratModal
-                           id={surat.id}
-                           nama={surat.nama}
-                           jenis={surat.jenis}
-                           tanggal={surat.tanggal}
-                           status={surat.status}
-                           nik={surat.nik}
-                           alamat={surat.alamat}
-                           keperluan={surat.keperluan}
-                           ktpImage={surat.ktpImage}
-                           kkImage={surat.kkImage}
-                           />
-                           <UbahStatusSuratModal
-                           id={surat.id}
-                           nama={surat.nama}
-                           jenis={surat.jenis}
-                           status={surat.status}
-                           onStatusChange={handleStatusChange}
-                           />
-                        </div>
-                     </TableCell>
+            <CardContent>
+               <Table>
+                  <TableHeader>
+                     <TableRow>
+                        <TableHead>No</TableHead>
+                        <TableHead>Nama</TableHead>
+                        <TableHead>Jenis Surat</TableHead>
+                        <TableHead>Tanggal</TableHead>
+                        <TableHead>Status</TableHead>
+                        <TableHead className="text-right">Aksi</TableHead>
                      </TableRow>
-                  ))
-               ) : (
-                  <TableRow>
-                     <TableCell colSpan={6} className="text-center py-4">
-                     Tidak ada data yang sesuai dengan pencarian
-                     </TableCell>
-                  </TableRow>
-               )}
-               </TableBody>
-            </Table>
-         </CardContent>
+                  </TableHeader>
+                  <TableBody>
+                     {filteredData.length > 0 ? (
+                        filteredData.map((surat) => (
+                           <TableRow key={surat.id}>
+                              <TableCell>{surat.id}</TableCell>
+                              <TableCell>{surat.nama}</TableCell>
+                              <TableCell>{surat.jenis}</TableCell>
+                              <TableCell>{surat.tanggal}</TableCell>
+                              <TableCell>
+                                 <Badge className={getStatusColor(surat.status)}>{surat.status}</Badge>
+                              </TableCell>
+                              <TableCell className="text-right">
+                                 <div className="flex justify-end gap-2">
+                                    {/* Tambahkan Tooltip untuk Tombol Lihat Surat */}
+                                    <Tooltip.Provider delayDuration={300}>
+                                       <Tooltip.Root>
+                                          <Tooltip.Trigger asChild>
+                                             <div className="relative inline-block">
+                                                <LihatSuratModal
+                                                   id={surat.id}
+                                                   nama={surat.nama}
+                                                   jenis={surat.jenis}
+                                                   tanggal={surat.tanggal}
+                                                   status={surat.status}
+                                                   nik={surat.nik}
+                                                   alamat={surat.alamat}
+                                                   keperluan={surat.keperluan}
+                                                   ktpImage={surat.ktpImage}
+                                                   kkImage={surat.kkImage}
+                                                />
+                                             </div>
+                                          </Tooltip.Trigger>
+                                          <Tooltip.Portal>
+                                             <Tooltip.Content 
+                                                side="top" 
+                                                sideOffset={6}
+                                                className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
+                                                avoidCollisions
+                                                collisionPadding={8}
+                                             >
+                                                Lihat Detail Surat
+                                                <Tooltip.Arrow className="fill-white" width={10} height={5} />
+                                             </Tooltip.Content>
+                                          </Tooltip.Portal>
+                                       </Tooltip.Root>
+                                    </Tooltip.Provider>
+
+                                    {/* Tambahkan Tooltip untuk Tombol Ubah Status */}
+                                    <Tooltip.Provider delayDuration={300}>
+                                       <Tooltip.Root>
+                                          <Tooltip.Trigger asChild>
+                                             <div className="relative inline-block">
+                                                <UbahStatusSuratModal
+                                                   id={surat.id}
+                                                   nama={surat.nama}
+                                                   jenis={surat.jenis}
+                                                   status={surat.status}
+                                                   onStatusChange={handleStatusChange}
+                                                />
+                                             </div>
+                                          </Tooltip.Trigger>
+                                          <Tooltip.Portal>
+                                             <Tooltip.Content 
+                                                side="top" 
+                                                sideOffset={6}
+                                                className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
+                                                avoidCollisions
+                                                collisionPadding={8}
+                                             >
+                                                Ubah Status Surat
+                                                <Tooltip.Arrow className="fill-white" width={10} height={5} />
+                                             </Tooltip.Content>
+                                          </Tooltip.Portal>
+                                       </Tooltip.Root>
+                                    </Tooltip.Provider>
+                                 </div>
+                              </TableCell>
+                           </TableRow>
+                        ))
+                     ) : (
+                        <TableRow>
+                           <TableCell colSpan={6} className="text-center py-4">
+                              Tidak ada data yang sesuai dengan pencarian
+                           </TableCell>
+                        </TableRow>
+                     )}
+                  </TableBody>
+               </Table>
+            </CardContent>
          </Card>
       </div>
    )
 }
-

@@ -11,6 +11,7 @@ import { LihatBeritaModal } from "@/components/modals/lihat-berita-modal"
 import { EditBeritaModal } from "@/components/modals/edit-berita-modal"
 import { useToast } from "@/hooks/use-toast"
 import { SearchComponent } from "@/components/ui/SearchComponent"
+import * as Tooltip from "@radix-ui/react-tooltip"
 
 interface BeritaItem {
     id: number
@@ -133,7 +134,27 @@ export default function BeritaDesaPage() {
                     <h1 className="text-2xl font-bold">Berita Desa</h1>
                     <p className="text-muted-foreground">Kelola berita dan informasi desa</p>
                 </div>
-                <TambahBeritaModal />
+                <Tooltip.Provider delayDuration={200}>
+                    <Tooltip.Root> 
+                        <Tooltip.Trigger asChild>
+                            <div className="relative inline-block">
+                                <TambahBeritaModal />
+                            </div>
+                        </Tooltip.Trigger>
+                        <Tooltip.Portal>
+                            <Tooltip.Content 
+                                side="bottom" 
+                                sideOffset={6}
+                                className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
+                                avoidCollisions
+                                collisionPadding={8}
+                            >
+                                Tambah Berita Baru
+                                <Tooltip.Arrow className="fill-white" width={10} height={5} />
+                            </Tooltip.Content>
+                        </Tooltip.Portal>
+                    </Tooltip.Root>
+                </Tooltip.Provider>
             </div>
 
             <Card>
@@ -180,30 +201,92 @@ export default function BeritaDesaPage() {
                                         </TableCell>
                                         <TableCell className="text-right">
                                             <div className="flex justify-end gap-2">
-                                                <LihatBeritaModal
-                                                    judul={berita.judul}
-                                                    kategori={berita.kategori}
-                                                    tanggal={berita.tanggal}
-                                                    status={berita.status}
-                                                    konten={berita.konten}
-                                                />
-                                                <EditBeritaModal
-                                                    id={berita.id}
-                                                    judul={berita.judul}
-                                                    kategori={berita.kategori}
-                                                    status={berita.status}
-                                                    konten={berita.konten}
-                                                    onBeritaUpdate={handleBeritaUpdate}
-                                                />
-                                                <Button
-                                                    variant="destructive"
-                                                    size="sm"
-                                                    onClick={() => handleDirectDelete(berita.id)}
-                                                    className="text-red-500 hover:text-red-700 hover:bg-red-50"
-                                                >
-                                                    <Trash className="h-4 w-4" />
-                                                    <span className="sr-only">Hapus</span>
-                                                </Button>
+                                                <Tooltip.Provider delayDuration={300}>
+                                                    <Tooltip.Root>
+                                                        <Tooltip.Trigger asChild>
+                                                            <div className="relative inline-block">
+                                                                <LihatBeritaModal
+                                                                    judul={berita.judul}
+                                                                    kategori={berita.kategori}
+                                                                    tanggal={berita.tanggal}
+                                                                    status={berita.status}
+                                                                    konten={berita.konten}
+                                                                />
+                                                            </div>
+                                                        </Tooltip.Trigger>
+                                                        <Tooltip.Portal>
+                                                            <Tooltip.Content 
+                                                                side="top" 
+                                                                sideOffset={6}
+                                                                className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
+                                                                avoidCollisions
+                                                                collisionPadding={8}
+                                                            >
+                                                                Lihat Detail Berita
+                                                                <Tooltip.Arrow className="fill-white" width={10} height={5} />
+                                                            </Tooltip.Content>
+                                                        </Tooltip.Portal>
+                                                    </Tooltip.Root>
+                                                </Tooltip.Provider>
+                                                    
+                                                {/* Tambahkan Tooltip untuk Tombol Ubah Status */}
+                                                <Tooltip.Provider delayDuration={300}>
+                                                    <Tooltip.Root>
+                                                        <Tooltip.Trigger>
+                                                            <div className="relative inline-block">
+                                                                <EditBeritaModal
+                                                                    id={berita.id}
+                                                                    judul={berita.judul}
+                                                                    kategori={berita.kategori}
+                                                                    status={berita.status}
+                                                                    konten={berita.konten}
+                                                                    onBeritaUpdate={handleBeritaUpdate}
+                                                                />
+                                                            </div>
+                                                        </Tooltip.Trigger>
+                                                        <Tooltip.Portal>
+                                                            <Tooltip.Content 
+                                                                side="top" 
+                                                                sideOffset={6}
+                                                                className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
+                                                                avoidCollisions
+                                                                collisionPadding={8}
+                                                                >
+                                                                    Ubah Status Berita
+                                                                <Tooltip.Arrow className="fill-white" width={10} height={5} />
+                                                            </Tooltip.Content>
+                                                        </Tooltip.Portal>
+                                                    </Tooltip.Root>
+                                                </Tooltip.Provider>
+                                                
+                                                {/* Tambahkan Tooltip untuk Tombol Delete */}
+                                                <Tooltip.Provider delayDuration={300}>
+                                                    <Tooltip.Root>
+                                                        <Tooltip.Trigger>
+                                                        <Button
+                                                            variant="destructive"
+                                                            size="sm"
+                                                            onClick={() => handleDirectDelete(berita.id)}
+                                                            className="text-red-500 bg-red-50 hover:text-red-50 hover:bg-red-500"
+                                                        >
+                                                            <Trash className="h-4 w-4" />
+                                                            <span className="sr-only">Hapus</span>
+                                                        </Button>
+                                                        </Tooltip.Trigger>
+                                                        <Tooltip.Portal>
+                                                        <Tooltip.Content
+                                                            side="top"
+                                                            sideOffset={6}
+                                                            className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
+                                                            avoidCollisions
+                                                            collisionPadding={8}
+                                                        >
+                                                            Hapus Berita
+                                                            <Tooltip.Arrow className="fill-white" width={10} height={5} />
+                                                        </Tooltip.Content>
+                                                        </Tooltip.Portal>
+                                                    </Tooltip.Root>
+                                                </Tooltip.Provider>
                                             </div>
                                         </TableCell>
                                     </TableRow>

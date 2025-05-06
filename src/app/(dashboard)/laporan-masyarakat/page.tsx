@@ -7,6 +7,7 @@ import { Badge } from "@/components/ui/badge"
 import { SearchComponent } from "@/components/ui/SearchComponent"
 import { UbahStatusLaporanModal } from "../../../components/modals/ubah-status-laporan"
 import { LihatLaporanModal } from "@/components/modals/lihat-laporan-modal"
+import * as Tooltip from "@radix-ui/react-tooltip"
 
 interface LaporanItem {
    id: number
@@ -86,7 +87,7 @@ const initialLaporanData: LaporanItem[] = [
 const getStatusColor = (status: string): string => {
    switch (status) {
       case "Diproses":
-         return "bg-blue-100 text-blue-800"
+         return "bg-gray-100 text-gray-800"
       case "Selesai":
          return "bg-green-100 text-green-800"
       case "Ditolak":
@@ -165,37 +166,78 @@ export default function LaporanMasyarakatPage() {
                {filteredData.length > 0 ? (
                   filteredData.map((laporan) => (
                      <TableRow key={laporan.id}>
-                     <TableCell>{laporan.id}</TableCell>
-                     <TableCell>{laporan.nama}</TableCell>
-                     <TableCell>{laporan.judul}</TableCell>
-                     <TableCell>{laporan.kategori}</TableCell>
-                     <TableCell>{laporan.tanggal}</TableCell>
-                     <TableCell>
-                        <Badge className={getStatusColor(laporan.status)}>{laporan.status}</Badge>
-                     </TableCell>
-                     <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                           <LihatLaporanModal
-                              id={laporan.id}
-                              nama={laporan.nama}
-                              judul={laporan.judul}
-                              kategori={laporan.kategori}
-                              tanggal={laporan.tanggal}
-                              status={laporan.status}
-                              isi={laporan.isi}
-                              lokasi={laporan.lokasi}
-                              kontak={laporan.kontak}
-                              gambar={laporan.gambar}
-                           />
-                           <UbahStatusLaporanModal
-                              id={laporan.id}
-                              nama={laporan.nama}
-                              judul={laporan.judul}
-                              status={laporan.status}
-                              onStatusChange={handleStatusChange}
-                           />
-                        </div>
-                     </TableCell>
+                        <TableCell>{laporan.id}</TableCell>
+                        <TableCell>{laporan.nama}</TableCell>
+                        <TableCell>{laporan.judul}</TableCell>
+                        <TableCell>{laporan.kategori}</TableCell>
+                        <TableCell>{laporan.tanggal}</TableCell>
+                        <TableCell>
+                           <Badge className={getStatusColor(laporan.status)}>{laporan.status}</Badge>
+                        </TableCell>
+                        <TableCell className="text-right">
+                           <div className="flex justify-end gap-2">
+                              <Tooltip.Provider delayDuration={300}>
+                                 <Tooltip.Root>
+                                    <Tooltip.Trigger asChild>
+                                       <div className="relative inline-block">
+                                          <LihatLaporanModal
+                                             id={laporan.id}
+                                             nama={laporan.nama}
+                                             judul={laporan.judul}
+                                             kategori={laporan.kategori}
+                                             tanggal={laporan.tanggal}
+                                             status={laporan.status}
+                                             isi={laporan.isi}
+                                             lokasi={laporan.lokasi}
+                                             kontak={laporan.kontak}
+                                             gambar={laporan.gambar}
+                                          />
+                                       </div>
+                                    </Tooltip.Trigger>
+                                    <Tooltip.Portal>
+                                       <Tooltip.Content side="top" 
+                                          sideOffset={6}
+                                          className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
+                                          avoidCollisions
+                                          collisionPadding={8}
+                                       >
+                                          Lihat Detail Laporan
+                                          <Tooltip.Arrow className="fill-white" width={10} height={5} />
+                                       </Tooltip.Content>
+                                    </Tooltip.Portal>
+                                 </Tooltip.Root>
+                              </Tooltip.Provider>
+
+                              {/* Tambahkan Tooltip untuk Tombol Ubah Status */}
+                              <Tooltip.Provider delayDuration={300}>
+                                 <Tooltip.Root>
+                                    <Tooltip.Trigger asChild>
+                                       <div className="relative inline-block">
+                                          <UbahStatusLaporanModal
+                                             id={laporan.id}
+                                             nama={laporan.nama}
+                                             judul={laporan.judul}
+                                             status={laporan.status}
+                                             onStatusChange={handleStatusChange}
+                                          />
+                                       </div>
+                                    </Tooltip.Trigger>
+                                    <Tooltip.Portal>
+                                       <Tooltip.Content 
+                                          side="top" 
+                                          sideOffset={6}
+                                          className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
+                                          avoidCollisions
+                                          collisionPadding={8}
+                                          >
+                                             Ubah Status Laporan
+                                          <Tooltip.Arrow className="fill-white" width={10} height={5} />
+                                       </Tooltip.Content>
+                                    </Tooltip.Portal>
+                                 </Tooltip.Root>
+                              </Tooltip.Provider>
+                           </div>
+                        </TableCell>
                      </TableRow>
                   ))
                ) : (
