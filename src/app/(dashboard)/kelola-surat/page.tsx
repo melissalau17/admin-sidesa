@@ -135,7 +135,7 @@ export default function KelolaSuratPage() {
 
    return (
       <div className="space-y-6">
-         <div className="flex items-center justify-between">
+         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
                <h1 className="text-2xl font-bold">Kelola Surat</h1>
                <p className="text-muted-foreground">Kelola permohonan surat dari masyarakat</p>
@@ -166,7 +166,7 @@ export default function KelolaSuratPage() {
 
          <Card>
             <CardHeader className="pb-2">
-               <div className="flex items-center justify-between">
+               <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                   <div>
                      <CardTitle>Daftar Permohonan Surat</CardTitle>
                      <CardDescription>Daftar permohonan surat yang masuk</CardDescription>

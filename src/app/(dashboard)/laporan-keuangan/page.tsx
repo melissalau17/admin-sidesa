@@ -267,7 +267,7 @@ export default function LaporanKeuanganPage() {
 
    return (
       <div className="space-y-6">
-         <div className="flex items-center justify-between">
+         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
             <div>
                <h1 className="text-2xl font-bold">Laporan Keuangan</h1>
                <p className="text-muted-foreground">Kelola laporan keuangan desa</p>
@@ -359,7 +359,7 @@ export default function LaporanKeuanganPage() {
             <TabsContent value="transaksi">
                <Card>
                   <CardHeader className="pb-2">
-                     <div className="flex items-center justify-between">
+                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div>
                            <CardTitle>Daftar Transaksi</CardTitle>
                            <CardDescription>Daftar transaksi keuangan desa</CardDescription>
@@ -447,7 +447,7 @@ export default function LaporanKeuanganPage() {
             <TabsContent value="laporan">
                <Card>
                   <CardHeader>
-                     <div className="flex items-center justify-between">
+                     <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div>
                            <CardTitle>Laporan Bulanan</CardTitle>
                            <CardDescription>Laporan keuangan desa per bulan</CardDescription>

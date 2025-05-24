@@ -7,7 +7,7 @@ interface InputProps extends InputHTMLAttributes<HTMLInputElement> {
 
 const Input = forwardRef<HTMLInputElement, InputProps>(({ label, error, className, ...props }, ref) => {
    return (
-      <div className="w-83 flex ">
+      <div className="w-83-sm flex ">
          {label && <label className="block text-md font-medium text-gray-700">{label}</label>}
          <input
          ref={ref}

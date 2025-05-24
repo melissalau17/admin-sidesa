@@ -123,7 +123,7 @@ export default function DataUserPage() {
 
    return (
       <div className="space-y-6">
-         <div className="flex items-center justify-between">
+         <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
          <div>
             <h1 className="text-2xl font-bold">Data User</h1>
             <p className="text-muted-foreground">Kelola data pengguna sistem</p>
@@ -153,123 +153,125 @@ export default function DataUserPage() {
 
          <Card>
          <CardHeader className="pb-2">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
                <div>
                <CardTitle>Daftar User</CardTitle>
                <CardDescription>Daftar pengguna sistem administrasi desa</CardDescription>
                </div>
                <div className="flex items-center gap-2">
-                  <div className="relative">
-                  <SearchComponent
-                        searchQuery={searchQuery}
-                        onSearchChange={handleSearchChange}
-                        placeholder="Cari User..."
-                  />
+                  <div className="w-full sm:w-auto">
+                     <SearchComponent
+                           searchQuery={searchQuery}
+                           onSearchChange={handleSearchChange}
+                           placeholder="Cari User..."
+                     />
                   </div>
                </div>
             </div>
          </CardHeader>
-         <CardContent>
-            <Table>
-               <TableHeader>
-               <TableRow>
-                  <TableHead>No</TableHead>
-                  <TableHead>Nama</TableHead>
-                  <TableHead>Username</TableHead>
-                  <TableHead>NIK</TableHead>
-                  <TableHead>No. HP</TableHead>
-                  <TableHead className="text-right">Aksi</TableHead>
-               </TableRow>
-               </TableHeader>
-               <TableBody>
-               {filteredData.length > 0 ? (
-                  filteredData.map((user) => (
-                     <TableRow key={user.id}>
-                     <TableCell>{user.id}</TableCell>
-                     <TableCell>
-                        <div className="flex items-center gap-2">
-                           <Avatar className="h-8 w-8">
-                           <AvatarImage src={user.photo || "/placeholder.svg"} alt={user.nama} />
-                           <AvatarFallback className="bg-gray-200"></AvatarFallback>
-                           </Avatar>
-                           <span>{user.nama}</span>
-                        </div>
-                     </TableCell>
-                     <TableCell>{user.username}</TableCell>
-                     <TableCell>{user.nik}</TableCell>
-                     <TableCell>{user.no_hp}</TableCell>
-                     <TableCell className="text-right">
-                        <div className="flex justify-end gap-2">
-                           <Tooltip.Provider delayDuration={300}>
-                              <Tooltip.Root>
-                                 <Tooltip.Trigger>
-                                    <LihatUserModal user={user} />
-                                 </Tooltip.Trigger>
-                                 <Tooltip.Portal>
-                                    <Tooltip.Content side="top"
-                                    sideOffset={6}
-                                    className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
-                                    avoidCollisions
-                                    collisionPadding={8}
-                                    >
-                                       Lihar Data User
-                                       <Tooltip.Arrow className="fill-white" width={10} height={5} />
-                                    </Tooltip.Content>
-                                 </Tooltip.Portal>
-                              </Tooltip.Root>
-                           </Tooltip.Provider>
-                           <Tooltip.Provider delayDuration={300}>
-                              <Tooltip.Root>
-                                 <Tooltip.Trigger>
-                                    <EditUserModal user={user} onUpdateUser={handleUpdateUser} />
-                                 </Tooltip.Trigger>
-                                 <Tooltip.Portal>
-                                    <Tooltip.Content
-                                    side="top"
-                                    sideOffset={6}
-                                    className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
-                                    avoidCollisions
-                                    collisionPadding={8}
-                                    >
-                                       Edit Data User
-                                       <Tooltip.Arrow className="fill-white" width={10} height={5} />   
-                                    </Tooltip.Content>
-                                 </Tooltip.Portal>
-                              </Tooltip.Root>
-                           </Tooltip.Provider>
-                           
-                           <Tooltip.Provider delayDuration={300}>
-                              <Tooltip.Root>
-                                 <Tooltip.Trigger>
-                                    <HapusUserModal id={user.id} nama={user.nama} onDeleteUser={handleDeleteUser} />
-                                 </Tooltip.Trigger>
-                                 <Tooltip.Portal>
-                                    <Tooltip.Content
-                                    side="top"
-                                    sideOffset={6}
-                                    className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
-                                    avoidCollisions
-                                    collisionPadding={8}
-                                    >
-                                       Hapus User
-                                       <Tooltip.Arrow className="fill-white" width={10} height={5} />
-                                    </Tooltip.Content>
-                                 </Tooltip.Portal>
-                              </Tooltip.Root>
-                           </Tooltip.Provider>
-                        </div>
-                     </TableCell>
-                     </TableRow>
-                  ))
-               ) : (
+         <CardContent className="overflow-x-auto">
+            <div className="min-w-[600px]">
+               <Table>
+                  <TableHeader>
                   <TableRow>
-                     <TableCell colSpan={6} className="text-center py-4">
-                     Tidak ada data yang sesuai dengan pencarian
-                     </TableCell>
+                     <TableHead>No</TableHead>
+                     <TableHead>Nama</TableHead>
+                     <TableHead>Username</TableHead>
+                     <TableHead>NIK</TableHead>
+                     <TableHead>No. HP</TableHead>
+                     <TableHead className="text-right">Aksi</TableHead>
                   </TableRow>
-               )}
-               </TableBody>
-            </Table>
+                  </TableHeader>
+                  <TableBody>
+                  {filteredData.length > 0 ? (
+                     filteredData.map((user) => (
+                        <TableRow key={user.id}>
+                        <TableCell>{user.id}</TableCell>
+                        <TableCell>
+                           <div className="flex items-center gap-2">
+                              <Avatar className="h-8 w-8">
+                              <AvatarImage src={user.photo || "/placeholder.svg"} alt={user.nama} />
+                              <AvatarFallback className="bg-gray-200"></AvatarFallback>
+                              </Avatar>
+                              <span>{user.nama}</span>
+                           </div>
+                        </TableCell>
+                        <TableCell>{user.username}</TableCell>
+                        <TableCell>{user.nik}</TableCell>
+                        <TableCell>{user.no_hp}</TableCell>
+                        <TableCell className="text-right">
+                           <div className="flex justify-end gap-2">
+                              <Tooltip.Provider delayDuration={300}>
+                                 <Tooltip.Root>
+                                    <Tooltip.Trigger>
+                                       <LihatUserModal user={user} />
+                                    </Tooltip.Trigger>
+                                    <Tooltip.Portal>
+                                       <Tooltip.Content side="top"
+                                       sideOffset={6}
+                                       className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
+                                       avoidCollisions
+                                       collisionPadding={8}
+                                       >
+                                          Lihar Data User
+                                          <Tooltip.Arrow className="fill-white" width={10} height={5} />
+                                       </Tooltip.Content>
+                                    </Tooltip.Portal>
+                                 </Tooltip.Root>
+                              </Tooltip.Provider>
+                              <Tooltip.Provider delayDuration={300}>
+                                 <Tooltip.Root>
+                                    <Tooltip.Trigger>
+                                       <EditUserModal user={user} onUpdateUser={handleUpdateUser} />
+                                    </Tooltip.Trigger>
+                                    <Tooltip.Portal>
+                                       <Tooltip.Content
+                                       side="top"
+                                       sideOffset={6}
+                                       className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
+                                       avoidCollisions
+                                       collisionPadding={8}
+                                       >
+                                          Edit Data User
+                                          <Tooltip.Arrow className="fill-white" width={10} height={5} />   
+                                       </Tooltip.Content>
+                                    </Tooltip.Portal>
+                                 </Tooltip.Root>
+                              </Tooltip.Provider>
+                              
+                              <Tooltip.Provider delayDuration={300}>
+                                 <Tooltip.Root>
+                                    <Tooltip.Trigger>
+                                       <HapusUserModal id={user.id} nama={user.nama} onDeleteUser={handleDeleteUser} />
+                                    </Tooltip.Trigger>
+                                    <Tooltip.Portal>
+                                       <Tooltip.Content
+                                       side="top"
+                                       sideOffset={6}
+                                       className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
+                                       avoidCollisions
+                                       collisionPadding={8}
+                                       >
+                                          Hapus User
+                                          <Tooltip.Arrow className="fill-white" width={10} height={5} />
+                                       </Tooltip.Content>
+                                    </Tooltip.Portal>
+                                 </Tooltip.Root>
+                              </Tooltip.Provider>
+                           </div>
+                        </TableCell>
+                        </TableRow>
+                     ))
+                  ) : (
+                     <TableRow>
+                        <TableCell colSpan={6} className="text-center py-4">
+                        Tidak ada data yang sesuai dengan pencarian
+                        </TableCell>
+                     </TableRow>
+                  )}
+                  </TableBody>
+               </Table>
+            </div>
          </CardContent>
          </Card>
       </div>

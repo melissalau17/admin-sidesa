@@ -29,7 +29,7 @@ export function HeroSection() {
                      Hubungi Kami
                   </Button>
                   <Link href="/login" passHref>
-                     <Button size="lg" className="bg-[#004D40] hover:bg-[#00695C] text-white px-8 py-3">
+                     <Button size="lg" className="bg-[#004D40] w-full hover:bg-[#00695C] text-white px-8 py-3">
                         Login
                      </Button>
                   </Link>

@@ -31,11 +31,6 @@ export function Footer() {
                </li>
                <li>
                   <Link href="#" className="hover:text-white transition-colors">
-                     Harga
-                  </Link>
-               </li>
-               <li>
-                  <Link href="#" className="hover:text-white transition-colors">
                      Demo
                   </Link>
                </li>

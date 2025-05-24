@@ -17,11 +17,16 @@ export function Header() {
   const { logout } = useAuth()
 
   return (
-    <header className="flex h-14 items-center gap-4 border-b border-gray-200 bg-white px-6 shadow-sm">
+    <header className="flex flex-wrap sm:flex-nowrap h-auto sm:h-14 items-center justify-between gap-4 border-b border-gray-200 bg-white px-4 sm:px-6 py-2 sm:py-0 shadow-sm">
+      {/* Logo / Judul - bisa tambahkan kalau diperlukan */}
+      {/* <div className="text-lg font-semibold">Desa Digital</div> */}
+
+      {/* Spacer */}
       <div className="flex-1" />
 
-      <div className="flex items-center gap-2">
-        {/* Tooltip untuk Notifikasi */}
+      {/* Kumpulan Aksi (Notifikasi + Profil) */}
+      <div className="flex items-center gap-2 flex-wrap">
+        {/* Notifikasi */}
         <Tooltip.Provider delayDuration={300}>
           <Tooltip.Root>
             <Tooltip.Trigger asChild>
@@ -33,7 +38,7 @@ export function Header() {
                       <span className="sr-only">Notifikasi</span>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-80 bg-white border-gray-200">
+                  <DropdownMenuContent align="end" className="w-80 bg-white border border-gray-200">
                     <DropdownMenuLabel>Notifikasi</DropdownMenuLabel>
                     <DropdownMenuSeparator />
                     <div className="py-6 text-center">
@@ -45,8 +50,8 @@ export function Header() {
               </div>
             </Tooltip.Trigger>
             <Tooltip.Portal>
-              <Tooltip.Content 
-                side="bottom" 
+              <Tooltip.Content
+                side="bottom"
                 className="bg-white text-black text-sm px-2 py-1 rounded shadow-md"
                 sideOffset={5}
               >
@@ -57,7 +62,7 @@ export function Header() {
           </Tooltip.Root>
         </Tooltip.Provider>
 
-        {/* Tooltip untuk Profil */}
+        {/* Profil */}
         <Tooltip.Provider delayDuration={300}>
           <Tooltip.Root>
             <Tooltip.Trigger asChild>
@@ -69,7 +74,7 @@ export function Header() {
                       <span className="sr-only">Profil</span>
                     </Button>
                   </DropdownMenuTrigger>
-                  <DropdownMenuContent align="end" className="w-56 bg-white border-gray-200">
+                  <DropdownMenuContent align="end" className="w-56 bg-white border border-gray-200">
                     <div className="flex items-center gap-2 p-2">
                       <div className="bg-primary rounded-full p-1">
                         <UserCircle className="h-8 w-8 text-[#003C43]" />
@@ -98,8 +103,8 @@ export function Header() {
               </div>
             </Tooltip.Trigger>
             <Tooltip.Portal>
-              <Tooltip.Content 
-                side="bottom" 
+              <Tooltip.Content
+                side="bottom"
                 className="bg-white text-black text-sm px-2 py-1 rounded shadow-md"
                 sideOffset={5}
               >

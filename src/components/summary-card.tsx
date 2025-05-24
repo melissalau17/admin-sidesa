@@ -12,9 +12,9 @@ interface SummaryCardProps {
 export function SummaryCard({ title, subtitle, children, className }: SummaryCardProps) {
    return (
       <Card className={cn("", className)}>
-         <CardHeader className="pb-2">
-         <CardTitle className="text-lg font-bold">{title}</CardTitle>
-         <p className="text-sm text-muted-foreground">{subtitle}</p>
+         <CardHeader className="pb-1 md:pb-2 p-3 md:p-4">
+         <CardTitle className="text-base md:text-lg font-bold">{title}</CardTitle>
+         <p className="text-xs md:text-sm text-muted-foreground">{subtitle}</p>
          </CardHeader>
          <CardContent>{children}</CardContent>
       </Card>

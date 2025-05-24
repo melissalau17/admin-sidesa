@@ -129,7 +129,7 @@ export default function BeritaDesaPage() {
 
     return (
         <div className="space-y-6">
-            <div className="flex items-center justify-between">
+            <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold">Berita Desa</h1>
                     <p className="text-muted-foreground">Kelola berita dan informasi desa</p>
@@ -159,7 +159,7 @@ export default function BeritaDesaPage() {
 
             <Card>
                 <CardHeader className="pb-2">
-                    <div className="flex items-center justify-between">
+                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                         <div>
                             <CardTitle>Daftar Berita</CardTitle>
                             <CardDescription>Daftar berita dan informasi desa</CardDescription>
