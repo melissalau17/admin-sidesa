@@ -5,7 +5,7 @@ import { useRouter, usePathname } from "next/navigation"
 
 interface AuthContextType {
    isAuthenticated: boolean
-   login: () => void
+   login: (redirect?: boolean) => void
    logout: () => void
 }
 
@@ -28,7 +28,6 @@ export function AuthProvider({ children }: AuthProviderProps) {
    const pathname = usePathname()
 
    useEffect(() => {
-      // Check if user is authenticated on client side
       const authStatus = localStorage.getItem("isAuthenticated")
       setIsAuthenticated(authStatus === "true")
       setIsLoading(false)
@@ -36,27 +35,32 @@ export function AuthProvider({ children }: AuthProviderProps) {
 
    useEffect(() => {
       if (!isLoading) {
-         // Only handle redirections for non-login pages when not authenticated
-         // Let the login page handle its own redirections
-         if (!isAuthenticated && pathname !== "/login") {
+         const isPublicRoute = pathname === "/" || pathname === "/login"
+
+         if (!isAuthenticated && !isPublicRoute) {
          router.push("/login")
          }
       }
    }, [isAuthenticated, isLoading, pathname, router])
 
-   const login = () => {
+   const login = (redirect = true) => {
       setIsAuthenticated(true)
       localStorage.setItem("isAuthenticated", "true")
+      if (redirect) {
+         router.push("/dashboard")
+      }
    }
 
    const logout = () => {
-      setIsAuthenticated(false)
+      // First clear the authentication state
       localStorage.removeItem("isAuthenticated")
-      router.push("/login")
+      // Then set the state to trigger UI updates
+      setIsAuthenticated(false)
+      // Force redirect to landing page
+      window.location.href = "/"
    }
 
    return (
       <AuthContext.Provider value={{ isAuthenticated, login, logout }}>{!isLoading && children}</AuthContext.Provider>
    )
 }
-

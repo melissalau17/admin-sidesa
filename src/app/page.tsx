@@ -1,21 +1,25 @@
 "use client"
 
 import { useEffect } from "react"
+import { useRouter } from "next/navigation"
+import { PublicHeader } from "@/components/public-header" 
+import { LandingPageContent } from "@/components/landing/landing-page-content" 
+import { useAuth } from "@/lib/auth/auth-provider" 
 
-export default function Home() {
+export default function HomePage() {
+  const { isAuthenticated } = useAuth()
+  const router = useRouter()
+
   useEffect(() => {
-    // Check authentication status
-    const isAuthenticated = localStorage.getItem("isAuthenticated") === "true"
-
-    // Redirect based on authentication status
     if (isAuthenticated) {
-      window.location.href = "/dashboard"
-    } else {
-      window.location.href = "/login"
+      router.push("/dashboard")
     }
-  }, [])
+  }, [isAuthenticated, router])
 
-  // Return null while redirecting
-  return null
+  return (
+    <>
+      <PublicHeader />
+      <LandingPageContent />
+    </>
+  )
 }
-

@@ -4,7 +4,7 @@ import Link from "next/link"
 import { usePathname } from "next/navigation"
 import { cn } from "@/lib/utils"
 import { Button } from "../components/ui/buttom";
-import { useAuth } from "@/components/auth-provider"
+import { useAuth } from "@/lib/auth/auth-provider"
 import { LayoutDashboard, FileText, MessageSquare, Newspaper, DollarSign, LogOut,Users, type LucideIcon } from "lucide-react"
 
 interface MenuItem {

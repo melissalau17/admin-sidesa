@@ -10,7 +10,7 @@ import {
   DropdownMenuLabel,
   DropdownMenuTrigger,
 } from "@/components/ui/dropdown-menu"
-import { useAuth } from "@/components/auth-provider"
+import { useAuth } from "@/lib/auth/auth-provider"
 import * as Tooltip from "@radix-ui/react-tooltip"
 
 export function Header() {

@@ -1,32 +1,28 @@
 import { Inter } from "next/font/google"
 import "./globals.css"
-import { AuthProvider } from "@/components/auth-provider"
+import { ThemeProvider } from "@/components/theme-provider"
+import { AuthProvider } from "@/lib/auth/auth-provider" 
 import { Toaster } from "@/components/ui/toaster"
 import type { ReactNode } from "react"
 
 const inter = Inter({ subsets: ["latin"] })
 
 export const metadata = {
-  title: "Admin Desa - Panel Administrasi",
-  description: "Panel administrasi desa",
-    generator: 'v0.dev',
-  icons: {
-    icon: '/homestay.svg',
-
-  },
+  title: "Admin Desa - Sistem Administrasi Desa Digital",
+  description: "Sistem administrasi desa digital untuk pengelolaan yang lebih efisien dan transparan",
 }
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="id">
       <body className={inter.className}>
+        <ThemeProvider attribute="class" defaultTheme="light">
           <AuthProvider>
             {children}
             <Toaster />
           </AuthProvider>
+        </ThemeProvider>
       </body>
     </html>
   )
 }
-
-import './globals.css'

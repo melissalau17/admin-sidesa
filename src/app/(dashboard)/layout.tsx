@@ -1,6 +1,6 @@
 "use client"
 
-import { useAuth } from "@/components/auth-provider"
+import { useAuth } from "@/lib/auth/auth-provider" // Updated import path
 import { Sidebar } from "@/components/sidebar"
 import { Header } from "@/components/header"
 import type { ReactNode } from "react"
@@ -22,4 +22,3 @@ export default function DashboardLayout({ children }: { children: ReactNode }) {
     </div>
   )
 }
-

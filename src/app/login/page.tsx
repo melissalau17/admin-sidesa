@@ -1,82 +1,117 @@
-"use client";
+"use client"
 
-import { useState } from "react";
-import { Button } from "../../components/ui/buttom";
+import { useState, type FormEvent } from "react"
+import { Button } from "@/components/ui/buttom"
+import {
+   Card,
+   CardContent,
+   CardDescription,
+   CardHeader,
+   CardTitle,
+} from "@/components/ui/card"
+import { useToast } from "@/hooks/use-toast"
 
 export default function LoginPage() {
-   const [username, setUsername] = useState("");
-   const [password, setPassword] = useState("");
-   const [isLoading, setIsLoading] = useState(false);
+   const [username, setUsername] = useState<string>("")
+   const [password, setPassword] = useState<string>("")
+   const [isLoading, setIsLoading] = useState<boolean>(false)
+   const { toast } = useToast()
 
-   const handleLogin = async (e: React.FormEvent) => {
-      e.preventDefault();
-      setIsLoading(true);
+   const handleLogin = async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault()
+      setIsLoading(true)
 
       if (!username || !password) {
-         alert("Username dan password harus diisi");
-         setIsLoading(false);
-         return;
+         toast({
+         title: "Error",
+         description: "Username dan password harus diisi",
+         variant: "destructive",
+         })
+         setIsLoading(false)
+         return
       }
 
       if (username === "admin" && password === "admin") {
          try {
-            localStorage.setItem("isAuthenticated", "true");
-            alert("Login berhasil! Selamat datang di panel administrasi desa");
-            setTimeout(() => {
-               window.location.href = "/dashboard";
-            }, 100);
+         localStorage.setItem("isAuthenticated", "true")
+
+         toast({
+            title: "Login berhasil",
+            description: "Selamat datang di panel administrasi desa",
+         })
+
+         setTimeout(() => {
+            window.location.href = "/dashboard"
+         }, 100)
          } catch (error) {
-            console.error("Redirect error:", error);
-            alert("Terjadi kesalahan saat login");
+         console.error("Redirect error:", error)
+         toast({
+            title: "Error",
+            description: "Terjadi kesalahan saat login",
+            variant: "destructive",
+         })
          }
       } else {
-         alert("Login gagal! Username atau password salah");
-         setIsLoading(false);
+         toast({
+         title: "Login gagal",
+         description: "Username atau password salah",
+         variant: "destructive",
+         })
+         setIsLoading(false)
       }
-   };
+   }
 
    return (
       <div className="flex h-screen w-full items-center justify-center bg-gray-50">
-         <div className="w-full max-w-md bg-white p-8 border border-gray-200 rounded-md shadow-sm">
-            <h2 className="text-2xl font-bold text-center text-[#004D40]">Admin Desa</h2>
-            <p className="text-center text-gray-500 mt-2">Masuk ke panel administrasi desa</p>
-            
-            <form onSubmit={handleLogin} className="space-y-5 mt-6">
+         <Card className="w-full max-w-md border p-2   border-gray-200 shadow-sm">
+         <CardHeader className="space-y-1">
+            <CardTitle className="text-2xl font-bold text-center text-[#004D40]">Admin Desa</CardTitle>
+            <CardDescription className="text-center">
+               Masuk ke panel administrasi desa
+            </CardDescription>
+         </CardHeader>
+         <CardContent>
+            <form onSubmit={handleLogin} className="space-y-5 mt-2">
                <div>
-                  <label htmlFor="username" className="block text-gray-700 font-medium mb-2">Username</label>
-                  <input
-                     id="username"
-                     placeholder="Masukkan username"
-                     value={username}
-                     onChange={(e) => setUsername(e.target.value)}
-                     disabled={isLoading}
-                     className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#004D40] focus:border-[#004D40] focus:outline-none"
-                  />
+               <label htmlFor="username" className="block text-gray-700 font-medium mb-1">
+                  Username
+               </label>
+               <input
+                  id="username"
+                  placeholder="Masukkan username"
+                  value={username}
+                  className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#004D40] focus:border-[#004D40] focus:outline-none"
+                  onChange={(e) => setUsername(e.target.value)}
+                  disabled={isLoading}
+               />
                </div>
                <div>
-                  <label htmlFor="password" className="block text-gray-700 font-medium mb-2">Password</label>
-                  <input
-                     id="password"
-                     type="password"
-                     placeholder="Masukkan password"
-                     value={password}
-                     onChange={(e) => setPassword(e.target.value)}
-                     disabled={isLoading}
-                     className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#004D40] focus:border-[#004D40] focus:outline-none"
-                  />
+               <label htmlFor="password" className="block text-gray-700 font-medium mb-1">
+                  Password
+               </label>
+               <input
+                  id="password"
+                  type="password"
+                  placeholder="Masukkan password"
+                  value={password}
+                  className="w-full p-3 border border-gray-200 rounded-md focus:ring-2 focus:ring-[#004D40] focus:border-[#004D40] focus:outline-none"
+                  onChange={(e) => setPassword(e.target.value)}
+                  disabled={isLoading}
+               />
                </div>
                <Button
-                  type="submit"
-                  className="w-full bg-[#004D40] hover:bg-[#00695C] text-white py-3 rounded-md transition duration-300 ease-in-out shadow-sm hover:shadow-md"
-                  disabled={isLoading}>
-                  {isLoading ? "Memproses..." : "Masuk"}
+               type="submit"
+               className="w-full bg-[#004D40] hover:bg-[#00695C] text-white"
+               disabled={isLoading}
+               >
+               {isLoading ? "Memproses..." : "Masuk"}
                </Button>
             </form>
-
-            <p className="text-center text-sm text-gray-500 mt-5">
+         </CardContent>
+            <p className="text-center text-sm text-gray-500 p-5">
                Gunakan username: <span className="font-semibold">admin</span>, password: <span className="font-semibold">admin</span>
             </p>
-         </div>
+         </Card>
       </div>
-   );
+   )
 }
