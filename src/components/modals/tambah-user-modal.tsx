@@ -107,34 +107,34 @@ export function TambahUserModal({ onAddUser }: TambahUserModalProps) {
          </DialogHeader>
          <form onSubmit={handleSubmit}>
             <div className="grid gap-4 py-4">
-               <div className="grid grid-cols-4 items-center gap-4">
-               <Label htmlFor="nama" className="text-right">
-                  Nama Lengkap
-               </Label>
-               <Input
-                  id="nama"
-                  placeholder="Masukkan nama lengkap"
-                  className="col-span-3"
-                  required
-                  value={formData.nama}
-                  onChange={handleInputChange}
-               />
+               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
+                  <Label htmlFor="nama" className="sm:text-right">
+                     Nama Lengkap
+                  </Label>
+                  <Input
+                     id="nama"
+                     placeholder="Masukkan nama lengkap"
+                     className="col-span-3"
+                     required
+                     value={formData.nama}
+                     onChange={handleInputChange}
+                  />
                </div>
-               <div className="grid grid-cols-4 items-center gap-4">
-               <Label htmlFor="username" className="text-right">
-                  Username
-               </Label>
-               <Input
-                  id="username"
-                  placeholder="Masukkan username"
-                  className="col-span-3"
-                  required
-                  value={formData.username}
-                  onChange={handleInputChange}
-               />
+               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
+                  <Label htmlFor="username" className="sm:text-right">
+                     Username
+                  </Label>
+                  <Input
+                     id="username"
+                     placeholder="Masukkan username"
+                     className="col-span-3"
+                     required
+                     value={formData.username}
+                     onChange={handleInputChange}
+                  />
                </div>
-               <div className="grid grid-cols-4 items-center gap-4">
-               <Label htmlFor="password" className="text-right">
+               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
+               <Label htmlFor="password" className="sm:text-right">
                   Password
                </Label>
                <Input
@@ -147,8 +147,8 @@ export function TambahUserModal({ onAddUser }: TambahUserModalProps) {
                   onChange={handleInputChange}
                />
                </div>
-               <div className="grid grid-cols-4 items-center gap-4">
-               <Label htmlFor="nik" className="text-right">
+               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
+               <Label htmlFor="nik" className="sm:text-right">
                   NIK
                </Label>
                <Input
@@ -160,8 +160,8 @@ export function TambahUserModal({ onAddUser }: TambahUserModalProps) {
                   onChange={handleInputChange}
                />
                </div>
-               <div className="grid grid-cols-4 items-center gap-4">
-               <Label htmlFor="no_hp" className="text-right">
+               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
+               <Label htmlFor="no_hp" className="sm:text-right">
                   No. HP
                </Label>
                <Input
@@ -173,37 +173,37 @@ export function TambahUserModal({ onAddUser }: TambahUserModalProps) {
                   onChange={handleInputChange}
                />
                </div>
-               <div className="grid grid-cols-4 items-center gap-4">
-               <Label className="text-right">Jenis Kelamin</Label>
-               <RadioGroup
-                  value={formData.jenis_kelamin}
-                  onValueChange={(value) => handleSelectChange("jenis_kelamin", value)}
-                  className="col-span-3 flex space-x-4"
-               >
-                  <div className="flex items-center space-x-2">
-                     <RadioGroupItem value="Laki-laki" id="laki-laki" />
-                     <Label htmlFor="laki-laki" className="font-normal">
-                     Laki-laki
-                     </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                     <RadioGroupItem value="Perempuan" id="perempuan" />
-                     <Label htmlFor="perempuan" className="font-normal">
-                     Perempuan
-                     </Label>
-                  </div>
-               </RadioGroup>
+               <div className="flex flex-col gap-3 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
+                  <Label className="sm:text-right">Jenis Kelamin</Label>
+                  <RadioGroup
+                     value={formData.jenis_kelamin}
+                     onValueChange={(value) => handleSelectChange("jenis_kelamin", value)}
+                     className="col-span-3 flex space-x-4"
+                  >
+                     <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="Laki-laki" id="laki-laki" />
+                        <Label htmlFor="laki-laki" className="font-normal">
+                        Laki-laki
+                        </Label>
+                     </div>
+                     <div className="flex items-center space-x-2">
+                        <RadioGroupItem value="Perempuan" id="perempuan" />
+                        <Label htmlFor="perempuan" className="font-normal">
+                        Perempuan
+                        </Label>
+                     </div>
+                  </RadioGroup>
                </div>
-               <div className="grid grid-cols-4 items-center gap-4">
-               <Label htmlFor="role" className="text-right">
+               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
+               <Label htmlFor="role" className="sm:text-right">
                   Role
                </Label>
                <div className="col-span-3">
                   <Input id="role" value="Masyarakat" disabled className="bg-gray-100" />
                </div>
                </div>
-               <div className="grid grid-cols-4 items-start gap-4">
-               <Label htmlFor="alamat" className="text-right pt-2">
+               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
+               <Label htmlFor="alamat" className="sm:text-right">
                   Alamat
                </Label>
                <Textarea
@@ -215,14 +215,14 @@ export function TambahUserModal({ onAddUser }: TambahUserModalProps) {
                   onChange={handleInputChange}
                />
                </div>
-               <div className="grid grid-cols-4 items-center gap-4">
-               <Label htmlFor="photo" className="text-right">
+               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
+               <Label htmlFor="photo" className="sm:text-right">
                   Foto
                </Label>
                <Input id="photo" type="file" accept="image/*" className="col-span-3" onChange={handleFileChange} />
                </div>
             </div>
-            <DialogFooter>
+            <DialogFooter className="flex flex-col sm:flex-row sm:justify-end gap-2">
                <Button type="button" variant="destructive" onClick={() => setOpen(false)}>
                Batal
                </Button>

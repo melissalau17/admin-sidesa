@@ -57,7 +57,7 @@ export function TambahTransaksiModal() {
                Tambah Transaksi
             </Button>
          </DialogTrigger>
-         <DialogContent className="sm:max-w-[500px]">
+         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
             <DialogHeader>
                <DialogTitle>Tambah Transaksi Keuangan</DialogTitle>
                <DialogDescription>Tambahkan transaksi keuangan desa baru</DialogDescription>
@@ -65,9 +65,9 @@ export function TambahTransaksiModal() {
             <form onSubmit={handleSubmit}>
                <div className="grid gap-4 py-4">
                   {/* Jenis Transaksi */}
-                  <div className="grid grid-cols-4 items-center gap-4">
-                     <Label className="text-right">Jenis Transaksi</Label>
-                     <RadioGroup defaultValue="pemasukan" className="col-span-3">
+                  <div className="flex flex-col gap-3 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
+                     <Label className="sm:text-right">Jenis Transaksi</Label>
+                     <RadioGroup defaultValue="pemasukan" className="sm:col-span-3 space-y-2">
                         <div className="flex items-center space-x-2">
                            <RadioGroupItem value="pemasukan" id="pemasukan" />
                            <Label htmlFor="pemasukan">Pemasukan</Label>
@@ -80,33 +80,33 @@ export function TambahTransaksiModal() {
                   </div>
 
                   {/* Keterangan */}
-                  <div className="grid grid-cols-4 items-center gap-4">
-                     <Label htmlFor="keterangan" className="text-right">Keterangan</Label>
+                  <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
+                     <Label htmlFor="keterangan" className="sm:text-right">Keterangan</Label>
                      <Input id="keterangan" placeholder="Masukkan keterangan transaksi" className="col-span-3" required />
                   </div>
 
                   {/* Kategori */}
-                  <div className="grid grid-cols-4 items-center gap-4">
-                     <Label htmlFor="kategori" className="text-right">Kategori</Label>
+                  <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
+                     <Label htmlFor="kategori" className="sm:text-right">Kategori</Label>
                      <Select required>
                         <SelectTrigger id="kategori" className="col-span-3 border-b border-gray-300">
                            <SelectValue placeholder="Pilih kategori" />
                         </SelectTrigger>
                         <SelectContent>
-                           <SelectItem value="dana-desa">Dana Desa</SelectItem>
-                           <SelectItem value="retribusi">Retribusi</SelectItem>
-                           <SelectItem value="bantuan">Bantuan</SelectItem>
-                           <SelectItem value="infrastruktur">Infrastruktur</SelectItem>
-                           <SelectItem value="operasional">Operasional</SelectItem>
-                           <SelectItem value="gaji">Gaji</SelectItem>
-                           <SelectItem value="lainnya">Lainnya</SelectItem>
+                           <SelectItem value="dana-desa" className="hover:bg-[#129990]">Dana Desa</SelectItem>
+                           <SelectItem value="retribusi" className="hover:bg-[#129990]">Retribusi</SelectItem>
+                           <SelectItem value="bantuan" className="hover:bg-[#129990]">Bantuan</SelectItem>
+                           <SelectItem value="infrastruktur" className="hover:bg-[#129990]">Infrastruktur</SelectItem>
+                           <SelectItem value="operasional" className="hover:bg-[#129990]">Operasional</SelectItem>
+                           <SelectItem value="gaji" className="hover:bg-[#129990]">Gaji</SelectItem>
+                           <SelectItem value="lainnya" className="hover:bg-[#129990]">Lainnya</SelectItem>
                         </SelectContent>
                      </Select>
                   </div>
 
                   {/* Tanggal */}
-                  <div className="grid grid-cols-4 items-center gap-4">
-                     <Label htmlFor="tanggal" className="text-right">Tanggal</Label>
+                  <div className="lex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
+                     <Label htmlFor="tanggal" className="sm:text-right">Tanggal</Label>
                      <div className="col-span-3">
                         <Popover open={isDatePickerOpen} onOpenChange={setIsDatePickerOpen}>
                            <PopoverTrigger asChild>
@@ -126,8 +126,8 @@ export function TambahTransaksiModal() {
                   </div>
 
                   {/* Jumlah */}
-                  <div className="grid grid-cols-4 items-center gap-4">
-                     <Label htmlFor="jumlah" className="text-right">Jumlah (Rp)</Label>
+                  <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
+                     <Label htmlFor="jumlah" className="sm:text-right">Jumlah (Rp)</Label>
                      <Input
                         id="jumlah"
                         placeholder="Masukkan jumlah"
@@ -140,14 +140,14 @@ export function TambahTransaksiModal() {
                   </div>
 
                   {/* Catatan */}
-                  <div className="grid grid-cols-4 items-start gap-4">
-                     <Label htmlFor="catatan" className="text-right pt-2">Catatan</Label>
+                  <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
+                     <Label htmlFor="catatan" className="sm:text-right">Catatan</Label>
                      <Textarea id="catatan" placeholder="Masukkan catatan tambahan (opsional)" className="col-span-3 border-b border-gray-300" />
                   </div>
                </div>
-               <DialogFooter>
+               <DialogFooter className="flex flex-col sm:flex-row sm:justify-end gap-2">
                   <Button type="button" variant="destructive" onClick={() => setOpen(false)}>Batal</Button>
-                  <Button type="submit" className="w-min" variant="ghost" disabled={isLoading}>
+                  <Button type="submit" variant="ghost" disabled={isLoading}>
                      {isLoading ? "Menyimpan..." : "Simpan"}
                   </Button>
                </DialogFooter>

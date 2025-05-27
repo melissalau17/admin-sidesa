@@ -72,15 +72,15 @@ export function EditBeritaModal({ id, judul, kategori, status, konten, onBeritaU
             <span className="sr-only">Edit</span>
          </Button>
          </DialogTrigger>
-         <DialogContent className="sm:max-w-[750px] max-h-[90vh] overflow-y-auto">
+         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
          <DialogHeader>
             <DialogTitle>Edit Berita</DialogTitle>
             <DialogDescription>Edit berita atau informasi desa</DialogDescription>
          </DialogHeader>
          <form onSubmit={handleSubmit}>
             <div className="grid gap-4 py-4">
-               <div className="grid grid-cols-4 items-center gap-4">
-               <Label htmlFor="judul" className="text-right">
+               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
+               <Label htmlFor="judul" className="sm:text-right">
                   Judul Berita
                </Label>
                <Input
@@ -92,8 +92,8 @@ export function EditBeritaModal({ id, judul, kategori, status, konten, onBeritaU
                   onChange={(e) => handleChange("judul", e.target.value)}
                />
                </div>
-               <div className="grid grid-cols-4 items-center gap-4">
-               <Label htmlFor="kategori" className="text-right">
+               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
+               <Label htmlFor="kategori" className="sm:text-right">
                   Kategori
                </Label>
                <Select required value={formData.kategori} onValueChange={(value) => handleChange("kategori", value)}>
@@ -110,14 +110,14 @@ export function EditBeritaModal({ id, judul, kategori, status, konten, onBeritaU
                   </SelectContent>
                </Select>
                </div>
-               <div className="grid grid-cols-4 items-center gap-4">
-               <Label htmlFor="gambar" className="text-right">
+               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
+               <Label htmlFor="gambar" className="sm:text-right">
                   Gambar
                </Label>
                <Input id="gambar" type="file" accept="image/*" className="col-span-3" />
                </div>
-               <div className="grid grid-cols-4 items-start gap-4">
-                  <Label htmlFor="konten" className="text-right pt-2">
+               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
+                  <Label htmlFor="konten" className="sm:text-right pt-2">
                      Konten Berita
                   </Label>
                   <Textarea
@@ -129,8 +129,8 @@ export function EditBeritaModal({ id, judul, kategori, status, konten, onBeritaU
                      onChange={(e) => handleChange("konten", e.target.value)}
                   />
                </div>
-               <div className="grid grid-cols-4 items-center gap-4">
-               <Label className="text-right">Status</Label>
+               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
+               <Label className="sm:text-right">Status</Label>
                <RadioGroup
                   value={formData.status}
                   onValueChange={(value) => handleChange("status", value)}
@@ -147,7 +147,7 @@ export function EditBeritaModal({ id, judul, kategori, status, konten, onBeritaU
                </RadioGroup>
                </div>
             </div>
-            <DialogFooter>
+            <DialogFooter className="flex flex-col sm:flex-row sm:justify-end gap-2">
                <Button type="button" variant="destructive" onClick={() => setOpen(false)}>
                Batal
                </Button>

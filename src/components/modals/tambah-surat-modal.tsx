@@ -127,110 +127,127 @@ export function TambahSuratModal({ onAddSurat }: TambahSuratModalProps) {
             Tambah Surat
          </Button>
          </DialogTrigger>
-         <DialogContent className="sm:max-w-[600px]">
+         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
          <DialogHeader>
             <DialogTitle>Tambah Permohonan Surat</DialogTitle>
             <DialogDescription>Tambahkan permohonan surat baru dari masyarakat</DialogDescription>
          </DialogHeader>
          <form onSubmit={handleSubmit}>
-            <div className="grid gap-4 py-4">
-               <div className="grid grid-cols-4 items-center gap-4">
-               <Label htmlFor="nama" className="text-right">
+         <div className="grid gap-4 py-4">
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+               <Label htmlFor="nama" className="sm:text-right text-left">
                   Nama Pemohon
                </Label>
                <Input
                   id="nama"
                   placeholder="Masukkan nama pemohon"
-                  className="col-span-3"
+                  className="sm:col-span-3"
                   required
                   value={formData.nama}
                   onChange={handleInputChange}
                />
-               </div>
-               <div className="grid grid-cols-4 items-center gap-4">
-               <Label htmlFor="nik" className="text-right">
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+               <Label htmlFor="nik" className="sm:text-right text-left">
                   NIK
                </Label>
                <Input
                   id="nik"
                   placeholder="Masukkan NIK"
-                  className="col-span-3"
+                  className="sm:col-span-3"
                   required
                   value={formData.nik}
                   onChange={handleInputChange}
                />
-               </div>
-               <div className="grid grid-cols-4 items-center gap-4">
-               <Label htmlFor="jenis-surat" className="text-right">
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+               <Label htmlFor="jenis-surat" className="sm:text-right text-left">
                   Jenis Surat
                </Label>
                <Select required value={formData.jenis} onValueChange={handleSelectChange}>
-                  <SelectTrigger id="jenis-surat" className="col-span-3 border-b border-gray-300">
-                     <SelectValue placeholder="Pilih jenis surat" />
+                  <SelectTrigger id="jenis-surat" className="sm:col-span-2 border-b border-gray-300">
+                  <SelectValue placeholder="Pilih jenis surat" />
                   </SelectTrigger>
                   <SelectContent>
-                     <SelectItem value="Surat Keterangan Domisili">Surat Keterangan Domisili</SelectItem>
-                     <SelectItem value="Surat Keterangan Usaha">Surat Keterangan Usaha</SelectItem>
-                     <SelectItem value="Surat Keterangan Tidak Mampu">Surat Keterangan Tidak Mampu</SelectItem>
-                     <SelectItem value="Surat Pengantar KTP">Surat Pengantar KTP</SelectItem>
-                     <SelectItem value="Lainnya">Lainnya</SelectItem>
+                     <SelectItem value="Surat Keterangan Domisili" className="hover:bg-[#129990]">
+                        Surat Keterangan Domisili
+                     </SelectItem>
+                     <SelectItem value="Surat Keterangan Usaha" className="hover:bg-[#129990]">
+                        Surat Keterangan Usaha
+                     </SelectItem>
+                     <SelectItem value="Surat Keterangan Tidak Mampu" className="hover:bg-[#129990]">
+                        Surat Keterangan Tidak Mampu
+                     </SelectItem>
+                     <SelectItem value="Surat Pengantar KTP" className="hover:bg-[#129990]">
+                        Surat Pengantar KTP
+                     </SelectItem>
+                     <SelectItem value="Lainnya" className="hover:bg-[#129990]">
+                        Lainnya
+                     </SelectItem>
                   </SelectContent>
                </Select>
-               </div>
-               <div className="grid grid-cols-4 items-center gap-4">
-               <Label htmlFor="alamat" className="text-right">
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+               <Label htmlFor="alamat" className="sm:text-right text-left">
                   Alamat
                </Label>
                <Textarea
                   id="alamat"
                   placeholder="Masukkan alamat lengkap"
-                  className="col-span-3 border-b border-gray-300"
+                  className="sm:col-span-3 w-85 border-b border-gray-300"
                   required
                   value={formData.alamat}
                   onChange={handleInputChange}
                />
-               </div>
-               <div className="grid grid-cols-4 items-center gap-4">
-               <Label htmlFor="keperluan" className="text-right">
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+               <Label htmlFor="keperluan" className="sm:text-right text-left">
                   Keperluan
                </Label>
                <Textarea
                   id="keperluan"
                   placeholder="Masukkan keperluan"
-                  className="col-span-3 border-b border-gray-300"
+                  className="sm:col-span-3 w-85 border-b border-gray-300"
                   required
                   value={formData.keperluan}
                   onChange={handleInputChange}
                />
-               </div>
-               <div className="grid grid-cols-4 items-center gap-4">
-               <Label htmlFor="ktp" className="text-right">
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+               <Label htmlFor="ktp" className="sm:text-right text-left">
                   Scan KTP
                </Label>
                <Input
                   id="ktp"
                   type="file"
                   accept="image/*"
-                  className="col-span-3"
+                  className="sm:col-span-3"
                   required
                   onChange={(e) => handleFileChange(e, "ktpImage")}
                />
-               </div>
-               <div className="grid grid-cols-4 items-center gap-4">
-               <Label htmlFor="kk" className="text-right">
+            </div>
+
+            <div className="grid grid-cols-1 sm:grid-cols-4 items-center gap-2 sm:gap-4">
+               <Label htmlFor="kk" className="sm:text-right text-left">
                   Scan Kartu Keluarga
                </Label>
                <Input
                   id="kk"
                   type="file"
                   accept="image/*"
-                  className="col-span-3"
+                  className="sm:col-span-3"
                   required
                   onChange={(e) => handleFileChange(e, "kkImage")}
                />
-               </div>
             </div>
-            <DialogFooter>
+            </div>
+
+            <DialogFooter className="flex flex-col sm:flex-row sm:justify-end gap-2">
                <Button type="button" variant="destructive" onClick={() => setOpen(false)}>
                Batal
                </Button>
