@@ -141,7 +141,7 @@ export function EditUserModal({ user, onUpdateUser }: EditUserModalProps) {
                </div>
                <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
                   <Label htmlFor="no_hp" className="sm:text-right">
-                     No. HP
+                     No.HP
                   </Label>
                   <Input
                      id="no_hp"
