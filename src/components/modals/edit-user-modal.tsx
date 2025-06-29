@@ -1,210 +1,295 @@
-"use client"
+"use client";
 
-import { useState, type FormEvent, type ChangeEvent } from "react"
-import { Button } from "@/components/ui/buttom"
+import { useState, type FormEvent, type ChangeEvent } from "react";
+import { Button } from "@/components/ui/buttom";
 import {
-   Dialog,
-   DialogContent,
-   DialogDescription,
-   DialogFooter,
-   DialogHeader,
-   DialogTitle,
-   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Edit } from "lucide-react"
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Edit, Eye, EyeOff } from "lucide-react";
+import axios from "axios";
 
 interface UserItem {
-   id: number
-   nama: string
-   username: string
-   password: string
-   photo: string
-   nik: string
-   alamat: string
-   jenis_kelamin: "Laki-laki" | "Perempuan"
-   no_hp: string
+  user_id: number;
+  nama: string;
+  username: string;
+  password: string;
+  photo?: string;
+  nik: string;
+  alamat: string;
+  jenis_kel: string;
+  no_hp: string;
+  agama: string;
+  role: string;
 }
 
 interface EditUserModalProps {
-   user: UserItem
-   onUpdateUser: (id: number, updatedUser: Partial<UserItem>) => void
+  user: UserItem;
+  onUpdateUser?: (user: UserItem) => void;
 }
 
 export function EditUserModal({ user, onUpdateUser }: EditUserModalProps) {
-   const [open, setOpen] = useState<boolean>(false)
-   const [isLoading, setIsLoading] = useState<boolean>(false)
-   const [formData, setFormData] = useState<UserItem>({ ...user })
+  const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState<UserItem>({ ...user });
+  const [selectedFile, setSelectedFile] = useState<File | null>(null);
+  const [showPassword, setShowPassword] = useState(false);
 
-   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const { id, value } = e.target
-      setFormData((prev) => ({ ...prev, [id]: value }))
-   }
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  };
 
-   const handleSelectChange = (field: string, value: string) => {
-      setFormData((prev) => ({ ...prev, [field]: value }))
-   }
+  const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) setSelectedFile(file);
+  };
 
-   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0]
-      if (file) {
-         // In a real app, you would upload the file to a server and get a URL
-         // For this demo, we'll use a placeholder
-         setFormData((prev) => ({
-         ...prev,
-         photo: "/placeholder.svg?height=128&width=128",
-         }))
-      }
-   }
+  const handleSelectChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
 
-   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-      e.preventDefault()
-      setIsLoading(true)
+  const toBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = (error) => reject(error);
+    });
 
-      // Simulate API call
-      setTimeout(() => {
-         onUpdateUser(user.id, formData)
-         setIsLoading(false)
-         setOpen(false)
-      }, 1000)
-   }
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+    setIsLoading(true);
 
-   return (
-      <Dialog open={open} onOpenChange={setOpen}>
-         <DialogTrigger asChild>
-         <Button className="bg-amber-100 text-amber-500 hover:bg-amber-500 hover:text-amber-100" size="sm">
-            <Edit className="h-4 w-4" />
-            <span className="sr-only">Edit</span>
-         </Button>
-         </DialogTrigger>
-         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-         <DialogHeader>
-            <DialogTitle>Edit User</DialogTitle>
-            <DialogDescription>Edit informasi pengguna sistem</DialogDescription>
-         </DialogHeader>
-         <form onSubmit={handleSubmit}>
-            <div className="grid gap-4 py-4">
-               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
-               <Label htmlFor="nama" className="sm:text-right">
-                  Nama Lengkap
-               </Label>
-               <Input
-                  id="nama"
-                  placeholder="Masukkan nama lengkap"
-                  className="col-span-3"
-                  required
-                  value={formData.nama}
-                  onChange={handleInputChange}
-               />
-               </div>
-               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
-               <Label htmlFor="username" className="sm:text-right">
-                  Username
-               </Label>
-               <Input
-                  id="username"
-                  placeholder="Masukkan username"
-                  className="col-span-3"
-                  required
-                  value={formData.username}
-                  onChange={handleInputChange}
-               />
-               </div>
-               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
-               <Label htmlFor="password" className="sm:text-right">
-                  Password
-               </Label>
-               <Input
+    try {
+      const data = new FormData();
+      data.append("nama", formData.nama);
+      data.append("username", formData.username);
+      if (formData.password) data.append("password", formData.password);
+      data.append("NIK", formData.nik);
+      data.append("alamat", formData.alamat);
+      data.append("jenis_kel", formData.jenis_kel);
+      data.append("no_hp", formData.no_hp);
+      data.append("agama", formData.agama);
+      data.append("role", formData.role);
+      if (selectedFile) data.append("photo", selectedFile);
+
+      await axios.patch(
+        `http://localhost:19000/api/users/${formData.user_id}`,
+        data,
+        { headers: { "Content-Type": "multipart/form-data" } }
+      );
+
+      const updatedPhoto = selectedFile
+        ? await toBase64(selectedFile)
+        : formData.photo;
+
+      onUpdateUser?.({ ...formData, photo: updatedPhoto });
+
+      setOpen(false);
+    } catch (error) {
+      console.error("Gagal update user:", error);
+      alert("Gagal memperbarui data.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button
+          className="bg-amber-100 text-amber-500 hover:bg-amber-500 hover:text-white"
+          size="sm"
+        >
+          <Edit className="h-4 w-4" />
+          <span className="sr-only">Edit</span>
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Edit Penduduk</DialogTitle>
+          <DialogDescription>Perbarui informasi pengguna</DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit}>
+          <div className="grid gap-4 py-4">
+            <FormRow label="Nama" id="nama">
+              <Input
+                id="nama"
+                value={formData.nama}
+                onChange={handleInputChange}
+                required
+              />
+            </FormRow>
+
+            <FormRow label="Username" id="username">
+              <Input
+                id="username"
+                value={formData.username}
+                onChange={handleInputChange}
+                required
+              />
+            </FormRow>
+
+            <FormRow label="Password" id="password">
+              <div className="relative w-full">
+                <Input
                   id="password"
-                  type="password"
-                  placeholder="Masukkan password baru (kosongkan jika tidak diubah)"
-                  className="col-span-3"
-                  value={formData.password}
+                  type={showPassword ? "text" : "password"}
+                  placeholder="Kosongkan jika tidak ingin ubah"
+                  value={""}
                   onChange={handleInputChange}
-               />
-               </div>
-               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
-                  <Label htmlFor="nik" className="sm:text-right">
-                     NIK
-                  </Label>
-                  <Input
-                     id="nik"
-                     placeholder="Masukkan NIK"
-                     className="col-span-3"
-                     required
-                     value={formData.nik}
-                     onChange={handleInputChange}
-                  />
-               </div>
-               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
-                  <Label htmlFor="no_hp" className="sm:text-right">
-                     No.HP
-                  </Label>
-                  <Input
-                     id="no_hp"
-                     placeholder="Masukkan nomor HP"
-                     className="col-span-3"
-                     required
-                     value={formData.no_hp}
-                     onChange={handleInputChange}
-                  />
-               </div>
-               <div className="flex flex-col gap-3 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
-                  <Label className="sm:text-right">Jenis Kelamin</Label>
-                  <RadioGroup
-                     value={formData.jenis_kelamin}
-                     onValueChange={(value) => handleSelectChange("jenis_kelamin", value)}
-                     className="col-span-3 flex space-x-4"
-                  >
-                     <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Laki-laki" id="edit-laki-laki" />
-                        <Label htmlFor="edit-laki-laki" className="font-normal">
-                        Laki-laki
-                        </Label>
-                     </div>
-                     <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Perempuan" id="edit-perempuan" />
-                        <Label htmlFor="edit-perempuan" className="font-normal">
-                        Perempuan
-                        </Label>
-                     </div>
-                  </RadioGroup>
-               </div>
-               <div className="grid grid-cols-4 items-center gap-4">
+                />
+                <button
+                  type="button"
+                  className="absolute inset-y-0 right-2 flex items-center text-gray-500"
+                  onClick={() => setShowPassword((prev) => !prev)}
+                >
+                  {showPassword ? <EyeOff size={18} /> : <Eye size={18} />}
+                </button>
+              </div>
+            </FormRow>
+
+            <FormRow label="NIK" id="nik">
+              <Input
+                id="nik"
+                value={formData.nik}
+                onChange={handleInputChange}
+                required
+              />
+            </FormRow>
+
+            <FormRow label="No HP" id="no_hp">
+              <Input
+                id="no_hp"
+                value={formData.no_hp}
+                onChange={handleInputChange}
+                required
+              />
+            </FormRow>
+
+            <div className="grid grid-cols-4 items-center gap-4">
+              <Label className="text-right">Jenis Kelamin</Label>
+              <RadioGroup
+                value={formData.jenis_kel}
+                onValueChange={(value) =>
+                  handleSelectChange("jenis_kel", value)
+                }
+                className="col-span-3 flex space-x-4"
+              >
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="Pria" id="edit-l" />
+                  <Label htmlFor="edit-l">Pria</Label>
+                </div>
+                <div className="flex items-center space-x-2">
+                  <RadioGroupItem value="Wanita" id="edit-p" />
+                  <Label htmlFor="edit-p">Wanita</Label>
+                </div>
+              </RadioGroup>
             </div>
-            <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
-               <Label htmlFor="alamat" className="sm:text-right pt-2">
-                  Alamat
-               </Label>
-               <Textarea
-                  id="alamat"
-                  placeholder="Masukkan alamat lengkap"
-                  className="col-span-3 border-gray-200"
-                  required
-                  value={formData.alamat}
-                  onChange={handleInputChange}
-               />
-               </div>
-               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
-               <Label htmlFor="photo" className="sm:text-right">
-                  Foto
-               </Label>
-               <Input id="photo" type="file" accept="image/*" className="col-span-3" onChange={handleFileChange} />
-               </div>
-            </div>
-            <DialogFooter className="flex flex-col sm:flex-row sm:justify-end gap-2">
-               <Button type="button" variant="destructive" onClick={() => setOpen(false)}>
-               Batal
-               </Button>
-               <Button type="submit" variant="ghost" disabled={isLoading}>
-               {isLoading ? "Menyimpan..." : "Simpan"}
-               </Button>
-            </DialogFooter>
-         </form>
-         </DialogContent>
-      </Dialog>
-   )
+
+            <FormRow label="Agama" id="agama">
+              <select
+                id="agama"
+                className="w-full border rounded-md p-2"
+                value={formData.agama}
+                onChange={(e) => handleSelectChange("agama", e.target.value)}
+              >
+                <option value="Islam">Islam</option>
+                <option value="Kristen">Kristen</option>
+                <option value="Katolik">Katolik</option>
+                <option value="Hindu">Hindu</option>
+                <option value="Budha">Budha</option>
+                <option value="Konghucu">Konghucu</option>
+              </select>
+            </FormRow>
+
+            <FormRow label="Alamat" id="alamat" isTextarea>
+              <Textarea
+                id="alamat"
+                value={formData.alamat}
+                onChange={handleInputChange}
+                required
+              />
+            </FormRow>
+
+            <FormRow label="Foto" id="photo">
+              <Input
+                id="photo"
+                type="file"
+                accept="image/*"
+                onChange={handleFileChange}
+              />
+              {selectedFile && (
+                <p className="text-sm text-muted-foreground mt-2">
+                  File dipilih: <strong>{selectedFile.name}</strong>
+                </p>
+              )}
+            </FormRow>
+
+            <FormRow label="Role" id="role">
+              <select
+                id="role"
+                className="w-full border rounded-md p-2"
+                value={formData.role}
+                onChange={(e) => handleSelectChange("role", e.target.value)}
+              >
+                <option value="penduduk">penduduk</option>
+                <option value="admin">admin</option>
+              </select>
+            </FormRow>
+          </div>
+          <DialogFooter className="flex justify-end gap-2">
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => setOpen(false)}
+            >
+              Batal
+            </Button>
+            <Button type="submit" variant="ghost" disabled={isLoading}>
+              {isLoading ? "Menyimpan..." : "Simpan"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
+}
+
+// Komponen Form Row
+function FormRow({
+  label,
+  id,
+  children,
+  isTextarea = false,
+}: {
+  label: string;
+  id: string;
+  children: React.ReactNode;
+  isTextarea?: boolean;
+}) {
+  return (
+    <div
+      className={`grid grid-cols-4 items-${
+        isTextarea ? "start" : "center"
+      } gap-4`}
+    >
+      <Label htmlFor={id} className="text-right">
+        {label}
+      </Label>
+      <div className="col-span-3">{children}</div>
+    </div>
+  );
 }

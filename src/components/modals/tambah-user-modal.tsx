@@ -1,237 +1,299 @@
-"use client"
+"use client";
 
-import { useState, type FormEvent, type ChangeEvent } from "react"
-import { Button } from "@/components/ui/buttom"
+import { useState, type FormEvent, type ChangeEvent } from "react";
+import axios from "axios";
+import { Button } from "@/components/ui/buttom"; // perbaiki typo dari `buttom`
 import {
-   Dialog,
-   DialogContent,
-   DialogDescription,
-   DialogFooter,
-   DialogHeader,
-   DialogTitle,
-   DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
-import { Textarea } from "@/components/ui/textarea"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { UserPlus } from "lucide-react"
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
+import { Textarea } from "@/components/ui/textarea";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import {
+  Select,
+  SelectTrigger,
+  SelectValue,
+  SelectContent,
+  SelectItem,
+} from "@/components/ui/select";
+import { UserPlus } from "lucide-react";
 
 interface TambahUserModalProps {
-   onAddUser: (newUser: {
-      nama: string
-      username: string
-      password: string
-      photo: string
-      nik: string
-      alamat: string
-      jenis_kelamin: "Laki-laki" | "Perempuan"
-      no_hp: string
-      role: "Masyarakat"
-   }) => void
+  onAddUser: (newUser: any) => void;
 }
 
 export function TambahUserModal({ onAddUser }: TambahUserModalProps) {
-   const [open, setOpen] = useState<boolean>(false)
-   const [isLoading, setIsLoading] = useState<boolean>(false)
-   const [formData, setFormData] = useState({
-      nama: "",
-      username: "",
-      password: "",
-      photo: "/placeholder.svg?height=128&width=128",
-      nik: "",
-      alamat: "",
-      jenis_kelamin: "Laki-laki" as "Laki-laki" | "Perempuan",
-      no_hp: "",
-      role: "Masyarakat" as const,
-   })
+  const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
+  const [formData, setFormData] = useState({
+    nama: "",
+    username: "",
+    password: "",
+    photo: "",
+    NIK: "",
+    alamat: "",
+    jenis_kel: "",
+    no_hp: "",
+    agama: "",
+    role: "penduduk",
+  });
 
-   const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-      const { id, value } = e.target
-      setFormData((prev) => ({ ...prev, [id]: value }))
-   }
+  // ✅ Kembalikan hasil base64 lengkap (dengan prefix)
+  const fileToBase64 = (file: File): Promise<string> => {
+    return new Promise((resolve, reject) => {
+      const reader = new FileReader();
+      reader.readAsDataURL(file);
+      reader.onload = () => resolve(reader.result as string);
+      reader.onerror = reject;
+    });
+  };
 
-   const handleSelectChange = (field: string, value: string) => {
-      setFormData((prev) => ({ ...prev, [field]: value }))
-   }
+  const handleInputChange = (
+    e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
+  ) => {
+    const { id, value } = e.target;
+    setFormData((prev) => ({ ...prev, [id]: value }));
+  };
 
-   const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-      const file = e.target.files?.[0]
-      if (file) {
-         // In a real app, you would upload the file to a server and get a URL
-         // For this demo, we'll use a placeholder
-         setFormData((prev) => ({
-         ...prev,
-         photo: "/placeholder.svg?height=128&width=128",
-         }))
+  const handleSelectChange = (field: string, value: string) => {
+    setFormData((prev) => ({ ...prev, [field]: value }));
+  };
+
+  const handleFileChange = async (e: ChangeEvent<HTMLInputElement>) => {
+    const file = e.target.files?.[0];
+    if (file) {
+      const base64 = await fileToBase64(file);
+      setFormData((prev) => ({
+        ...prev,
+        photo: base64,
+      }));
+    }
+  };
+
+  const validateInput = () => {
+    const requiredFields = [
+      "nama",
+      "username",
+      "password",
+      "NIK",
+      "no_hp",
+      "alamat",
+      "jenis_kel",
+      "agama",
+      "role",
+      "photo",
+    ];
+
+    for (const field of requiredFields) {
+      if (!formData[field as keyof typeof formData]) {
+        return `Field "${field}" wajib diisi.`;
       }
-   }
+    }
 
-   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-      e.preventDefault()
-      setIsLoading(true)
+    if (formData.password.length < 6) {
+      return "Password minimal 6 karakter.";
+    }
 
-      // Simulate API call
-      setTimeout(() => {
-         onAddUser(formData)
-         setIsLoading(false)
-         setOpen(false)
+    if (!/^\d{16}$/.test(formData.NIK)) {
+      return "NIK harus 16 digit angka.";
+    }
 
-         // Reset form
-         setFormData({
-         nama: "",
-         username: "",
-         password: "",
-         photo: "/placeholder.svg?height=128&width=128",
-         nik: "",
-         alamat: "",
-         jenis_kelamin: "Laki-laki",
-         no_hp: "",
-         role: "Masyarakat",
-         })
-      }, 1000)
-   }
+    return null;
+  };
 
-   return (
-      <Dialog open={open} onOpenChange={setOpen}>
-         <DialogTrigger asChild>
-         <Button type="button" variant="ghost">
-            <UserPlus className="mr-2 h-4 w-4" />
-            Tambah User
-         </Button>
-         </DialogTrigger>
-         <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
-         <DialogHeader>
-            <DialogTitle>Tambah User Baru</DialogTitle>
-            <DialogDescription>Tambahkan pengguna baru ke sistem administrasi desa</DialogDescription>
-         </DialogHeader>
-         <form onSubmit={handleSubmit}>
-            <div className="grid gap-4 py-4">
-               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
-                  <Label htmlFor="nama" className="sm:text-right">
-                     Nama Lengkap
-                  </Label>
-                  <Input
-                     id="nama"
-                     placeholder="Masukkan nama lengkap"
-                     className="col-span-3"
-                     required
-                     value={formData.nama}
-                     onChange={handleInputChange}
-                  />
-               </div>
-               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
-                  <Label htmlFor="username" className="sm:text-right">
-                     Username
-                  </Label>
-                  <Input
-                     id="username"
-                     placeholder="Masukkan username"
-                     className="col-span-3"
-                     required
-                     value={formData.username}
-                     onChange={handleInputChange}
-                  />
-               </div>
-               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
-               <Label htmlFor="password" className="sm:text-right">
-                  Password
-               </Label>
-               <Input
-                  id="password"
-                  type="password"
-                  placeholder="Masukkan password"
-                  className="col-span-3"
-                  required
-                  value={formData.password}
-                  onChange={handleInputChange}
-               />
-               </div>
-               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
-               <Label htmlFor="nik" className="sm:text-right">
-                  NIK
-               </Label>
-               <Input
-                  id="nik"
-                  placeholder="Masukkan NIK"
-                  className="col-span-3"
-                  required
-                  value={formData.nik}
-                  onChange={handleInputChange}
-               />
-               </div>
-               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
-               <Label htmlFor="no_hp" className="sm:text-right">
-                  No. HP
-               </Label>
-               <Input
-                  id="no_hp"
-                  placeholder="Masukkan nomor HP"
-                  className="col-span-3"
-                  required
-                  value={formData.no_hp}
-                  onChange={handleInputChange}
-               />
-               </div>
-               <div className="flex flex-col gap-3 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
-                  <Label className="sm:text-right">Jenis Kelamin</Label>
-                  <RadioGroup
-                     value={formData.jenis_kelamin}
-                     onValueChange={(value) => handleSelectChange("jenis_kelamin", value)}
-                     className="col-span-3 flex space-x-4"
-                  >
-                     <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Laki-laki" id="laki-laki" />
-                        <Label htmlFor="laki-laki" className="font-normal">
-                        Laki-laki
-                        </Label>
-                     </div>
-                     <div className="flex items-center space-x-2">
-                        <RadioGroupItem value="Perempuan" id="perempuan" />
-                        <Label htmlFor="perempuan" className="font-normal">
-                        Perempuan
-                        </Label>
-                     </div>
-                  </RadioGroup>
-               </div>
-               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
-               <Label htmlFor="role" className="sm:text-right">
-                  Role
-               </Label>
-               <div className="col-span-3">
-                  <Input id="role" value="Masyarakat" disabled className="bg-gray-100" />
-               </div>
-               </div>
-               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
-               <Label htmlFor="alamat" className="sm:text-right">
-                  Alamat
-               </Label>
-               <Textarea
-                  id="alamat"
-                  placeholder="Masukkan alamat lengkap"
-                  className="col-span-3 border-gray-300"
-                  required
-                  value={formData.alamat}
-                  onChange={handleInputChange}
-               />
-               </div>
-               <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
-               <Label htmlFor="photo" className="sm:text-right">
-                  Foto
-               </Label>
-               <Input id="photo" type="file" accept="image/*" className="col-span-3" onChange={handleFileChange} />
-               </div>
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault();
+
+    const error = validateInput();
+    if (error) {
+      alert(error);
+      return;
+    }
+
+    setIsLoading(true);
+
+    try {
+      const response = await axios.post(
+        "http://localhost:19000/api/users",
+        formData,
+        {
+          headers: {
+            "Content-Type": "application/json",
+          },
+        }
+      );
+
+      const data = response.data;
+      onAddUser({ ...formData, user_id: data.user_id });
+
+      // Reset form
+      setFormData({
+        nama: "",
+        username: "",
+        password: "",
+        photo: "",
+        NIK: "",
+        alamat: "",
+        jenis_kel: "",
+        no_hp: "",
+        agama: "",
+        role: "penduduk",
+      });
+
+      setOpen(false);
+    } catch (err) {
+      console.error("Gagal menambahkan user:", err);
+      alert("Terjadi kesalahan saat menyimpan user.");
+    } finally {
+      setIsLoading(false);
+    }
+  };
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button type="button" variant="ghost">
+          <UserPlus className="mr-2 h-4 w-4" /> Tambah Penduduk
+        </Button>
+      </DialogTrigger>
+      <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+        <DialogHeader>
+          <DialogTitle>Tambah User Baru</DialogTitle>
+          <DialogDescription>
+            Lengkapi data pengguna dengan benar.
+          </DialogDescription>
+        </DialogHeader>
+
+        <form onSubmit={handleSubmit} className="text-sm space-y-3 py-2">
+          {[
+            ["nama", "Nama Lengkap"],
+            ["username", "Username"],
+            ["password", "Password", "password"],
+            ["NIK", "NIK"],
+            ["no_hp", "No. HP"],
+          ].map(([id, label, type = "text"]) => (
+            <div
+              key={id}
+              className="grid grid-cols-[120px_1fr] items-center gap-2"
+            >
+              <Label htmlFor={id} className="text-right">
+                {label}
+              </Label>
+              <Input
+                id={id}
+                type={type}
+                value={(formData as any)[id]}
+                onChange={handleInputChange}
+                required
+              />
             </div>
-            <DialogFooter className="flex flex-col sm:flex-row sm:justify-end gap-2">
-               <Button type="button" variant="destructive" onClick={() => setOpen(false)}>
-               Batal
-               </Button>
-               <Button type="submit" variant="ghost" disabled={isLoading}>
-               {isLoading ? "Menyimpan..." : "Simpan"}
-               </Button>
-            </DialogFooter>
-         </form>
-         </DialogContent>
-      </Dialog>
-   )
+          ))}
+
+          <div className="grid grid-cols-[120px_1fr] items-center gap-2">
+            <Label className="text-right">Jenis Kelamin</Label>
+            <RadioGroup
+              value={formData.jenis_kel}
+              onValueChange={(val) => handleSelectChange("jenis_kel", val)}
+              className="flex gap-6"
+            >
+              {["Pria", "Wanita"].map((val) => (
+                <div key={val} className="flex items-center space-x-2">
+                  <RadioGroupItem value={val} id={val} />
+                  <Label htmlFor={val}>{val}</Label>
+                </div>
+              ))}
+            </RadioGroup>
+          </div>
+
+          <div className="grid grid-cols-[120px_1fr] items-start gap-2">
+            <Label htmlFor="alamat" className="text-right pt-2">
+              Alamat
+            </Label>
+            <Textarea
+              id="alamat"
+              value={formData.alamat}
+              onChange={handleInputChange}
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-[120px_1fr] items-center gap-2">
+            <Label htmlFor="photo" className="text-right">
+              Foto
+            </Label>
+            <Input
+              id="photo"
+              type="file"
+              accept="image/*"
+              onChange={handleFileChange}
+              required
+            />
+          </div>
+
+          <div className="grid grid-cols-[120px_1fr] items-center gap-2">
+            <Label className="text-right">Agama</Label>
+            <Select
+              value={formData.agama}
+              onValueChange={(val) => handleSelectChange("agama", val)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Pilih Agama" />
+              </SelectTrigger>
+              <SelectContent>
+                {[
+                  "Islam",
+                  "Kristen Protestan",
+                  "Katolik",
+                  "Hindu",
+                  "Buddha",
+                  "Khonghucu",
+                  "Kepercayaan",
+                ].map((agama) => (
+                  <SelectItem key={agama} value={agama}>
+                    {agama}
+                  </SelectItem>
+                ))}
+              </SelectContent>
+            </Select>
+          </div>
+
+          <div className="grid grid-cols-[120px_1fr] items-center gap-2">
+            <Label className="text-right">Role</Label>
+            <Select
+              value={formData.role}
+              onValueChange={(val) => handleSelectChange("role", val)}
+            >
+              <SelectTrigger>
+                <SelectValue placeholder="Pilih Role" />
+              </SelectTrigger>
+              <SelectContent>
+                <SelectItem value="penduduk">penduduk</SelectItem>
+                <SelectItem value="admin">admin</SelectItem>
+              </SelectContent>
+            </Select>
+          </div>
+
+          <DialogFooter className="flex flex-col sm:flex-row sm:justify-end gap-2">
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => setOpen(false)}
+            >
+              Batal
+            </Button>
+            <Button type="submit" disabled={isLoading}>
+              {isLoading ? "Menyimpan..." : "Simpan"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  );
 }
