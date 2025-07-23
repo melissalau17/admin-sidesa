@@ -1,15 +1,13 @@
-"use client"
-
 import { useState, type FormEvent } from "react"
-import { Button } from "@/components/ui/buttom"
+import { Button } from "@/components/ui/button"
 import {
-   Dialog,
-   DialogContent,
-   DialogDescription,
-   DialogFooter,
-   DialogHeader,
-   DialogTitle,
-   DialogTrigger,
+  Dialog,
+  DialogContent,
+  DialogDescription,
+  DialogFooter,
+  DialogHeader,
+  DialogTitle,
+  DialogTrigger,
 } from "@/components/ui/dialog"
 import { Label } from "@/components/ui/label"
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
@@ -17,95 +15,112 @@ import { useToast } from "@/hooks/use-toast"
 import { ClipboardCheck } from "lucide-react"
 
 interface UbahStatusSuratModalProps {
-   id: number
-   nama: string
-   jenis: string
-   status: string
-   onStatusChange: (id: number, newStatus: string) => void
+  id: number
+  nama: string
+  jenis: string
+  status: string
+  onStatusChange?: (id: number, newStatus: string) => void
 }
 
-export function UbahStatusSuratModal({ id, nama, jenis, status, onStatusChange }: UbahStatusSuratModalProps) {
-   const [open, setOpen] = useState<boolean>(false)
-   const [isLoading, setIsLoading] = useState<boolean>(false)
-   const [selectedStatus, setSelectedStatus] = useState<string>(status)
-   const { toast } = useToast()
+export function UbahStatusSuratModal({
+  id,
+  nama,
+  jenis,
+  status,
+  onStatusChange,
+}: UbahStatusSuratModalProps) {
+  const [open, setOpen] = useState(false)
+  const [isLoading, setIsLoading] = useState(false)
+  const [selectedStatus, setSelectedStatus] = useState(status)
+  const { toast } = useToast()
 
-   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
-      e.preventDefault()
-      setIsLoading(true)
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
+    e.preventDefault()
+    setIsLoading(true)
 
-      // Simulasi proses penyimpanan
-      setTimeout(() => {
-         // Update the status in the parent component
-         onStatusChange(id, selectedStatus)
+    try {
+      const token = localStorage.getItem("token")
+      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/letters/${id}`, {
+        method: "PATCH",
+        headers: {
+          "Content-Type": "application/json",
+          "Authorization": `Bearer ${token}`
+        },
+        body: JSON.stringify({ status: selectedStatus }),
+      })
 
-         setIsLoading(false)
-         setOpen(false)
-         toast({
-         title: "Berhasil",
-         description: `Status surat berhasil diubah menjadi ${selectedStatus}`,
-         })
-      }, 1000)
-   }
+      if (!res.ok) throw new Error("Gagal mengubah status surat")
 
-   return (
-      <Dialog open={open} onOpenChange={setOpen}>
-         <DialogTrigger asChild>
-         <Button className="bg-purple-100 text-purple-600 hover:bg-purple-600 hover:text-purple-100" size="sm">
-            <ClipboardCheck className="h-4 w-4" />
-            <span className="sr-only">Ubah Status</span>
-         </Button>
-         </DialogTrigger>
-         <DialogContent className="sm:max-w-[425px]">
-         <DialogHeader>
-            <DialogTitle>Ubah Status Surat</DialogTitle>
-            <DialogDescription>
-               Ubah status permohonan surat untuk {nama} - {jenis}
-            </DialogDescription>
-         </DialogHeader>
-         <form onSubmit={handleSubmit}>
-            <div className="grid gap-4 py-4">
-               <div className="space-y-2">
-               <Label>Status Surat</Label>
-               <RadioGroup value={selectedStatus} onValueChange={setSelectedStatus} className="flex flex-col space-y-2">
-                  <div className="flex items-center space-x-2">
-                     <RadioGroupItem value="Menunggu" id="menunggu" />
-                     <Label htmlFor="menunggu" className="font-normal">
-                     Menunggu
-                     </Label>
+      const json = await res.json()
+
+      onStatusChange?.(id, selectedStatus)
+      toast({
+        title: "Berhasil",
+        description: `Status surat berhasil diubah menjadi ${selectedStatus}`,
+      })
+      setOpen(false)
+    } catch (error: any) {
+      toast({
+        title: "Gagal",
+        description: error.message || "Terjadi kesalahan saat mengubah status",
+        variant: "destructive",
+      })
+    } finally {
+      setIsLoading(false)
+    }
+  }
+
+  return (
+    <Dialog open={open} onOpenChange={setOpen}>
+      <DialogTrigger asChild>
+        <Button
+          className="bg-purple-100 text-purple-600 hover:bg-purple-600 hover:text-purple-100"
+          size="sm"
+        >
+          <ClipboardCheck className="h-4 w-4" />
+          <span className="sr-only">Ubah Status</span>
+        </Button>
+      </DialogTrigger>
+      <DialogContent
+        className="sm:max-w-[425px]"
+        onOpenAutoFocus={(e) => e.preventDefault()}
+      >
+        <DialogHeader>
+          <DialogTitle>Ubah Status Surat</DialogTitle>
+          <DialogDescription>
+            Ubah status permohonan surat untuk {nama} - {jenis}
+          </DialogDescription>
+        </DialogHeader>
+        <form onSubmit={handleSubmit}>
+          <div className="grid gap-4 py-4">
+            <div className="space-y-2">
+              <Label>Status Surat</Label>
+              <RadioGroup
+                value={selectedStatus}
+                onValueChange={setSelectedStatus}
+                className="flex flex-col space-y-2"
+              >
+                {["Menunggu", "Diproses", "Selesai", "Ditolak"].map((item) => (
+                  <div className="flex items-center space-x-2" key={item}>
+                    <RadioGroupItem value={item} id={item.toLowerCase()} />
+                    <Label htmlFor={item.toLowerCase()} className="font-normal">
+                      {item}
+                    </Label>
                   </div>
-                  <div className="flex items-center space-x-2">
-                     <RadioGroupItem value="Diproses" id="diproses" />
-                     <Label htmlFor="diproses" className="font-normal">
-                     Diproses
-                     </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                     <RadioGroupItem value="Selesai" id="selesai" />
-                     <Label htmlFor="selesai" className="font-normal">
-                     Selesai
-                     </Label>
-                  </div>
-                  <div className="flex items-center space-x-2">
-                     <RadioGroupItem value="Ditolak" id="ditolak" />
-                     <Label htmlFor="ditolak" className="font-normal">
-                     Ditolak
-                     </Label>
-                  </div>
-               </RadioGroup>
-               </div>
+                ))}
+              </RadioGroup>
             </div>
-            <DialogFooter>
-               <Button type="button" variant="destructive" onClick={() => setOpen(false)}>
-               Batal
-               </Button>
-               <Button type="submit" variant="ghost" disabled={isLoading}>
-               {isLoading ? "Menyimpan..." : "Simpan"}
-               </Button>
-            </DialogFooter>
-         </form>
-         </DialogContent>
-      </Dialog>
-   )
+          </div>
+          <DialogFooter>
+            <Button type="button" variant="destructive" onClick={() => setOpen(false)}>
+              Batal
+            </Button>
+            <Button type="submit" variant="ghost" disabled={isLoading}>
+              {isLoading ? "Menyimpan..." : "Simpan"}
+            </Button>
+          </DialogFooter>
+        </form>
+      </DialogContent>
+    </Dialog>
+  )
 }
-

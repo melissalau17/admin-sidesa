@@ -3,7 +3,7 @@
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { cn } from "@/lib/utils";
-import { Button } from "../components/ui/buttom";
+import { Button } from "./ui/button";
 import { useAuth } from "@/lib/auth/auth-provider";
 import { useState } from "react";
 import {
@@ -51,11 +51,11 @@ const menuItems: MenuItem[] = [
     href: "/berita-desa",
     icon: Newspaper,
   },
-  // {
-  //    name: "Laporan Keuangan",
-  //    href: "/laporan-keuangan",
-  //    icon: DollarSign,
-  // },
+  {
+     name: "Laporan Keuangan",
+     href: "/laporan-keuangan",
+     icon: DollarSign,
+  },
 ];
 
 export function Sidebar() {

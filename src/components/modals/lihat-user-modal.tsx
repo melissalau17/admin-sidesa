@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import { Button } from "@/components/ui/buttom";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
   DialogContent,
@@ -20,7 +20,7 @@ interface UserItem {
   username: string;
   password: string;
   photo?: string;
-  nik: string;
+  NIK: string;
   alamat: string;
   jenis_kel: string;
   no_hp: string;
@@ -85,7 +85,7 @@ export function LihatUserModal({ user }: LihatUserModalProps) {
 
           {/* Informasi Pengguna */}
           <div className="grid grid-cols-2 gap-2 text-xs">
-            <InfoItem label="NIK" value={user.nik} />
+            <InfoItem label="NIK" value={user.NIK} />
             <InfoItem label="Username" value={user.username} />
             <InfoItem
               label="Password"

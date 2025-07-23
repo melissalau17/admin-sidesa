@@ -2,15 +2,16 @@
 
 import { useState, type FormEvent, type ChangeEvent } from "react";
 import axios from "axios";
-import { Button } from "@/components/ui/buttom"; // perbaiki typo dari `buttom`
+import { UserPlus } from "lucide-react";
+import { Button } from "@/components/ui/button";
 import {
   Dialog,
+  DialogTrigger,
   DialogContent,
-  DialogDescription,
-  DialogFooter,
   DialogHeader,
   DialogTitle,
-  DialogTrigger,
+  DialogDescription,
+  DialogFooter,
 } from "@/components/ui/dialog";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
@@ -23,16 +24,29 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
-import { UserPlus } from "lucide-react";
 
 interface TambahUserModalProps {
-  onAddUser: (newUser: any) => void;
+  trigger?: React.ReactNode;
+  onAddUser?: (user: any) => void; // optionally pass newly added user back to parent
 }
 
-export function TambahUserModal({ onAddUser }: TambahUserModalProps) {
+interface FormData {
+  nama: string;
+  username: string;
+  password: string;
+  photo: string;
+  NIK: string;
+  alamat: string;
+  jenis_kel: string;
+  no_hp: string;
+  agama: string;
+  role: string;
+}
+
+export function TambahUserModal({ trigger, onAddUser }: TambahUserModalProps) {
   const [open, setOpen] = useState(false);
   const [isLoading, setIsLoading] = useState(false);
-  const [formData, setFormData] = useState({
+  const [formData, setFormData] = useState<FormData>({
     nama: "",
     username: "",
     password: "",
@@ -45,15 +59,13 @@ export function TambahUserModal({ onAddUser }: TambahUserModalProps) {
     role: "penduduk",
   });
 
-  // ✅ Kembalikan hasil base64 lengkap (dengan prefix)
-  const fileToBase64 = (file: File): Promise<string> => {
-    return new Promise((resolve, reject) => {
+  const fileToBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
       const reader = new FileReader();
       reader.readAsDataURL(file);
       reader.onload = () => resolve(reader.result as string);
       reader.onerror = reject;
     });
-  };
 
   const handleInputChange = (
     e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
@@ -62,7 +74,7 @@ export function TambahUserModal({ onAddUser }: TambahUserModalProps) {
     setFormData((prev) => ({ ...prev, [id]: value }));
   };
 
-  const handleSelectChange = (field: string, value: string) => {
+  const handleSelectChange = (field: keyof FormData, value: string) => {
     setFormData((prev) => ({ ...prev, [field]: value }));
   };
 
@@ -70,15 +82,12 @@ export function TambahUserModal({ onAddUser }: TambahUserModalProps) {
     const file = e.target.files?.[0];
     if (file) {
       const base64 = await fileToBase64(file);
-      setFormData((prev) => ({
-        ...prev,
-        photo: base64,
-      }));
+      setFormData((prev) => ({ ...prev, photo: base64 }));
     }
   };
 
   const validateInput = () => {
-    const requiredFields = [
+    const requiredFields: (keyof FormData)[] = [
       "nama",
       "username",
       "password",
@@ -92,7 +101,7 @@ export function TambahUserModal({ onAddUser }: TambahUserModalProps) {
     ];
 
     for (const field of requiredFields) {
-      if (!formData[field as keyof typeof formData]) {
+      if (!formData[field]) {
         return `Field "${field}" wajib diisi.`;
       }
     }
@@ -119,21 +128,24 @@ export function TambahUserModal({ onAddUser }: TambahUserModalProps) {
 
     setIsLoading(true);
 
+    const token = localStorage.getItem("token");
     try {
       const response = await axios.post(
-        "http://localhost:19000/api/users",
+        `${process.env.NEXT_PUBLIC_API_URL}/api/users`,
         formData,
         {
           headers: {
-            "Content-Type": "application/json",
+            Authorization: `Bearer ${token}`,
           },
         }
       );
 
       const data = response.data;
-      onAddUser({ ...formData, user_id: data.user_id });
+      if (onAddUser) {
+        onAddUser({ ...formData, user_id: data.user_id });
+      }
 
-      // Reset form
+      // Reset
       setFormData({
         nama: "",
         username: "",
@@ -159,10 +171,13 @@ export function TambahUserModal({ onAddUser }: TambahUserModalProps) {
   return (
     <Dialog open={open} onOpenChange={setOpen}>
       <DialogTrigger asChild>
-        <Button type="button" variant="ghost">
-          <UserPlus className="mr-2 h-4 w-4" /> Tambah Penduduk
-        </Button>
+        {trigger || (
+          <Button type="button" variant="ghost">
+            <UserPlus className="mr-2 h-4 w-4" /> Tambah Penduduk
+          </Button>
+        )}
       </DialogTrigger>
+
       <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
         <DialogHeader>
           <DialogTitle>Tambah User Baru</DialogTitle>
@@ -189,7 +204,7 @@ export function TambahUserModal({ onAddUser }: TambahUserModalProps) {
               <Input
                 id={id}
                 type={type}
-                value={(formData as any)[id]}
+                value={formData[id as keyof FormData] as string}
                 onChange={handleInputChange}
                 required
               />
@@ -200,7 +215,9 @@ export function TambahUserModal({ onAddUser }: TambahUserModalProps) {
             <Label className="text-right">Jenis Kelamin</Label>
             <RadioGroup
               value={formData.jenis_kel}
-              onValueChange={(val) => handleSelectChange("jenis_kel", val)}
+              onValueChange={(val) =>
+                handleSelectChange("jenis_kel", val)
+              }
               className="flex gap-6"
             >
               {["Pria", "Wanita"].map((val) => (
@@ -281,11 +298,7 @@ export function TambahUserModal({ onAddUser }: TambahUserModalProps) {
           </div>
 
           <DialogFooter className="flex flex-col sm:flex-row sm:justify-end gap-2">
-            <Button
-              type="button"
-              variant="destructive"
-              onClick={() => setOpen(false)}
-            >
+            <Button type="button" variant="destructive" onClick={() => setOpen(false)}>
               Batal
             </Button>
             <Button type="submit" disabled={isLoading}>

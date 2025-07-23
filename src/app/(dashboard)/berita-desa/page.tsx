@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, type ChangeEvent } from "react"
-import { Button } from "@/components/ui/buttom"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
@@ -12,6 +12,8 @@ import { EditBeritaModal } from "@/components/modals/edit-berita-modal"
 import { useToast } from "@/hooks/use-toast"
 import { SearchComponent } from "@/components/ui/SearchComponent"
 import * as Tooltip from "@radix-ui/react-tooltip"
+import axios from "axios"
+import { useEffect } from "react"
 
 interface BeritaItem {
     id: number
@@ -22,53 +24,53 @@ interface BeritaItem {
     konten: string
 }
 
-const initialBeritaData: BeritaItem[] = [
-    {
-        id: 1,
-        judul: "Pembangunan Jembatan Desa Dimulai",
-        kategori: "Infrastruktur",
-        tanggal: "12 Mar 2025",
-        status: "Dipublikasikan",
-        konten:
-            "Pembangunan jembatan penghubung antar dusun telah dimulai pada hari Senin, 10 Maret 2025. Jembatan ini akan menghubungkan Dusun Sukamaju dan Dusun Harapan Jaya yang selama ini terpisah oleh sungai.\n\nProyek ini dibiayai oleh dana desa dan diperkirakan akan selesai dalam waktu 3 bulan. Jembatan sepanjang 15 meter ini akan mempermudah mobilitas warga dan meningkatkan aktivitas ekonomi antar dusun.",
-    },
-    {
-        id: 2,
-        judul: "Hasil Panen Padi Meningkat 20%",
-        kategori: "Pertanian",
-        tanggal: "10 Mar 2025",
-        status: "Dipublikasikan",
-        konten:
-            "Hasil panen padi di desa kita pada musim tanam tahun ini mengalami peningkatan sebesar 20% dibandingkan tahun lalu. Peningkatan ini berkat program intensifikasi pertanian yang telah dijalankan sejak tahun lalu.\n\nProgram tersebut meliputi penyuluhan teknik bertani modern, bantuan bibit unggul, dan perbaikan sistem irigasi. Petani desa kini bisa menikmati hasil panen yang lebih melimpah dan berkualitas lebih baik.",
-    },
-    {
-        id: 3,
-        judul: "Program Vaksinasi Lansia Sukses",
-        kategori: "Kesehatan",
-        tanggal: "8 Mar 2025",
-        status: "Dipublikasikan",
-        konten:
-            "Program vaksinasi untuk warga lansia di desa kita telah berhasil mencapai target 95% dari total populasi lansia. Program yang berlangsung selama dua minggu ini mendapat sambutan positif dari masyarakat.\n\nTim kesehatan desa bekerja sama dengan Puskesmas setempat melakukan kunjungan dari rumah ke rumah untuk memastikan semua lansia mendapatkan vaksin. Hal ini merupakan bagian dari upaya meningkatkan kualitas kesehatan masyarakat desa.",
-    },
-    {
-        id: 4,
-        judul: "Pelatihan UMKM untuk Warga Desa",
-        kategori: "Ekonomi",
-        tanggal: "5 Mar 2025",
-        status: "Draft",
-        konten:
-            "Pemerintah desa akan mengadakan pelatihan UMKM bagi warga desa pada tanggal 15-17 Maret 2025. Pelatihan ini bertujuan untuk meningkatkan kapasitas warga dalam mengelola usaha kecil dan menengah.\n\nMateri yang akan diberikan meliputi manajemen keuangan sederhana, strategi pemasaran produk, dan pemanfaatan media sosial untuk promosi. Pendaftaran dibuka mulai tanggal 6 Maret 2025 di kantor desa.",
-    },
-    {
-        id: 5,
-        judul: "Persiapan Festival Desa Tahunan",
-        kategori: "Budaya",
-        tanggal: "1 Mar 2025",
-        status: "Draft",
-        konten:
-            "Persiapan Festival Desa Tahunan telah dimulai. Festival yang akan diselenggarakan pada bulan April mendatang ini akan menampilkan berbagai kesenian dan budaya lokal desa kita.\n\nPanitia festival telah dibentuk dan mulai melakukan koordinasi dengan berbagai kelompok seni di desa. Festival ini diharapkan dapat menjadi ajang promosi potensi desa sekaligus melestarikan budaya lokal yang kita miliki.",
-    },
-]
+// const initialBeritaData: BeritaItem[] = [
+//     {
+//         id: 1,
+//         judul: "Pembangunan Jembatan Desa Dimulai",
+//         kategori: "Infrastruktur",
+//         tanggal: "12 Mar 2025",
+//         status: "Dipublikasikan",
+//         konten:
+//             "Pembangunan jembatan penghubung antar dusun telah dimulai pada hari Senin, 10 Maret 2025. Jembatan ini akan menghubungkan Dusun Sukamaju dan Dusun Harapan Jaya yang selama ini terpisah oleh sungai.\n\nProyek ini dibiayai oleh dana desa dan diperkirakan akan selesai dalam waktu 3 bulan. Jembatan sepanjang 15 meter ini akan mempermudah mobilitas warga dan meningkatkan aktivitas ekonomi antar dusun.",
+//     },
+//     {
+//         id: 2,
+//         judul: "Hasil Panen Padi Meningkat 20%",
+//         kategori: "Pertanian",
+//         tanggal: "10 Mar 2025",
+//         status: "Dipublikasikan",
+//         konten:
+//             "Hasil panen padi di desa kita pada musim tanam tahun ini mengalami peningkatan sebesar 20% dibandingkan tahun lalu. Peningkatan ini berkat program intensifikasi pertanian yang telah dijalankan sejak tahun lalu.\n\nProgram tersebut meliputi penyuluhan teknik bertani modern, bantuan bibit unggul, dan perbaikan sistem irigasi. Petani desa kini bisa menikmati hasil panen yang lebih melimpah dan berkualitas lebih baik.",
+//     },
+//     {
+//         id: 3,
+//         judul: "Program Vaksinasi Lansia Sukses",
+//         kategori: "Kesehatan",
+//         tanggal: "8 Mar 2025",
+//         status: "Dipublikasikan",
+//         konten:
+//             "Program vaksinasi untuk warga lansia di desa kita telah berhasil mencapai target 95% dari total populasi lansia. Program yang berlangsung selama dua minggu ini mendapat sambutan positif dari masyarakat.\n\nTim kesehatan desa bekerja sama dengan Puskesmas setempat melakukan kunjungan dari rumah ke rumah untuk memastikan semua lansia mendapatkan vaksin. Hal ini merupakan bagian dari upaya meningkatkan kualitas kesehatan masyarakat desa.",
+//     },
+//     {
+//         id: 4,
+//         judul: "Pelatihan UMKM untuk Warga Desa",
+//         kategori: "Ekonomi",
+//         tanggal: "5 Mar 2025",
+//         status: "Draft",
+//         konten:
+//             "Pemerintah desa akan mengadakan pelatihan UMKM bagi warga desa pada tanggal 15-17 Maret 2025. Pelatihan ini bertujuan untuk meningkatkan kapasitas warga dalam mengelola usaha kecil dan menengah.\n\nMateri yang akan diberikan meliputi manajemen keuangan sederhana, strategi pemasaran produk, dan pemanfaatan media sosial untuk promosi. Pendaftaran dibuka mulai tanggal 6 Maret 2025 di kantor desa.",
+//     },
+//     {
+//         id: 5,
+//         judul: "Persiapan Festival Desa Tahunan",
+//         kategori: "Budaya",
+//         tanggal: "1 Mar 2025",
+//         status: "Draft",
+//         konten:
+//             "Persiapan Festival Desa Tahunan telah dimulai. Festival yang akan diselenggarakan pada bulan April mendatang ini akan menampilkan berbagai kesenian dan budaya lokal desa kita.\n\nPanitia festival telah dibentuk dan mulai melakukan koordinasi dengan berbagai kelompok seni di desa. Festival ini diharapkan dapat menjadi ajang promosi potensi desa sekaligus melestarikan budaya lokal yang kita miliki.",
+//     },
+// ]
 
 const getStatusColor = (status: string): string => {
     switch (status) {
@@ -82,9 +84,40 @@ const getStatusColor = (status: string): string => {
 }
 
 export default function BeritaDesaPage() {
-    const [beritaData, setBeritaData] = useState<BeritaItem[]>(initialBeritaData)
+    const [beritaData, setBeritaData] = useState<BeritaItem[]>([])
+    const [editModalOpenId, setEditModalOpenId] = useState<number | null>(null)
     const [searchQuery, setSearchQuery] = useState<string>("")
     const { toast } = useToast()
+
+    useEffect(() => {
+        const fetchBeritas = async () => {
+            try {
+                const token = localStorage.getItem("token"); // Get token from localStorage or cookie
+                const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
+
+                // Map berita_id from backend to id for frontend consistency
+                const mappedData = res.data.data.map((item: any) => ({
+                    id: item.berita_id,
+                    judul: item.judul,
+                    kategori: item.kategori,
+                    tanggal: item.tanggal || "",
+                    status: item.status,
+                    konten: item.kontent || "", // double-check field name, kontent or konten?
+                }));
+
+                setBeritaData(mappedData);
+            } catch (err) {
+                console.error("Gagal mengambil data berita", err);
+            }
+        };
+
+        fetchBeritas();
+    }, []);
+
 
     // Function to handle search input changes
     const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -104,17 +137,40 @@ export default function BeritaDesaPage() {
         setBeritaData((prevData) => prevData.map((berita) => (berita.id === id ? { ...berita, ...updatedBerita } : berita)))
     }
 
-    // Function to delete berita directly from the table
-    const handleDirectDelete = (id: number) => {
-        // Remove the item from the beritaData state
-        setBeritaData((prevData) => prevData.filter((berita) => berita.id !== id))
+    const handleDirectDelete = async (id?: number) => {
+        if (!id) {
+            toast({
+                title: "Gagal",
+                description: "ID berita tidak ditemukan",
+                variant: "destructive",
+            })
+            return
+        }
 
-        // Show success notification
-        toast({
-            title: "Berhasil",
-            description: "Berita berhasil dihapus",
-        })
+        try {
+            const token = localStorage.getItem("token")
+            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas/${id}`, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                },
+            })
+
+            setBeritaData((prevData) => prevData.filter((berita) => berita.id !== id))
+
+            toast({
+                title: "Berhasil",
+                description: "Berita berhasil dihapus",
+            })
+        } catch (error) {
+            console.error("Gagal menghapus berita:", error)
+            toast({
+                title: "Gagal",
+                description: "Terjadi kesalahan saat menghapus berita",
+                variant: "destructive",
+            })
+        }
     }
+
 
     // Filter data based on search query
     const filteredData = beritaData.filter((berita) => {
@@ -135,15 +191,15 @@ export default function BeritaDesaPage() {
                     <p className="text-muted-foreground">Kelola berita dan informasi desa</p>
                 </div>
                 <Tooltip.Provider delayDuration={200}>
-                    <Tooltip.Root> 
+                    <Tooltip.Root>
                         <Tooltip.Trigger asChild>
                             <div className="relative inline-block">
                                 <TambahBeritaModal />
                             </div>
                         </Tooltip.Trigger>
                         <Tooltip.Portal>
-                            <Tooltip.Content 
-                                side="bottom" 
+                            <Tooltip.Content
+                                side="bottom"
                                 sideOffset={6}
                                 className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
                                 avoidCollisions
@@ -174,7 +230,7 @@ export default function BeritaDesaPage() {
                             </div>
                         </div>
                     </div>
-                    
+
                 </CardHeader>
                 <CardContent>
                     <Table>
@@ -190,8 +246,8 @@ export default function BeritaDesaPage() {
                         </TableHeader>
                         <TableBody>
                             {filteredData.length > 0 ? (
-                                filteredData.map((berita) => (
-                                    <TableRow key={berita.id}>
+                                filteredData.map((berita, index) => (
+                                    <TableRow key={berita.id ?? `fallback-${index}`}>
                                         <TableCell>{berita.id}</TableCell>
                                         <TableCell>{berita.judul}</TableCell>
                                         <TableCell>{berita.kategori}</TableCell>
@@ -205,18 +261,12 @@ export default function BeritaDesaPage() {
                                                     <Tooltip.Root>
                                                         <Tooltip.Trigger asChild>
                                                             <div className="relative inline-block">
-                                                                <LihatBeritaModal
-                                                                    judul={berita.judul}
-                                                                    kategori={berita.kategori}
-                                                                    tanggal={berita.tanggal}
-                                                                    status={berita.status}
-                                                                    konten={berita.konten}
-                                                                />
+                                                                <LihatBeritaModal id={berita.id} />
                                                             </div>
                                                         </Tooltip.Trigger>
                                                         <Tooltip.Portal>
-                                                            <Tooltip.Content 
-                                                                side="top" 
+                                                            <Tooltip.Content
+                                                                side="top"
                                                                 sideOffset={6}
                                                                 className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
                                                                 avoidCollisions
@@ -228,62 +278,74 @@ export default function BeritaDesaPage() {
                                                         </Tooltip.Portal>
                                                     </Tooltip.Root>
                                                 </Tooltip.Provider>
-                                                    
+
                                                 {/* Tambahkan Tooltip untuk Tombol Ubah Status */}
                                                 <Tooltip.Provider delayDuration={300}>
                                                     <Tooltip.Root>
-                                                        <Tooltip.Trigger>
-                                                            <div className="relative inline-block">
-                                                                <EditBeritaModal
-                                                                    id={berita.id}
-                                                                    judul={berita.judul}
-                                                                    kategori={berita.kategori}
-                                                                    status={berita.status}
-                                                                    konten={berita.konten}
-                                                                    onBeritaUpdate={handleBeritaUpdate}
-                                                                />
-                                                            </div>
+                                                        <Tooltip.Trigger asChild>
+                                                            <Button
+                                                                size="sm"
+                                                                variant="outline"
+                                                                onClick={() => setEditModalOpenId(berita.id)}
+                                                            >
+                                                                ✏️
+                                                            </Button>
                                                         </Tooltip.Trigger>
                                                         <Tooltip.Portal>
-                                                            <Tooltip.Content 
-                                                                side="top" 
+                                                            <Tooltip.Content
+                                                                side="top"
                                                                 sideOffset={6}
                                                                 className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
                                                                 avoidCollisions
                                                                 collisionPadding={8}
-                                                                >
-                                                                    Ubah Status Berita
+                                                            >
+                                                                Ubah Status Berita
                                                                 <Tooltip.Arrow className="fill-white" width={10} height={5} />
                                                             </Tooltip.Content>
                                                         </Tooltip.Portal>
                                                     </Tooltip.Root>
                                                 </Tooltip.Provider>
-                                                
+
+                                                {/* Outside the table but inside the same map loop */}
+                                                <EditBeritaModal
+                                                    id={berita.id}
+                                                    judul={berita.judul}
+                                                    kategori={berita.kategori}
+                                                    status={berita.status}
+                                                    konten={berita.konten}
+                                                    open={editModalOpenId === berita.id}
+                                                    onOpenChange={(open) => {
+                                                        if (!open) setEditModalOpenId(null)
+                                                    }}
+                                                    onBeritaUpdate={handleBeritaUpdate}
+                                                />
+
+
                                                 {/* Tambahkan Tooltip untuk Tombol Delete */}
                                                 <Tooltip.Provider delayDuration={300}>
                                                     <Tooltip.Root>
-                                                        <Tooltip.Trigger>
-                                                        <Button
-                                                            variant="destructive"
-                                                            size="sm"
-                                                            onClick={() => handleDirectDelete(berita.id)}
-                                                            className="text-red-500 bg-red-50 hover:text-red-50 hover:bg-red-500"
-                                                        >
-                                                            <Trash className="h-4 w-4" />
-                                                            <span className="sr-only">Hapus</span>
-                                                        </Button>
+                                                        <Tooltip.Trigger asChild>
+                                                            <Button
+                                                                variant="destructive"
+                                                                size="sm"
+                                                                onClick={() => handleDirectDelete(berita.id)}
+                                                                className="text-red-500 bg-red-50 hover:text-red-50 hover:bg-red-500"
+                                                            >
+                                                                <Trash className="h-4 w-4" />
+                                                                <span className="sr-only">Hapus</span>
+                                                            </Button>
                                                         </Tooltip.Trigger>
                                                         <Tooltip.Portal>
-                                                        <Tooltip.Content
-                                                            side="top"
-                                                            sideOffset={6}
-                                                            className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
-                                                            avoidCollisions
-                                                            collisionPadding={8}
-                                                        >
-                                                            Hapus Berita
-                                                            <Tooltip.Arrow className="fill-white" width={10} height={5} />
-                                                        </Tooltip.Content>
+                                                            <Tooltip.Content
+                                                                side="top"
+                                                                sideOffset={6}
+                                                                className="bg-white text-gray-900 text-xs font-medium px-2.5 py-1.5 rounded shadow-md z-50"
+                                                                avoidCollisions
+                                                                collisionPadding={8}
+                                                            >
+                                                                Hapus Berita
+                                                                <Tooltip.Arrow className="fill-white" width={10} height={5} />
+                                                            </Tooltip.Content>
                                                         </Tooltip.Portal>
                                                     </Tooltip.Root>
                                                 </Tooltip.Provider>
@@ -292,7 +354,7 @@ export default function BeritaDesaPage() {
                                     </TableRow>
                                 ))
                             ) : (
-                                <TableRow>
+                                <TableRow key="no-data">
                                     <TableCell colSpan={6} className="text-center py-4">
                                         Tidak ada data yang sesuai dengan pencarian
                                     </TableCell>

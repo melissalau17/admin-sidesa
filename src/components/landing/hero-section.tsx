@@ -1,5 +1,5 @@
 import Link from "next/link";
-import { Button } from "@/components/ui/buttom";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import Image from "next/image";
 

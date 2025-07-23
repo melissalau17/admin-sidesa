@@ -1,7 +1,7 @@
 "use client"
 
-import { useState, type ChangeEvent } from "react"
-import { Button } from "@/components/ui/buttom"
+import { useState, useEffect, type ChangeEvent } from "react"
+import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
@@ -14,7 +14,7 @@ import { LihatTransaksiModal } from "@/components/modals/lihat-transaksi-modal"
 import * as Tooltip from "@radix-ui/react-tooltip"
 
 interface KeuanganItem {
-   id: number
+   keuangan_id: number
    keterangan: string
    tanggal: string
    jenis: string
@@ -23,53 +23,53 @@ interface KeuanganItem {
    catatan?: string
 }
 
-const initialKeuanganData: KeuanganItem[] = [
-   {
-      id: 1,
-      keterangan: "Dana Desa",
-      tanggal: "1 Mar 2025",
-      jenis: "Pemasukan",
-      jumlah: "Rp 25,000,000",
-      kategori: "Dana Desa",
-      catatan: "Penerimaan dana desa tahap pertama tahun anggaran 2025.",
-   },
-   {
-      id: 2,
-      keterangan: "Pembangunan Jembatan",
-      tanggal: "5 Mar 2025",
-      jenis: "Pengeluaran",
-      jumlah: "Rp 15,000,000",
-      kategori: "Infrastruktur",
-      catatan: "Pembayaran tahap awal untuk pembangunan jembatan penghubung Dusun Sukamaju dan Dusun Harapan Jaya.",
-   },
-   {
-      id: 3,
-      keterangan: "Retribusi Pasar",
-      tanggal: "8 Mar 2025",
-      jenis: "Pemasukan",
-      jumlah: "Rp 5,000,000",
-      kategori: "Retribusi",
-      catatan: "Penerimaan retribusi pasar desa bulan Maret 2025.",
-   },
-   {
-      id: 4,
-      keterangan: "Gaji Perangkat Desa",
-      tanggal: "10 Mar 2025",
-      jenis: "Pengeluaran",
-      jumlah: "Rp 12,000,000",
-      kategori: "Gaji",
-      catatan: "Pembayaran gaji perangkat desa bulan Maret 2025.",
-   },
-   {
-      id: 5,
-      keterangan: "Bantuan Provinsi",
-      tanggal: "12 Mar 2025",
-      jenis: "Pemasukan",
-      jumlah: "Rp 15,000,000",
-      kategori: "Bantuan",
-      catatan: "Penerimaan bantuan dari pemerintah provinsi untuk program pemberdayaan masyarakat desa.",
-   },
-]
+// const initialKeuanganData: KeuanganItem[] = [
+//    {
+//       id: 1,
+//       keterangan: "Dana Desa",
+//       tanggal: "1 Mar 2025",
+//       jenis: "Pemasukan",
+//       jumlah: "Rp 25,000,000",
+//       kategori: "Dana Desa",
+//       catatan: "Penerimaan dana desa tahap pertama tahun anggaran 2025.",
+//    },
+//    {
+//       id: 2,
+//       keterangan: "Pembangunan Jembatan",
+//       tanggal: "5 Mar 2025",
+//       jenis: "Pengeluaran",
+//       jumlah: "Rp 15,000,000",
+//       kategori: "Infrastruktur",
+//       catatan: "Pembayaran tahap awal untuk pembangunan jembatan penghubung Dusun Sukamaju dan Dusun Harapan Jaya.",
+//    },
+//    {
+//       id: 3,
+//       keterangan: "Retribusi Pasar",
+//       tanggal: "8 Mar 2025",
+//       jenis: "Pemasukan",
+//       jumlah: "Rp 5,000,000",
+//       kategori: "Retribusi",
+//       catatan: "Penerimaan retribusi pasar desa bulan Maret 2025.",
+//    },
+//    {
+//       id: 4,
+//       keterangan: "Gaji Perangkat Desa",
+//       tanggal: "10 Mar 2025",
+//       jenis: "Pengeluaran",
+//       jumlah: "Rp 12,000,000",
+//       kategori: "Gaji",
+//       catatan: "Pembayaran gaji perangkat desa bulan Maret 2025.",
+//    },
+//    {
+//       id: 5,
+//       keterangan: "Bantuan Provinsi",
+//       tanggal: "12 Mar 2025",
+//       jenis: "Pemasukan",
+//       jumlah: "Rp 15,000,000",
+//       kategori: "Bantuan",
+//       catatan: "Penerimaan bantuan dari pemerintah provinsi untuk program pemberdayaan masyarakat desa.",
+//    },
+// ]
 
 interface LaporanBulananItem {
    bulan: string
@@ -78,26 +78,26 @@ interface LaporanBulananItem {
    saldo: string
 }
 
-const laporanBulananData: LaporanBulananItem[] = [
-   {
-      bulan: "Maret 2025",
-      pemasukan: "Rp 45,000,000",
-      pengeluaran: "Rp 27,000,000",
-      saldo: "Rp 18,000,000",
-   },
-   {
-      bulan: "Februari 2025",
-      pemasukan: "Rp 40,000,000",
-      pengeluaran: "Rp 25,000,000",
-      saldo: "Rp 15,000,000",
-   },
-   {
-      bulan: "Januari 2025",
-      pemasukan: "Rp 38,000,000",
-      pengeluaran: "Rp 22,000,000",
-      saldo: "Rp 16,000,000",
-   },
-]
+// const laporanBulananData: LaporanBulananItem[] = [
+//    {
+//       bulan: "Maret 2025",
+//       pemasukan: "Rp 45,000,000",
+//       pengeluaran: "Rp 27,000,000",
+//       saldo: "Rp 18,000,000",
+//    },
+//    {
+//       bulan: "Februari 2025",
+//       pemasukan: "Rp 40,000,000",
+//       pengeluaran: "Rp 25,000,000",
+//       saldo: "Rp 15,000,000",
+//    },
+//    {
+//       bulan: "Januari 2025",
+//       pemasukan: "Rp 38,000,000",
+//       pengeluaran: "Rp 22,000,000",
+//       saldo: "Rp 16,000,000",
+//    },
+// ]
 
 const getJenisColor = (jenis: string): string => {
    switch (jenis) {
@@ -111,12 +111,79 @@ const getJenisColor = (jenis: string): string => {
 }
 
 export default function LaporanKeuanganPage() {
-   const [keuanganData] = useState<KeuanganItem[]>(initialKeuanganData)
+   const [keuanganData, setKeuanganData] = useState<KeuanganItem[]>([])
+   const [laporanBulananData, setLaporanBulananData] = useState<LaporanBulananItem[]>([])
    const [searchTransaksiQuery, setSearchTransaksiQuery] = useState<string>("")
    const [searchLaporanQuery, setSearchLaporanQuery] = useState<string>("")
    const [activeTab, setActiveTab] = useState<string>("transaksi")
    const [isDownloading, setIsDownloading] = useState<boolean>(false)
    const { toast } = useToast()
+
+   useEffect(() => {
+    const fetchKeuanganData = async () => {
+        try {
+            const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/finances`, {
+            headers: {
+                Authorization: `Bearer ${localStorage.getItem("token")}`
+            }
+            })
+            if (!res.ok) throw new Error("Failed to fetch data")
+
+            const data = await res.json()
+
+            // 👇 Map and format if needed
+            const formatted: KeuanganItem[] = data.data.map((item: any) => ({
+            id: item._id,
+            keterangan: item.keterangan,
+            tanggal: new Date(item.tanggal).toISOString().split("T")[0],
+            jenis: item.jenis,
+            jumlah: item.jumlah.toString()
+            }))
+
+            setKeuanganData(formatted)
+            generateMonthlyReport(formatted)
+        } catch (err) {
+            console.error("Error fetching keuangan data:", err)
+            toast({
+            title: "Error",
+            description: "Gagal mengambil data keuangan",
+            variant: "destructive"
+            })
+        }
+        }
+
+        fetchKeuanganData()
+    }, [])
+
+    const generateMonthlyReport = (data: KeuanganItem[]) => {
+    const reportMap: Record<string, { pemasukan: number; pengeluaran: number }> = {}
+
+    data.forEach((item) => {
+      const month = new Date(item.tanggal).toLocaleString("id-ID", { year: "numeric", month: "long" })
+
+      if (!reportMap[month]) {
+        reportMap[month] = { pemasukan: 0, pengeluaran: 0 }
+      }
+
+      const amount = parseFloat(item.jumlah)
+
+      if (item.jenis.toLowerCase() === "pemasukan") {
+        reportMap[month].pemasukan += amount
+      } else if (item.jenis.toLowerCase() === "pengeluaran") {
+        reportMap[month].pengeluaran += amount
+      }
+    })
+
+    const laporan: LaporanBulananItem[] = Object.entries(reportMap).map(([bulan, { pemasukan, pengeluaran }]) => ({
+      bulan,
+      pemasukan: pemasukan.toLocaleString("id-ID"),
+      pengeluaran: pengeluaran.toLocaleString("id-ID"),
+      saldo: (pemasukan - pengeluaran).toLocaleString("id-ID")
+    }))
+
+    setLaporanBulananData(laporan)
+  }
+
 
    // Function to handle search input changes for transaksi
    const handleSearchTransaksiChange = (e: ChangeEvent<HTMLInputElement>) => {
@@ -147,7 +214,7 @@ export default function LaporanKeuanganPage() {
 
          // Add filtered data to CSV
          filteredTransaksiData.forEach((item) => {
-            csvContent += `${item.id},"${item.keterangan}","${item.tanggal}","${item.jenis}","${item.jumlah}"\n`
+            csvContent += `${item.keuangan_id},"${item.keterangan}","${item.tanggal}","${item.jenis}","${item.jumlah}"\n`
          })
 
          filename = "transaksi_keuangan_desa.csv"
@@ -214,7 +281,7 @@ export default function LaporanKeuanganPage() {
          )
 
          monthTransactions.forEach((item) => {
-         csvContent += `${item.id},"${item.keterangan}","${item.tanggal}","${item.jenis}","${item.jumlah}"\n`
+         csvContent += `${item.keuangan_id},"${item.keterangan}","${item.tanggal}","${item.jenis}","${item.jumlah}"\n`
          })
 
          // Create a blob and download link
@@ -390,8 +457,8 @@ export default function LaporanKeuanganPage() {
                         <TableBody>
                            {filteredTransaksiData.length > 0 ? (
                               filteredTransaksiData.map((item) => (
-                                 <TableRow key={item.id}>
-                                    <TableCell>{item.id}</TableCell>
+                                 <TableRow key={item.keuangan_id}>
+                                    <TableCell>{item.keuangan_id}</TableCell>
                                     <TableCell>{item.keterangan}</TableCell>
                                     <TableCell>{item.tanggal}</TableCell>
                                     <TableCell>
@@ -404,7 +471,7 @@ export default function LaporanKeuanganPage() {
                                           <Tooltip.Trigger asChild>
                                              <div className="inline-block cursor-pointer">
                                                 <LihatTransaksiModal
-                                                id={item.id}
+                                                id={item.keuangan_id}
                                                 keterangan={item.keterangan}
                                                 tanggal={item.tanggal}
                                                 jenis={item.jenis}
@@ -487,7 +554,7 @@ export default function LaporanKeuanganPage() {
                                        <Tooltip.Root>
                                        <Tooltip.Trigger asChild>
                                           <Button 
-                                             variant="ghost" 
+                                             variant="destructive" 
                                              size="sm" 
                                              onClick={() => handleDownloadMonthlyReport(item.bulan)}
                                           >

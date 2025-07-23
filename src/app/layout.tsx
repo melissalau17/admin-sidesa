@@ -15,9 +15,9 @@ export const metadata = {
 
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
-    <html lang="id">
-      <body className={inter.className}>
-        <ThemeProvider attribute="class" defaultTheme="light">
+    <html lang="id" suppressHydrationWarning>
+      <body className={`${inter.className}`}>
+        <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <AuthProvider>
             {children}
             <Toaster />

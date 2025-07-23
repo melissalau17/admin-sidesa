@@ -1,28 +1,22 @@
 "use client";
 
-import { useEffect, useState } from "react";
-import axios from "axios";
+import { useEffect } from "react";
+import { useRouter } from "next/navigation";
+import { useDashboardStats } from "@/hooks/use-dashboard";
 import { StatCard } from "@/components/stat-card";
 import { SummaryCard } from "@/components/summary-card";
-import { FileText, MessageSquare, Newspaper, Users } from "lucide-react";
+import { FileText, MessageSquare, Newspaper } from "lucide-react";
 
 export default function DashboardPage() {
-  const [userCount, setUserCount] = useState<number>(0);
+  const router = useRouter();
+  const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+  const { stats, loading } = useDashboardStats(token);
 
   useEffect(() => {
-    const fetchUserCount = async () => {
-      try {
-        const res = await axios.get("http://localhost:19000/api/users");
-        const users = res.data;
-        setUserCount(users.length);
-      } catch (error) {
-        console.error("Gagal memuat data user:", error);
-        setUserCount(0);
-      }
-    };
+    if (!token) router.push("/login");
+  }, [token]);
 
-    fetchUserCount();
-  }, []);
+  if (loading || !stats) return null;
 
   return (
     <div className="space-y-4 md:space-y-6">
@@ -33,26 +27,21 @@ export default function DashboardPage() {
         </p>
       </div>
 
-      {/* Stat Cards - 2 kolom besar */}
       <div className="grid grid-cols-1 md:grid-cols-2 gap-3 md:gap-4">
         <StatCard
           title="Permohonan Surat"
-          value="12"
-          description="4 permohonan baru"
+          value={(stats?.permohonans ?? 0).toString()}
+          description={`${stats?.newPermohonans ?? 0} permohonan baru`}
         />
         <StatCard
           title="Laporan Masyarakat"
-          value="8"
-          description="3 belum direspon"
+          value={(stats?.laporans ?? 0).toString()}
+          description={`${stats?.newLaporans ?? 0} belum direspon`}
         />
       </div>
 
-      {/* Summary Cards - 3 kolom: Aktivitas, Berita, Penduduk */}
       <div className="grid gap-3 md:grid-cols-3 md:gap-4">
-        <SummaryCard
-          title="Aktivitas Terbaru"
-          subtitle="Aktivitas terbaru di desa"
-        >
+        <SummaryCard title="Aktivitas Terbaru" subtitle="Aktivitas terbaru di desa">
           <div className="space-y-3 md:space-y-4">
             <div className="flex items-center gap-3 md:gap-4">
               <div className="rounded-full bg-blue-100 p-1.5 md:p-2">
@@ -92,18 +81,18 @@ export default function DashboardPage() {
 
         <SummaryCard title="Berita Desa" subtitle="Informasi terkini">
           <div className="space-y-2">
-            <p className="text-lg md:text-2xl font-bold">24</p>
+            <p className="text-lg md:text-2xl font-bold">{stats?.beritas ?? 0}</p>
             <p className="text-sm text-muted-foreground">
-              2 dipublikasikan minggu ini
+              {stats?.newBeritas ?? 0} dipublikasikan minggu ini
             </p>
           </div>
         </SummaryCard>
 
         <SummaryCard title="Penduduk" subtitle="Statistik jumlah penduduk">
           <div className="space-y-2">
-            <p className="text-lg md:text-2xl font-bold">{userCount}</p>
+            <p className="text-lg md:text-2xl font-bold">{stats?.users ?? 0}</p>
             <p className="text-sm text-muted-foreground">
-              +{userCount > 0 ? 12 : 0} bulan ini
+              +{(stats?.users ?? 0) > 0 ? 12 : 0} bulan ini
             </p>
           </div>
         </SummaryCard>
