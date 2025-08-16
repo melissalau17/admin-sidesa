@@ -15,8 +15,8 @@ import * as Tooltip from "@radix-ui/react-tooltip"
 import axios from "axios"
 import { useEffect } from "react"
 
-interface BeritaItem {
-    id: number
+interface BeritaApiItem {
+    berita_id: number
     judul: string
     kategori: string
     tanggal: string
@@ -84,7 +84,7 @@ const getStatusColor = (status: string): string => {
 }
 
 export default function BeritaDesaPage() {
-    const [beritaData, setBeritaData] = useState<BeritaItem[]>([])
+    const [beritaData, setBeritaData] = useState<BeritaApiItem[]>([])
     const [editModalOpenId, setEditModalOpenId] = useState<number | null>(null)
     const [searchQuery, setSearchQuery] = useState<string>("")
     const { toast } = useToast()
@@ -99,15 +99,15 @@ export default function BeritaDesaPage() {
                     },
                 });
 
-                // Map berita_id from backend to id for frontend consistency
-                const mappedData = res.data.data.map((item: any) => ({
+                const mappedData: BeritaApiItem[] = res.data.data.map((item: BeritaApiItem) => ({
                     id: item.berita_id,
                     judul: item.judul,
                     kategori: item.kategori,
-                    tanggal: item.tanggal || "",
+                    tanggal: item.tanggal ?? "",
                     status: item.status,
-                    konten: item.kontent || "", // double-check field name, kontent or konten?
+                    konten: item.konten ?? "", // pastikan backend memang "konten" bukan "kontent"
                 }));
+
 
                 setBeritaData(mappedData);
             } catch (err) {
@@ -134,7 +134,7 @@ export default function BeritaDesaPage() {
             konten: string
         },
     ) => {
-        setBeritaData((prevData) => prevData.map((berita) => (berita.id === id ? { ...berita, ...updatedBerita } : berita)))
+        setBeritaData((prevData) => prevData.map((berita) => (berita.berita_id === id ? { ...berita, ...updatedBerita } : berita)))
     }
 
     const handleDirectDelete = async (id?: number) => {
@@ -155,7 +155,7 @@ export default function BeritaDesaPage() {
                 },
             })
 
-            setBeritaData((prevData) => prevData.filter((berita) => berita.id !== id))
+            setBeritaData((prevData) => prevData.filter((berita) => berita.berita_id !== id))
 
             toast({
                 title: "Berhasil",
@@ -247,8 +247,8 @@ export default function BeritaDesaPage() {
                         <TableBody>
                             {filteredData.length > 0 ? (
                                 filteredData.map((berita, index) => (
-                                    <TableRow key={berita.id ?? `fallback-${index}`}>
-                                        <TableCell>{berita.id}</TableCell>
+                                    <TableRow key={berita.berita_id ?? `fallback-${index}`}>
+                                        <TableCell>{berita.berita_id}</TableCell>
                                         <TableCell>{berita.judul}</TableCell>
                                         <TableCell>{berita.kategori}</TableCell>
                                         <TableCell>{berita.tanggal}</TableCell>
@@ -261,7 +261,7 @@ export default function BeritaDesaPage() {
                                                     <Tooltip.Root>
                                                         <Tooltip.Trigger asChild>
                                                             <div className="relative inline-block">
-                                                                <LihatBeritaModal id={berita.id} />
+                                                                <LihatBeritaModal id={berita.berita_id} />
                                                             </div>
                                                         </Tooltip.Trigger>
                                                         <Tooltip.Portal>
@@ -286,7 +286,7 @@ export default function BeritaDesaPage() {
                                                             <Button
                                                                 size="sm"
                                                                 variant="outline"
-                                                                onClick={() => setEditModalOpenId(berita.id)}
+                                                                onClick={() => setEditModalOpenId(berita.berita_id)}
                                                             >
                                                                 ✏️
                                                             </Button>
@@ -308,12 +308,12 @@ export default function BeritaDesaPage() {
 
                                                 {/* Outside the table but inside the same map loop */}
                                                 <EditBeritaModal
-                                                    id={berita.id}
+                                                    id={berita.berita_id}
                                                     judul={berita.judul}
                                                     kategori={berita.kategori}
                                                     status={berita.status}
                                                     konten={berita.konten}
-                                                    open={editModalOpenId === berita.id}
+                                                    open={editModalOpenId === berita.berita_id}
                                                     onOpenChange={(open) => {
                                                         if (!open) setEditModalOpenId(null)
                                                     }}
@@ -328,7 +328,7 @@ export default function BeritaDesaPage() {
                                                             <Button
                                                                 variant="destructive"
                                                                 size="sm"
-                                                                onClick={() => handleDirectDelete(berita.id)}
+                                                                onClick={() => handleDirectDelete(berita.berita_id)}
                                                                 className="text-red-500 bg-red-50 hover:text-red-50 hover:bg-red-500"
                                                             >
                                                                 <Trash className="h-4 w-4" />

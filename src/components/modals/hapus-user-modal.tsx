@@ -19,38 +19,39 @@ import { Trash } from "lucide-react";
 interface HapusUserModalProps {
   id: number;
   nama: string;
-  onDeleteUser: (id: number) => void;
+  onDeleteUser: (id: number) => Promise<void> | void; // biar fleksibel (sync/async)
 }
 
-export function HapusUserModal({
-  id,
-  nama,
-  onDeleteUser,
-}: HapusUserModalProps) {
-  const [open, setOpen] = useState<boolean>(false);
-  const [isLoading, setIsLoading] = useState<boolean>(false);
+export function HapusUserModal({ id, nama, onDeleteUser }: HapusUserModalProps) {
+  const [open, setOpen] = useState(false);
+  const [isLoading, setIsLoading] = useState(false);
   const { toast } = useToast();
 
-  const handleDelete = () => {
+  const handleDelete = async () => {
     setIsLoading(true);
-    setTimeout(() => {
-      onDeleteUser(id);
-      setIsLoading(false);
-      setOpen(false);
+    try {
+      await onDeleteUser(id); // support async API call
       toast({
         title: "Berhasil",
-        description: "Penduduk berhasil dihapus",
+        description: `User "${nama}" berhasil dihapus`,
       });
-    }, 1000);
+      setOpen(false);
+    } catch (err) {
+      console.error("Gagal hapus user:", err);
+      toast({
+        title: "Error",
+        description: "Terjadi kesalahan saat menghapus user",
+        variant: "destructive",
+      });
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
     <AlertDialog open={open} onOpenChange={setOpen}>
       <AlertDialogTrigger asChild>
-        <Button
-          size="sm"
-          className="text-red-500 bg-red-50 hover:text-white hover:bg-red-500"
-        >
+        <Button variant="ghost" size="sm" className="text-red-500 hover:text-red-600">
           <Trash className="h-4 w-4" />
           <span className="sr-only">Hapus</span>
         </Button>
@@ -58,13 +59,11 @@ export function HapusUserModal({
 
       <AlertDialogContent className="bg-white text-black shadow-lg rounded-xl">
         <AlertDialogHeader>
-          <AlertDialogTitle className="text-lg font-bold">
-            Hapus User
-          </AlertDialogTitle>
+          <AlertDialogTitle className="text-lg font-bold">Hapus User</AlertDialogTitle>
           <AlertDialogDescription className="text-sm">
             Apakah Anda yakin ingin menghapus user{" "}
-            <span className="font-semibold">"{nama}"</span>? Tindakan ini tidak
-            dapat dibatalkan.
+            <span className="font-semibold">"{nama}"</span>? Tindakan ini tidak dapat
+            dibatalkan.
           </AlertDialogDescription>
         </AlertDialogHeader>
         <AlertDialogFooter>

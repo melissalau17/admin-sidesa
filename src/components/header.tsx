@@ -73,12 +73,12 @@ export function Header() {
                                             </div>
                                         ) : (
                                             <div className="max-h-64 overflow-y-auto">
-                                                {notifications.map((notification, index) => (
+                                                {notifications.map((notification) => (
                                                     <div
-                                                        key={index}
+                                                        key={notification.timestamp}
                                                         className="px-4 py-2 border-b last:border-b-0 hover:bg-gray-50 transition"
                                                     >
-                                                        <p className="text-sm font-medium">{notification.message}</p>
+                                                        <p className="text-sm font-medium truncate">{notification.message}</p>
                                                         <p className="text-xs text-gray-500">
                                                             {new Date(notification.timestamp || Date.now()).toLocaleString("id-ID", {
                                                                 dateStyle: "short",
@@ -89,6 +89,7 @@ export function Header() {
                                                 ))}
                                             </div>
                                         )}
+
 
                                     </DropdownMenuContent>
                                 </DropdownMenu>

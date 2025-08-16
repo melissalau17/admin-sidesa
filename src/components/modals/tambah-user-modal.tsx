@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent, type ChangeEvent } from "react";
+import { useState, type FormEvent, type ChangeEvent, useRef } from "react";
 import axios from "axios";
 import { UserPlus } from "lucide-react";
 import { Button } from "@/components/ui/button";
@@ -24,10 +24,11 @@ import {
   SelectContent,
   SelectItem,
 } from "@/components/ui/select";
+import { useToast } from "@/hooks/use-toast";
 
 interface TambahUserModalProps {
   trigger?: React.ReactNode;
-  onAddUser?: (user: any) => void; // optionally pass newly added user back to parent
+  onAddUser?: (user: any) => void;
 }
 
 interface FormData {
@@ -58,6 +59,9 @@ export function TambahUserModal({ trigger, onAddUser }: TambahUserModalProps) {
     agama: "",
     role: "penduduk",
   });
+
+  const { toast } = useToast();
+  const fileInputRef = useRef<HTMLInputElement | null>(null);
 
   const fileToBase64 = (file: File): Promise<string> =>
     new Promise((resolve, reject) => {
@@ -114,6 +118,10 @@ export function TambahUserModal({ trigger, onAddUser }: TambahUserModalProps) {
       return "NIK harus 16 digit angka.";
     }
 
+    if (!/^\d{10,15}$/.test(formData.no_hp)) {
+      return "No HP harus berisi 10–15 digit angka.";
+    }
+
     return null;
   };
 
@@ -122,7 +130,11 @@ export function TambahUserModal({ trigger, onAddUser }: TambahUserModalProps) {
 
     const error = validateInput();
     if (error) {
-      alert(error);
+      toast({
+        title: "Validasi Gagal",
+        description: error,
+        variant: "destructive",
+      });
       return;
     }
 
@@ -134,9 +146,7 @@ export function TambahUserModal({ trigger, onAddUser }: TambahUserModalProps) {
         `${process.env.NEXT_PUBLIC_API_URL}/api/users`,
         formData,
         {
-          headers: {
-            Authorization: `Bearer ${token}`,
-          },
+          headers: { Authorization: `Bearer ${token}` },
         }
       );
 
@@ -145,7 +155,12 @@ export function TambahUserModal({ trigger, onAddUser }: TambahUserModalProps) {
         onAddUser({ ...formData, user_id: data.user_id });
       }
 
-      // Reset
+      toast({
+        title: "Berhasil",
+        description: "User baru berhasil ditambahkan.",
+      });
+
+      // Reset form & file input
       setFormData({
         nama: "",
         username: "",
@@ -158,11 +173,18 @@ export function TambahUserModal({ trigger, onAddUser }: TambahUserModalProps) {
         agama: "",
         role: "penduduk",
       });
+      if (fileInputRef.current) fileInputRef.current.value = "";
 
       setOpen(false);
-    } catch (err) {
+    } catch (err: any) {
       console.error("Gagal menambahkan user:", err);
-      alert("Terjadi kesalahan saat menyimpan user.");
+      toast({
+        title: "Gagal",
+        description:
+          err.response?.data?.message ||
+          "Terjadi kesalahan saat menyimpan user.",
+        variant: "destructive",
+      });
     } finally {
       setIsLoading(false);
     }
@@ -187,6 +209,7 @@ export function TambahUserModal({ trigger, onAddUser }: TambahUserModalProps) {
         </DialogHeader>
 
         <form onSubmit={handleSubmit} className="text-sm space-y-3 py-2">
+          {/* Input dasar */}
           {[
             ["nama", "Nama Lengkap"],
             ["username", "Username"],
@@ -196,7 +219,7 @@ export function TambahUserModal({ trigger, onAddUser }: TambahUserModalProps) {
           ].map(([id, label, type = "text"]) => (
             <div
               key={id}
-              className="grid grid-cols-[120px_1fr] items-center gap-2"
+              className="grid sm:grid-cols-[150px_1fr] items-center gap-2"
             >
               <Label htmlFor={id} className="text-right">
                 {label}
@@ -211,13 +234,12 @@ export function TambahUserModal({ trigger, onAddUser }: TambahUserModalProps) {
             </div>
           ))}
 
-          <div className="grid grid-cols-[120px_1fr] items-center gap-2">
+          {/* Jenis kelamin */}
+          <div className="grid sm:grid-cols-[150px_1fr] items-center gap-2">
             <Label className="text-right">Jenis Kelamin</Label>
             <RadioGroup
               value={formData.jenis_kel}
-              onValueChange={(val) =>
-                handleSelectChange("jenis_kel", val)
-              }
+              onValueChange={(val) => handleSelectChange("jenis_kel", val)}
               className="flex gap-6"
             >
               {["Pria", "Wanita"].map((val) => (
@@ -229,7 +251,8 @@ export function TambahUserModal({ trigger, onAddUser }: TambahUserModalProps) {
             </RadioGroup>
           </div>
 
-          <div className="grid grid-cols-[120px_1fr] items-start gap-2">
+          {/* Alamat */}
+          <div className="grid sm:grid-cols-[150px_1fr] items-start gap-2">
             <Label htmlFor="alamat" className="text-right pt-2">
               Alamat
             </Label>
@@ -241,7 +264,8 @@ export function TambahUserModal({ trigger, onAddUser }: TambahUserModalProps) {
             />
           </div>
 
-          <div className="grid grid-cols-[120px_1fr] items-center gap-2">
+          {/* Foto */}
+          <div className="grid sm:grid-cols-[150px_1fr] items-center gap-2">
             <Label htmlFor="photo" className="text-right">
               Foto
             </Label>
@@ -250,11 +274,13 @@ export function TambahUserModal({ trigger, onAddUser }: TambahUserModalProps) {
               type="file"
               accept="image/*"
               onChange={handleFileChange}
+              ref={fileInputRef}
               required
             />
           </div>
 
-          <div className="grid grid-cols-[120px_1fr] items-center gap-2">
+          {/* Agama */}
+          <div className="grid sm:grid-cols-[150px_1fr] items-center gap-2">
             <Label className="text-right">Agama</Label>
             <Select
               value={formData.agama}
@@ -281,7 +307,8 @@ export function TambahUserModal({ trigger, onAddUser }: TambahUserModalProps) {
             </Select>
           </div>
 
-          <div className="grid grid-cols-[120px_1fr] items-center gap-2">
+          {/* Role */}
+          <div className="grid sm:grid-cols-[150px_1fr] items-center gap-2">
             <Label className="text-right">Role</Label>
             <Select
               value={formData.role}
@@ -297,8 +324,13 @@ export function TambahUserModal({ trigger, onAddUser }: TambahUserModalProps) {
             </Select>
           </div>
 
+          {/* Footer */}
           <DialogFooter className="flex flex-col sm:flex-row sm:justify-end gap-2">
-            <Button type="button" variant="destructive" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => setOpen(false)}
+            >
               Batal
             </Button>
             <Button type="submit" disabled={isLoading}>

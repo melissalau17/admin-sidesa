@@ -1,7 +1,6 @@
 "use client"
 
 import { useState } from "react"
-import Image from "next/image"
 import { Button } from "../ui/button"
 import {
     Dialog,
@@ -26,7 +25,7 @@ interface LihatLaporanModalProps {
     isi: string
     lokasi?: string
     kontak?: string
-    gambar?: string
+    gambar?: string | number[]
 }
 
 export function LihatLaporanModal({
@@ -46,11 +45,11 @@ export function LihatLaporanModal({
     const getStatusColor = (status: string): string => {
         switch (status) {
             case "Diproses":
-                return "bg-gray-100 text-gray-800"
+                return "bg-blue-100 text-blue-800"
             case "Selesai":
                 return "bg-green-100 text-green-800"
             case "Ditolak":
-                return "bg-gray-100 text-gray-800"
+                return "bg-red-100 text-red-800"
             default:
                 return "bg-gray-100 text-gray-800"
         }
@@ -65,24 +64,26 @@ export function LihatLaporanModal({
                     ? "Laporan telah ditolak dan tidak akan ditindaklanjuti lebih lanjut."
                     : "Status laporan belum tersedia."
 
-    const convertPhotoToBase64 = (photoData: number[]): string => {
+    const convertPhotoToBase64 = (photoData: Uint8Array): string => {
         try {
             const mime =
                 photoData[0] === 0xff && photoData[1] === 0xd8
                     ? "image/jpeg"
                     : photoData[0] === 0x89 && photoData[1] === 0x50
                         ? "image/png"
-                        : "image/jpeg";
+                        : "image/jpeg"
 
-            const binary = photoData.map((b) => String.fromCharCode(b)).join("");
-            const base64 = btoa(binary);
-            return `data:${mime};base64,${base64}`;
+            let binary = ""
+            for (let i = 0; i < photoData.length; i++) {
+                binary += String.fromCharCode(photoData[i])
+            }
+
+            return `data:${mime};base64,${btoa(binary)}`
         } catch (error) {
-            console.error("Konversi Base64 gagal:", error);
-            return "";
+            console.error("Konversi Base64 gagal:", error)
+            return ""
         }
-    };
-
+    }
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -106,10 +107,15 @@ export function LihatLaporanModal({
 
                 <Tabs defaultValue="info" className="w-full">
                     <TabsList className="grid w-full bg-gray-300 grid-cols-2">
-                        <TabsTrigger value="info" className="data-[state=active]:bg-white data-[state=active]:text-black text-gray-600 rounded-lg">Informasi</TabsTrigger>
-                        <TabsTrigger value="gambar" className="data-[state=active]:bg-white data-[state=active]:text-black text-gray-600 rounded-lg">Foto Laporan</TabsTrigger>
+                        <TabsTrigger value="info" className="data-[state=active]:bg-white data-[state=active]:text-black text-gray-600 rounded-lg">
+                            Informasi
+                        </TabsTrigger>
+                        <TabsTrigger value="gambar" className="data-[state=active]:bg-white data-[state=active]:text-black text-gray-600 rounded-lg">
+                            Foto Laporan
+                        </TabsTrigger>
                     </TabsList>
 
+                    {/* TAB INFO */}
                     <TabsContent value="info" className="py-4">
                         <div className="space-y-4">
                             <div className="grid grid-cols-3 gap-4">
@@ -176,14 +182,15 @@ export function LihatLaporanModal({
                         </div>
                     </TabsContent>
 
+                    {/* TAB GAMBAR */}
                     <TabsContent value="gambar" className="py-4">
                         {gambar ? (
                             <div className="flex flex-col items-center space-y-3">
                                 <h3 className="text-lg font-medium">Foto Laporan</h3>
                                 <div className="border rounded-md overflow-hidden">
                                     <img
-                                        src={Array.isArray(gambar) ? convertPhotoToBase64(gambar) : gambar}
-                                        alt="Foto Laporan"
+                                        src={Array.isArray(gambar) ? convertPhotoToBase64(new Uint8Array(gambar)) : gambar}
+                                        alt={`Foto laporan ${judul}`}
                                         width={600}
                                         height={400}
                                         className="object-contain rounded-md"

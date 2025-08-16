@@ -24,11 +24,13 @@ interface SuratItem {
     nik: string
     alamat: string
     tujuan_surat: string
-    photo_ktp: File | string
-    photo_kk: File | string
-    foto_usaha?: File | string
-    gaji_ortu?: File | string
+    photo_ktp: File
+    photo_kk: File
+    foto_usaha?: File
+    gaji_ortu?: File
 }
+
+type PhotoData = { [key: string]: number } | null
 
 const getStatusColor = (status: string): string => {
     switch (status) {
@@ -41,12 +43,15 @@ const getStatusColor = (status: string): string => {
 }
 
 const getSavedStatus = (surat_id: number, defaultStatus: string) => {
+    if (typeof window === "undefined") return defaultStatus
     const saved = localStorage.getItem(`status-${surat_id}`)
     return saved || defaultStatus
 }
 
 const saveStatus = (surat_id: number, status: string) => {
-    localStorage.setItem(`status-${surat_id}`, status)
+    if (typeof window !== "undefined") {
+        localStorage.setItem(`status-${surat_id}`, status)
+    }
 }
 
 export default function KelolaSuratPage() {
@@ -56,72 +61,72 @@ export default function KelolaSuratPage() {
     const [searchQuery, setSearchQuery] = useState("")
 
     useEffect(() => {
-    const fetchSurat = async () => {
-        try {
-            const token = localStorage.getItem("token")
-            const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/letters`, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
+        const fetchSurat = async () => {
+            try {
+                const token = typeof window !== "undefined" ? localStorage.getItem("token") : null
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/letters`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                })
 
-            const rawData = response.data.data || response.data
+                const rawData = response.data.data || response.data
 
-            const convertPhotoToBase64 = (photoData: any) => {
-                if (!photoData) return null
-                try {
-                    const byteArray = Object.values(photoData) as number[]
-                    const mime =
-                        byteArray[0] === 0xff && byteArray[1] === 0xd8
-                            ? "image/jpeg"
-                            : byteArray[0] === 0x89 && byteArray[1] === 0x50
-                                ? "image/png"
-                                : "image/jpeg"
-                    const binary = byteArray.map((b) => String.fromCharCode(b)).join("")
-                    const base64 = btoa(binary)
-                    return `data:${mime};base64,${base64}`
-                } catch (error) {
-                    console.error("Error converting photo:", error)
-                    return null
+                const convertPhotoToBase64 = (photoData: PhotoData): string | null => {
+                    if (!photoData) return null
+                    try {
+                        const byteArray = Object.values(photoData) as number[]
+                        const mime =
+                            byteArray[0] === 0xff && byteArray[1] === 0xd8
+                                ? "image/jpeg"
+                                : byteArray[0] === 0x89 && byteArray[1] === 0x50
+                                    ? "image/png"
+                                    : "image/jpeg"
+                        const binary = byteArray.map((b) => String.fromCharCode(b)).join("")
+                        const base64 = btoa(binary)
+                        return `data:${mime};base64,${base64}`
+                    } catch (err) {
+                        console.error("Error converting photo:", err)
+                        return null
+                    }
                 }
+
+                const formatted: SuratItem[] = rawData.map((surat: any) => ({
+                    ...surat,
+                    tanggal: new Date(surat.tanggal).toLocaleDateString("id-ID", {
+                        day: "2-digit", month: "short", year: "numeric"
+                    }),
+                    photo_ktp: convertPhotoToBase64(surat.photo_ktp),
+                    photo_kk: convertPhotoToBase64(surat.photo_kk),
+                    foto_usaha: convertPhotoToBase64(surat.foto_usaha),
+                    gaji_ortu: convertPhotoToBase64(surat.gaji_ortu),
+                }))
+
+                setSuratData(formatted)
+            } catch (err) {
+                console.error("Fetch gagal:", err)
+                setError("Gagal memuat data surat.")
+            } finally {
+                setLoading(false)
             }
-
-            const formatted = rawData.map((surat: any) => ({
-                ...surat,
-                tanggal: new Date(surat.tanggal).toLocaleDateString("id-ID", {
-                    day: "2-digit", month: "short", year: "numeric"
-                }),
-                photo_ktp: convertPhotoToBase64(surat.photo_ktp),
-                photo_kk: convertPhotoToBase64(surat.photo_kk),
-                foto_usaha: convertPhotoToBase64(surat.foto_usaha),
-                gaji_ortu: convertPhotoToBase64(surat.gaji_ortu),
-            }))
-
-            setSuratData(formatted)
-        } catch (err) {
-            console.error("Fetch gagal:", err)
-            setError("Gagal memuat data surat.")
-        } finally {
-            setLoading(false)
         }
-    }
 
-    fetchSurat()
-}, [])
-
+        fetchSurat()
+    }, [])
 
     useEffect(() => {
-        const updated = suratData.map((surat) => ({
-            ...surat,
-            status: getSavedStatus(surat.surat_id, surat.status),
-        }))
-        setSuratData(updated)
+        if (suratData.length > 0) {
+            const updated = suratData.map((surat) => ({
+                ...surat,
+                status: getSavedStatus(surat.surat_id, surat.status),
+            }))
+            setSuratData(updated)
+        }
     }, [suratData.length])
-
 
     const handleDeleteSurat = async (id: number) => {
         if (!confirm("Yakin ingin menghapus surat ini?")) return
 
         try {
-            const token = localStorage.getItem("token")
+            const token = typeof window !== "undefined" ? localStorage.getItem("token") : null
             await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/letters/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
             })
@@ -139,9 +144,8 @@ export default function KelolaSuratPage() {
                 surat.surat_id === id ? { ...surat, status: newStatus } : surat
             )
         )
-        saveStatus(id, newStatus) // Simpan status baru ke localStorage
+        saveStatus(id, newStatus)
     }
-
 
     const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value)
@@ -149,12 +153,12 @@ export default function KelolaSuratPage() {
 
     const handleAddSurat = async (newSurat: Omit<SuratItem, "surat_id"> & { surat_id?: number }) => {
         try {
-            const token = localStorage.getItem("token")
+            const token = typeof window !== "undefined" ? localStorage.getItem("token") : null
             const formData = new FormData()
 
             Object.entries(newSurat).forEach(([key, value]) => {
-                if (value !== undefined && value !== null && value !== "") {
-                    formData.append(key, value as any)
+                if (typeof value === "string" || (typeof File !== "undefined" && value instanceof File)) {
+                    formData.append(key, value)
                 }
             })
 
@@ -162,7 +166,7 @@ export default function KelolaSuratPage() {
                 headers: { Authorization: `Bearer ${token}` }
             })
 
-            const newData = {
+            const newData: SuratItem = {
                 ...response.data,
                 tanggal: new Date(response.data.tanggal).toLocaleDateString("id-ID", {
                     day: "2-digit", month: "short", year: "numeric"
@@ -228,80 +232,86 @@ export default function KelolaSuratPage() {
                 </Tooltip.Provider>
             </div>
 
+            {/* Error & Loading */}
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            {loading && <p className="text-gray-500 text-sm">Memuat data...</p>}
+
             {/* Tabel */}
-            <Card>
-                <CardHeader>
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                        <div>
-                            <CardTitle>Daftar Permohonan Surat</CardTitle>
-                            <CardDescription>Permohonan surat yang masuk</CardDescription>
+            {!loading && (
+                <Card>
+                    <CardHeader>
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div>
+                                <CardTitle>Daftar Permohonan Surat</CardTitle>
+                                <CardDescription>Permohonan surat yang masuk</CardDescription>
+                            </div>
+                            <SearchComponent
+                                searchQuery={searchQuery}
+                                onSearchChange={handleSearchChange}
+                                placeholder="Cari nama, jenis, status..."
+                            />
                         </div>
-                        <SearchComponent
-                            searchQuery={searchQuery}
-                            onSearchChange={handleSearchChange}
-                            placeholder="Cari nama, jenis, status..."
-                        />
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    <Table>
-                        <TableHeader>
-                            <TableRow>
-                                <TableHead>No</TableHead>
-                                <TableHead>Nama</TableHead>
-                                <TableHead>Jenis Surat</TableHead>
-                                <TableHead>Tanggal</TableHead>
-                                <TableHead>Status</TableHead>
-                                <TableHead className="text-right">Aksi</TableHead>
-                            </TableRow>
-                        </TableHeader>
-                        <TableBody>
-                            {filteredData.length > 0 ? (
-                                filteredData.map((surat, index) => (
-                                    <TableRow key={surat.surat_id}>
-                                        <TableCell>{index + 1}</TableCell>
-                                        <TableCell>{surat.nama}</TableCell>
-                                        <TableCell>{surat.jenis_surat}</TableCell>
-                                        <TableCell>{surat.tanggal}</TableCell>
-                                        <TableCell>
-                                            <Badge className={getStatusColor(surat.status)}>{surat.status}</Badge>
-                                        </TableCell>
-                                        <TableCell className="text-right">
-                                            <div className="flex justify-end gap-2">
-                                                <LihatSuratModal
-                                                    id={surat.surat_id}
-                                                    nama={surat.nama}
-                                                    jenis_surat={surat.jenis_surat}
-                                                    tanggal={surat.tanggal}
-                                                    status={surat.status}
-                                                    nik={surat.nik}
-                                                    alamat={surat.alamat}
-                                                    tujuan_surat={surat.tujuan_surat}
-                                                    photo_ktp={surat.photo_ktp}
-                                                    photo_kk={surat.photo_kk}
-                                                />
-                                                <UbahStatusSuratModal
-                                                    id={surat.surat_id}
-                                                    nama={surat.nama}
-                                                    jenis={surat.jenis_surat}
-                                                    status={surat.status}
-                                                    onStatusChange={handleStatusChange}
-                                                />
-                                            </div>
+                    </CardHeader>
+                    <CardContent>
+                        <Table>
+                            <TableHeader>
+                                <TableRow>
+                                    <TableHead>No</TableHead>
+                                    <TableHead>Nama</TableHead>
+                                    <TableHead>Jenis Surat</TableHead>
+                                    <TableHead>Tanggal</TableHead>
+                                    <TableHead>Status</TableHead>
+                                    <TableHead className="text-right">Aksi</TableHead>
+                                </TableRow>
+                            </TableHeader>
+                            <TableBody>
+                                {filteredData.length > 0 ? (
+                                    filteredData.map((surat, index) => (
+                                        <TableRow key={surat.surat_id}>
+                                            <TableCell>{index + 1}</TableCell>
+                                            <TableCell>{surat.nama}</TableCell>
+                                            <TableCell>{surat.jenis_surat}</TableCell>
+                                            <TableCell>{surat.tanggal}</TableCell>
+                                            <TableCell>
+                                                <Badge className={getStatusColor(surat.status)}>{surat.status}</Badge>
+                                            </TableCell>
+                                            <TableCell className="text-right">
+                                                <div className="flex justify-end gap-2">
+                                                    <LihatSuratModal
+                                                        id={surat.surat_id}
+                                                        nama={surat.nama}
+                                                        jenis_surat={surat.jenis_surat}
+                                                        tanggal={surat.tanggal}
+                                                        status={surat.status}
+                                                        nik={surat.nik}
+                                                        alamat={surat.alamat}
+                                                        tujuan_surat={surat.tujuan_surat}
+                                                        photo_ktp={surat.photo_ktp}
+                                                        photo_kk={surat.photo_kk}
+                                                    />
+                                                    <UbahStatusSuratModal
+                                                        id={surat.surat_id}
+                                                        nama={surat.nama}
+                                                        jenis={surat.jenis_surat}
+                                                        status={surat.status}
+                                                        onStatusChange={handleStatusChange}
+                                                    />
+                                                </div>
+                                            </TableCell>
+                                        </TableRow>
+                                    ))
+                                ) : (
+                                    <TableRow>
+                                        <TableCell colSpan={6} className="text-center py-4">
+                                            Tidak ada data yang sesuai
                                         </TableCell>
                                     </TableRow>
-                                ))
-                            ) : (
-                                <TableRow>
-                                    <TableCell colSpan={6} className="text-center py-4">
-                                        Tidak ada data yang sesuai
-                                    </TableCell>
-                                </TableRow>
-                            )}
-                        </TableBody>
-                    </Table>
-                </CardContent>
-            </Card>
+                                )}
+                            </TableBody>
+                        </Table>
+                    </CardContent>
+                </Card>
+            )}
         </div>
     )
 }

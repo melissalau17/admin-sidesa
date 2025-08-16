@@ -1,4 +1,4 @@
-import { useState, type FormEvent } from "react"
+import { useState, type FormEvent, useCallback } from "react"
 import { Button } from "@/components/ui/button"
 import {
   Dialog,
@@ -34,41 +34,51 @@ export function UbahStatusSuratModal({
   const [selectedStatus, setSelectedStatus] = useState(status)
   const { toast } = useToast()
 
-  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
-    setIsLoading(true)
+  const handleSubmit = useCallback(
+    async (e: FormEvent<HTMLFormElement>) => {
+      e.preventDefault()
+      setIsLoading(true)
 
-    try {
-      const token = localStorage.getItem("token")
-      const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/letters/${id}`, {
-        method: "PATCH",
-        headers: {
-          "Content-Type": "application/json",
-          "Authorization": `Bearer ${token}`
-        },
-        body: JSON.stringify({ status: selectedStatus }),
-      })
+      try {
+        const token = localStorage.getItem("token")
+        if (!token) throw new Error("Token tidak ditemukan")
 
-      if (!res.ok) throw new Error("Gagal mengubah status surat")
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/letters/${id}`,
+          {
+            method: "PATCH",
+            headers: {
+              "Content-Type": "application/json",
+              Authorization: `Bearer ${token}`,
+            },
+            body: JSON.stringify({ status: selectedStatus }),
+          }
+        )
 
-      const json = await res.json()
+        if (!res.ok) throw new Error("Gagal mengubah status surat")
 
-      onStatusChange?.(id, selectedStatus)
-      toast({
-        title: "Berhasil",
-        description: `Status surat berhasil diubah menjadi ${selectedStatus}`,
-      })
-      setOpen(false)
-    } catch (error: any) {
-      toast({
-        title: "Gagal",
-        description: error.message || "Terjadi kesalahan saat mengubah status",
-        variant: "destructive",
-      })
-    } finally {
-      setIsLoading(false)
-    }
-  }
+        onStatusChange?.(id, selectedStatus)
+        toast({
+          title: "Berhasil",
+          description: `Status surat berhasil diubah menjadi ${selectedStatus}`,
+        })
+        setOpen(false)
+      } catch (err: unknown) {
+        const message =
+          err instanceof Error
+            ? err.message
+            : "Terjadi kesalahan saat mengubah status"
+        toast({
+          title: "Gagal",
+          description: message,
+          variant: "destructive",
+        })
+      } finally {
+        setIsLoading(false)
+      }
+    },
+    [id, selectedStatus, onStatusChange, toast]
+  )
 
   return (
     <Dialog open={open} onOpenChange={setOpen}>
@@ -91,6 +101,7 @@ export function UbahStatusSuratModal({
             Ubah status permohonan surat untuk {nama} - {jenis}
           </DialogDescription>
         </DialogHeader>
+
         <form onSubmit={handleSubmit}>
           <div className="grid gap-4 py-4">
             <div className="space-y-2">
@@ -100,22 +111,32 @@ export function UbahStatusSuratModal({
                 onValueChange={setSelectedStatus}
                 className="flex flex-col space-y-2"
               >
-                {["Menunggu", "Diproses", "Selesai", "Ditolak"].map((item) => (
-                  <div className="flex items-center space-x-2" key={item}>
-                    <RadioGroupItem value={item} id={item.toLowerCase()} />
-                    <Label htmlFor={item.toLowerCase()} className="font-normal">
-                      {item}
-                    </Label>
-                  </div>
-                ))}
+                {["Menunggu", "Diproses", "Selesai", "Ditolak"].map(
+                  (item, idx) => {
+                    const idValue = `${item.toLowerCase()}-${idx}`
+                    return (
+                      <div className="flex items-center space-x-2" key={idValue}>
+                        <RadioGroupItem value={item} id={idValue} />
+                        <Label htmlFor={idValue} className="font-normal">
+                          {item}
+                        </Label>
+                      </div>
+                    )
+                  }
+                )}
               </RadioGroup>
             </div>
           </div>
+
           <DialogFooter>
-            <Button type="button" variant="destructive" onClick={() => setOpen(false)}>
+            <Button
+              type="button"
+              variant="destructive"
+              onClick={() => setOpen(false)}
+            >
               Batal
             </Button>
-            <Button type="submit" variant="ghost" disabled={isLoading}>
+            <Button type="submit" disabled={isLoading}>
               {isLoading ? "Menyimpan..." : "Simpan"}
             </Button>
           </DialogFooter>

@@ -131,7 +131,6 @@ export default function LaporanKeuanganPage() {
 
             const data = await res.json()
 
-            // 👇 Map and format if needed
             const formatted: KeuanganItem[] = data.data.map((item: any) => ({
             id: item._id,
             keterangan: item.keterangan,

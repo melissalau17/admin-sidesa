@@ -87,7 +87,7 @@ export function EditBeritaModal({
         data.append("judul", formData.judul)
         data.append("kategori", formData.kategori)
         data.append("status", formData.status)
-        data.append("kontent", formData.konten)
+        data.append("konten", formData.konten)
         if (photo) {
             data.append("photo", photo)
         }
