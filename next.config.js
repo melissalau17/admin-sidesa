@@ -1,5 +1,5 @@
 module.exports = {
   images: {
-    domains: ["192.168.18.20"]
+    domains: ["182.253.9.70"]
   }
 };
