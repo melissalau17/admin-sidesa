@@ -11,7 +11,6 @@ import {
   FileText,
   MessageSquare,
   Newspaper,
-  DollarSign,
   LogOut,
   Users,
   Menu,
