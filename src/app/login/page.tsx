@@ -41,15 +41,13 @@ export default function LoginPage() {
                 body: JSON.stringify({ username, password }),
             });
 
+            const data = await response.json();
             console.log("HTTP Status:", response.status, response.statusText);
-            const text = await response.text();
-            console.log("Response body:", text);
+            console.log("Response body:", data);
 
             if (!response.ok) {
-                throw new Error("Login gagal");
+            throw new Error(data.message || "Login gagal");
             }
-
-            const data = await response.json();
             const token = data.token;
 
             localStorage.setItem("token", token);
