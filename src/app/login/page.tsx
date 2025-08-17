@@ -37,11 +37,13 @@ export default function LoginPage() {
         try {
             const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/login`, {
                 method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
+                headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ username, password }),
             });
+
+            console.log("HTTP Status:", response.status, response.statusText);
+            const text = await response.text();
+            console.log("Response body:", text);
 
             if (!response.ok) {
                 throw new Error("Login gagal");

@@ -92,7 +92,7 @@ export default function BeritaDesaPage() {
     useEffect(() => {
         const fetchBeritas = async () => {
             try {
-                const token = localStorage.getItem("token"); // Get token from localStorage or cookie
+                const token = localStorage.getItem("token");
                 const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas`, {
                     headers: {
                         Authorization: `Bearer ${token}`,
