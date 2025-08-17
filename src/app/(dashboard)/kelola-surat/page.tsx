@@ -85,10 +85,7 @@ export default function KelolaSuratPage() {
 
                 const convertPhotoToBase64 = (photoData: PhotoData): string | null => {
                     if (!photoData) return null
-                    if (typeof photoData === "string") {
-                        return photoData.startsWith("data:") ? photoData : `data:image/jpeg;base64,${photoData}`
-                    }
-                    return null
+                    return typeof photoData === "string" ? photoData : null
                 }
 
                 const formatted: SuratItem[] = rawData.map((surat: SuratItem) => ({

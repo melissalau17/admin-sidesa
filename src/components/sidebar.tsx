@@ -50,12 +50,7 @@ const menuItems: MenuItem[] = [
     name: "Berita Desa",
     href: "/berita-desa",
     icon: Newspaper,
-  },
-  {
-     name: "Laporan Keuangan",
-     href: "/laporan-keuangan",
-     icon: DollarSign,
-  },
+  }
 ];
 
 export function Sidebar() {
