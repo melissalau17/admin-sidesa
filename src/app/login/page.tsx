@@ -43,12 +43,7 @@ export default function LoginPage() {
 
             console.log("HTTP Status:", response.status, response.statusText);
 
-            let data;
-            try {
-                data = await response.json();
-            } catch {
-                data = {};
-            }
+            const data = await response.json();
             console.log("Response body:", data);
 
             if (!response.ok) {
@@ -63,7 +58,6 @@ export default function LoginPage() {
                 title: "Login berhasil",
                 description: "Selamat datang di panel administrasi desa",
             });
-
         } catch (error) {
             console.error("Login error:", error);
             toast({
