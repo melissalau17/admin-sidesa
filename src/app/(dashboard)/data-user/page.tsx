@@ -31,7 +31,7 @@ interface UserItem {
     nama: string;
     username: string;
     role: string;
-    photo?: string;
+    photo?: string; // <-- sudah diubah
     no_hp: string;
     jenis_kel: string;
     alamat: string;
@@ -56,12 +56,11 @@ export default function DataUserPage() {
     const handleDeleteUser = async (id: number) => {
         try {
             const token = localStorage.getItem("token"); 
-            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`,
-                {
-                    headers: {
-                        Authorization: token ? `Bearer ${token}` : "",
-                    },
-                });
+            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${id}`, {
+                headers: {
+                    Authorization: token ? `Bearer ${token}` : "",
+                },
+            });
             setUserData((prev) => prev.filter((user) => user.user_id !== id));
         } catch (error) {
             console.error("Gagal menghapus user:", error);
@@ -73,9 +72,7 @@ export default function DataUserPage() {
         }
     };
 
-    const handleUpdateUser = (updatedUser: UserItem | undefined) => {
-        if (!updatedUser) return;
-
+    const handleUpdateUser = (updatedUser: UserItem) => {
         setUserData((prev) =>
             prev.map((user) =>
                 user.user_id === updatedUser.user_id ? updatedUser : user
@@ -91,26 +88,24 @@ export default function DataUserPage() {
     useEffect(() => {
         const fetchUsers = async () => {
             try {
-                const token = localStorage.getItem("token"); // adjust key if different
+                const token = localStorage.getItem("token"); 
 
-                const res = await axios.get(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/users`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`,
-                        },
-                    }
-                );
+                const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users`, {
+                    headers: {
+                        Authorization: `Bearer ${token}`,
+                    },
+                });
 
-                const users = Array.isArray(res.data.data) ? res.data.data : res.data.data.users || [];
+                const users = Array.isArray(res.data.data)
+                    ? res.data.data
+                    : res.data.data.users || [];
 
                 const mapped: UserItem[] = users.map((item: any) => {
                     let base64Photo: string | undefined;
 
                     if (item.photo) {
                         try {
-                            const byteArray = Object.values(item.photo) as number[];
-
+                            const byteArray: number[] = item.photo;
                             const mime =
                                 byteArray[0] === 0xff && byteArray[1] === 0xd8
                                     ? "image/jpeg"
@@ -157,7 +152,6 @@ export default function DataUserPage() {
 
         fetchUsers();
     }, []);
-
 
     const filteredData = userData.filter((user) => {
         const q = searchQuery.toLowerCase();

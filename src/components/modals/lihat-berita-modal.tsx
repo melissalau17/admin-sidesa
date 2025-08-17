@@ -13,6 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Eye } from "lucide-react";
 import axios from "axios";
+import Image from "next/image";
 
 interface LihatBeritaModalProps {
   id: number;
@@ -23,7 +24,7 @@ interface BeritaDetail {
   kategori: string;
   tanggal: string;
   status: string;
-  konten: string; // disesuaikan (kalau BE kirim "kontent", biar axios mapping ke sini)
+  kontent: string;
   photo?: string | number[];
 }
 
@@ -134,7 +135,7 @@ export function LihatBeritaModal({ id }: LihatBeritaModalProps) {
         ) : berita ? (
           <div className="py-4">
             <div className="mb-4">
-              <img
+              <Image
                 src={
                   berita.photo && Array.isArray(berita.photo)
                     ? convertPhotoToBase64(new Uint8Array(berita.photo))
@@ -143,12 +144,14 @@ export function LihatBeritaModal({ id }: LihatBeritaModalProps) {
                     : "/placeholder.svg?height=200&width=600"
                 }
                 alt={berita.judul}
+                width={600}
+                height={200}
                 className="w-full h-full object-cover rounded-md"
               />
             </div>
             <div className="space-y-4 pr-6">
               <p className="text-sm text-gray-700 whitespace-pre-line text-justify">
-                {berita.konten}
+                {berita.kontent}
               </p>
             </div>
           </div>

@@ -21,7 +21,7 @@ interface BeritaApiItem {
     kategori: string
     tanggal: string
     status: string
-    konten: string
+    kontent: string
 }
 
 // const initialBeritaData: BeritaItem[] = [
@@ -105,7 +105,7 @@ export default function BeritaDesaPage() {
                     kategori: item.kategori,
                     tanggal: item.tanggal ?? "",
                     status: item.status,
-                    konten: item.konten ?? "", // pastikan backend memang "konten" bukan "kontent"
+                    konten: item.kontent ?? "", 
                 }));
 
 
@@ -131,7 +131,7 @@ export default function BeritaDesaPage() {
             judul: string
             kategori: string
             status: string
-            konten: string
+            kontent: string
         },
     ) => {
         setBeritaData((prevData) => prevData.map((berita) => (berita.berita_id === id ? { ...berita, ...updatedBerita } : berita)))
@@ -312,7 +312,7 @@ export default function BeritaDesaPage() {
                                                     judul={berita.judul}
                                                     kategori={berita.kategori}
                                                     status={berita.status}
-                                                    konten={berita.konten}
+                                                    kontent={berita.kontent}
                                                     open={editModalOpenId === berita.berita_id}
                                                     onOpenChange={(open) => {
                                                         if (!open) setEditModalOpenId(null)

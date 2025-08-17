@@ -14,6 +14,7 @@ import {
 import { Badge } from "@/components/ui/badge"
 import { Eye, FileImage } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+import Image from "next/image";
 
 interface LihatLaporanModalProps {
     id: number
@@ -188,7 +189,7 @@ export function LihatLaporanModal({
                             <div className="flex flex-col items-center space-y-3">
                                 <h3 className="text-lg font-medium">Foto Laporan</h3>
                                 <div className="border rounded-md overflow-hidden">
-                                    <img
+                                    <Image
                                         src={Array.isArray(gambar) ? convertPhotoToBase64(new Uint8Array(gambar)) : gambar}
                                         alt={`Foto laporan ${judul}`}
                                         width={600}

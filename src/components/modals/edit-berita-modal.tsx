@@ -30,7 +30,7 @@ interface EditBeritaModalProps {
     judul: string
     kategori: string
     status: string
-    konten: string
+    kontent: string
     open: boolean
     onOpenChange: (open: boolean) => void
     onBeritaUpdate: (
@@ -39,7 +39,7 @@ interface EditBeritaModalProps {
             judul: string
             kategori: string
             status: string
-            konten: string
+            kontent: string
         }
     ) => void
 }
@@ -49,7 +49,7 @@ export function EditBeritaModal({
     judul,
     kategori,
     status,
-    konten,
+    kontent,
     open,
     onOpenChange,
     onBeritaUpdate,
@@ -58,7 +58,7 @@ export function EditBeritaModal({
         judul,
         kategori,
         status,
-        konten,
+        kontent,
     })
     const [photo, setPhoto] = useState<File | null>(null)
     const [isLoading, setIsLoading] = useState(false)
@@ -67,10 +67,10 @@ export function EditBeritaModal({
     // Reset form values when modal opens
     useEffect(() => {
         if (open) {
-            setFormData({ judul, kategori, status, konten })
+            setFormData({ judul, kategori, status, kontent })
             setPhoto(null)
         }
-    }, [open, judul, kategori, status, konten])
+    }, [open, judul, kategori, status, kontent])
 
     const handleChange = (field: string, value: string) => {
         setFormData((prev) => ({
@@ -87,7 +87,7 @@ export function EditBeritaModal({
         data.append("judul", formData.judul)
         data.append("kategori", formData.kategori)
         data.append("status", formData.status)
-        data.append("konten", formData.konten)
+        data.append("konten", formData.kontent)
         if (photo) {
             data.append("photo", photo)
         }
@@ -127,7 +127,7 @@ export function EditBeritaModal({
             })
 
             onOpenChange(false)
-        } catch (err) {
+        } catch {
             toast({
                 title: "Gagal",
                 description: "Terjadi kesalahan saat memperbarui berita",
@@ -216,7 +216,7 @@ export function EditBeritaModal({
                                 placeholder="Masukkan konten berita"
                                 className="col-span-3 min-h-[250px] text-justify border-b border-gray-300"
                                 required
-                                value={formData.konten}
+                                value={formData.kontent}
                                 onChange={(e) => handleChange("konten", e.target.value)}
                             />
                         </div>
@@ -253,7 +253,7 @@ export function EditBeritaModal({
                                 isLoading ||
                                 !formData.judul ||
                                 !formData.kategori ||
-                                !formData.konten
+                                !formData.kontent
                             }
                         >
                             {isLoading ? "Menyimpan..." : "Simpan"}

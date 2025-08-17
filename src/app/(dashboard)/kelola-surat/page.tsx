@@ -15,6 +15,19 @@ import { UbahStatusSuratModal } from "@/components/modals/ubah-status-surat-moda
 import { LihatSuratModal } from "@/components/modals/lihat-surat-modal"
 import * as Tooltip from "@radix-ui/react-tooltip"
 
+const fileToBase64 = (file: File): Promise<string> =>
+    new Promise((resolve, reject) => {
+        const reader = new FileReader()
+        reader.readAsDataURL(file)
+        reader.onload = () => resolve(reader.result as string)
+        reader.onerror = (err) => reject(err)
+    })
+
+const isFile = (input: File | string | null): input is File => input instanceof File
+
+type PhotoInput = File | string
+type PhotoData = string | null
+
 interface SuratItem {
     surat_id: number
     nama: string
@@ -24,13 +37,11 @@ interface SuratItem {
     nik: string
     alamat: string
     tujuan_surat: string
-    photo_ktp: File
-    photo_kk: File
-    foto_usaha?: File
-    gaji_ortu?: File
+    photo_ktp: PhotoData
+    photo_kk: PhotoData
+    foto_usaha?: PhotoData
+    gaji_ortu?: PhotoData
 }
-
-type PhotoData = { [key: string]: number } | null
 
 const getStatusColor = (status: string): string => {
     switch (status) {
@@ -73,7 +84,7 @@ export default function KelolaSuratPage() {
                 const convertPhotoToBase64 = (photoData: PhotoData): string | null => {
                     if (!photoData) return null
                     try {
-                        const byteArray = Object.values(photoData) as number[]
+                        const byteArray = Object.values(photoData).map(Number) as number[]
                         const mime =
                             byteArray[0] === 0xff && byteArray[1] === 0xd8
                                 ? "image/jpeg"
@@ -89,15 +100,15 @@ export default function KelolaSuratPage() {
                     }
                 }
 
-                const formatted: SuratItem[] = rawData.map((surat: any) => ({
+                const formatted: SuratItem[] = rawData.map((surat: SuratItem) => ({
                     ...surat,
                     tanggal: new Date(surat.tanggal).toLocaleDateString("id-ID", {
                         day: "2-digit", month: "short", year: "numeric"
                     }),
                     photo_ktp: convertPhotoToBase64(surat.photo_ktp),
                     photo_kk: convertPhotoToBase64(surat.photo_kk),
-                    foto_usaha: convertPhotoToBase64(surat.foto_usaha),
-                    gaji_ortu: convertPhotoToBase64(surat.gaji_ortu),
+                    foto_usaha: convertPhotoToBase64(surat.foto_usaha ?? null),
+                    gaji_ortu: convertPhotoToBase64(surat.gaji_ortu ?? null),
                 }))
 
                 setSuratData(formatted)
@@ -120,7 +131,7 @@ export default function KelolaSuratPage() {
             }))
             setSuratData(updated)
         }
-    }, [suratData.length])
+    }, [suratData])
 
     const handleDeleteSurat = async (id: number) => {
         if (!confirm("Yakin ingin menghapus surat ini?")) return
@@ -151,35 +162,49 @@ export default function KelolaSuratPage() {
         setSearchQuery(e.target.value)
     }
 
-    const handleAddSurat = async (newSurat: Omit<SuratItem, "surat_id"> & { surat_id?: number }) => {
+    const handleAddSurat = async (newSurat: Omit<SuratItem, "surat_id" | "photo_ktp" | "photo_kk"> & {
+        photo_ktp: PhotoInput
+        photo_kk: PhotoInput
+    }) => {
         try {
             const token = typeof window !== "undefined" ? localStorage.getItem("token") : null
-            const formData = new FormData()
 
-            Object.entries(newSurat).forEach(([key, value]) => {
-                if (typeof value === "string" || (typeof File !== "undefined" && value instanceof File)) {
-                    formData.append(key, value)
-                }
+            const isFile = (file: PhotoInput): file is File => file instanceof File
+
+            const ktpBase64 = isFile(newSurat.photo_ktp)
+                ? await fileToBase64(newSurat.photo_ktp)
+                : newSurat.photo_ktp
+
+            const kkBase64 = isFile(newSurat.photo_kk)
+                ? await fileToBase64(newSurat.photo_kk)
+                : newSurat.photo_kk
+
+            // Prepare FormData for backend
+            const formData = new FormData()
+            Object.entries({ ...newSurat, photo_ktp: ktpBase64, photo_kk: kkBase64 }).forEach(([key, value]) => {
+                if (value !== undefined && value !== null) formData.append(key, value as string | Blob)
             })
 
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/letters`, formData, {
                 headers: { Authorization: `Bearer ${token}` }
             })
 
-            const newData: SuratItem = {
+            // Store Base64 string in state
+            const savedSurat: SuratItem = {
                 ...response.data,
                 tanggal: new Date(response.data.tanggal).toLocaleDateString("id-ID", {
                     day: "2-digit", month: "short", year: "numeric"
                 }),
-                photo_ktp: response.data.photo_ktp,
-                photo_kk: response.data.photo_kk,
+                photo_ktp: ktpBase64,
+                photo_kk: kkBase64
             }
 
-            setSuratData(prev => [...prev, newData])
+            setSuratData(prev => [...prev, savedSurat])
         } catch (err) {
             console.error("Gagal menambahkan surat:", err)
         }
     }
+
 
     const filteredData = suratData.filter((surat) => {
         const q = searchQuery.toLowerCase()
@@ -296,6 +321,12 @@ export default function KelolaSuratPage() {
                                                         status={surat.status}
                                                         onStatusChange={handleStatusChange}
                                                     />
+                                                    <button
+                                                        className="bg-red-500 text-white px-3 py-1 rounded hover:bg-red-600 transition"
+                                                        onClick={() => handleDeleteSurat(surat.surat_id)}
+                                                    >
+                                                        Hapus
+                                                    </button>
                                                 </div>
                                             </TableCell>
                                         </TableRow>

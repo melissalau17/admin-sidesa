@@ -61,8 +61,8 @@ export function HapusUserModal({ id, nama, onDeleteUser }: HapusUserModalProps) 
         <AlertDialogHeader>
           <AlertDialogTitle className="text-lg font-bold">Hapus User</AlertDialogTitle>
           <AlertDialogDescription className="text-sm">
-            Apakah Anda yakin ingin menghapus user{" "}
-            <span className="font-semibold">"{nama}"</span>? Tindakan ini tidak dapat
+            Apakah Anda yakin ingin menghapus user
+            <span className="font-semibold">&quot;{nama}&quot;</span>? Tindakan ini tidak dapat
             dibatalkan.
           </AlertDialogDescription>
         </AlertDialogHeader>

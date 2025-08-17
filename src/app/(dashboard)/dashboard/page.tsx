@@ -14,7 +14,7 @@ export default function DashboardPage() {
 
   useEffect(() => {
     if (!token) router.push("/login");
-  }, [token]);
+  }, [token, router]);
 
   if (loading || !stats) return null;
 

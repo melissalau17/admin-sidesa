@@ -13,12 +13,11 @@ import {
 import { useAuth } from "@/lib/auth/auth-provider"
 import * as Tooltip from "@radix-ui/react-tooltip"
 import { useSocket } from "@/lib/socket/socket-provider";
-import { Socket } from "socket.io-client";
 import { useEffect, useState } from "react"
 
 export function Header() {
     const { logout } = useAuth()
-    const [notifications, setNotifications] = useState<any[]>([])
+    const [notifications, setNotifications] = useState<NotificationType[]>([])
     const socket = useSocket()
 
     type NotificationType = {
