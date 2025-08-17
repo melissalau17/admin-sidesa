@@ -77,25 +77,18 @@ export default function KelolaSuratPage() {
                     headers: { Authorization: `Bearer ${token}` }
                 })
 
-                const rawData = response.data.data || response.data
+                const rawData = Array.isArray(response.data.data)
+                ? response.data.data
+                : Array.isArray(response.data)
+                    ? response.data
+                    : []
 
                 const convertPhotoToBase64 = (photoData: PhotoData): string | null => {
                     if (!photoData) return null
-                    try {
-                        const byteArray = Object.values(photoData).map(Number) as number[]
-                        const mime =
-                            byteArray[0] === 0xff && byteArray[1] === 0xd8
-                                ? "image/jpeg"
-                                : byteArray[0] === 0x89 && byteArray[1] === 0x50
-                                    ? "image/png"
-                                    : "image/jpeg"
-                        const binary = byteArray.map((b) => String.fromCharCode(b)).join("")
-                        const base64 = btoa(binary)
-                        return `data:${mime};base64,${base64}`
-                    } catch (err) {
-                        console.error("Error converting photo:", err)
-                        return null
+                    if (typeof photoData === "string") {
+                        return photoData.startsWith("data:") ? photoData : `data:image/jpeg;base64,${photoData}`
                     }
+                    return null
                 }
 
                 const formatted: SuratItem[] = rawData.map((surat: SuratItem) => ({
@@ -122,14 +115,13 @@ export default function KelolaSuratPage() {
     }, [])
 
     useEffect(() => {
-        if (suratData.length > 0) {
-            const updated = suratData.map((surat) => ({
-                ...surat,
-                status: getSavedStatus(surat.surat_id, surat.status),
+        setSuratData(prev =>
+            prev.map(surat => ({
+            ...surat,
+            status: getSavedStatus(surat.surat_id, surat.status),
             }))
-            setSuratData(updated)
-        }
-    }, [suratData])
+        )
+    }, [])
 
     const handleDeleteSurat = async (id: number) => {
         if (!confirm("Yakin ingin menghapus surat ini?")) return
