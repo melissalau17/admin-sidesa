@@ -41,15 +41,21 @@ export default function LoginPage() {
                 body: JSON.stringify({ username, password }),
             });
 
-            const data = await response.json();
             console.log("HTTP Status:", response.status, response.statusText);
+
+            let data;
+            try {
+                data = await response.json();
+            } catch {
+                data = {};
+            }
             console.log("Response body:", data);
 
             if (!response.ok) {
-            throw new Error(data.message || "Login gagal");
+                throw new Error(data.message || "Login gagal");
             }
-            const token = data.token;
 
+            const token = data.token;
             localStorage.setItem("token", token);
 
             login();
@@ -57,6 +63,7 @@ export default function LoginPage() {
                 title: "Login berhasil",
                 description: "Selamat datang di panel administrasi desa",
             });
+
         } catch (error) {
             console.error("Login error:", error);
             toast({
