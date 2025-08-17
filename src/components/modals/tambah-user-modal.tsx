@@ -2,7 +2,9 @@
 
 import { useState, type FormEvent, type ChangeEvent, useRef } from "react";
 import axios from "axios";
+import type { AxiosError } from "axios";
 import { UserPlus } from "lucide-react";
+import { UserItem } from "@/app/(dashboard)/data-user/page";
 import { Button } from "@/components/ui/button";
 import {
   Dialog,
@@ -28,7 +30,7 @@ import { useToast } from "@/hooks/use-toast";
 
 interface TambahUserModalProps {
   trigger?: React.ReactNode;
-  onAddUser?: (user: any) => void;
+  onAddUser?: (user: UserItem) => void;
 }
 
 interface FormData {
@@ -152,7 +154,7 @@ export function TambahUserModal({ trigger, onAddUser }: TambahUserModalProps) {
 
       const data = response.data;
       if (onAddUser) {
-        onAddUser({ ...formData, user_id: data.user_id });
+        onAddUser({ ...formData, user_id: data.user_id } as UserItem);
       }
 
       toast({
@@ -176,12 +178,14 @@ export function TambahUserModal({ trigger, onAddUser }: TambahUserModalProps) {
       if (fileInputRef.current) fileInputRef.current.value = "";
 
       setOpen(false);
-    } catch (err: any) {
-      console.error("Gagal menambahkan user:", err);
+    } catch (err: unknown) {
+        
+      const axiosError = err as AxiosError<{ message: string }>;
+      console.error("Gagal menambahkan user:", axiosError);
       toast({
         title: "Gagal",
         description:
-          err.response?.data?.message ||
+          axiosError.response?.data?.message ||
           "Terjadi kesalahan saat menyimpan user.",
         variant: "destructive",
       });

@@ -23,8 +23,6 @@ const fileToBase64 = (file: File): Promise<string> =>
         reader.onerror = (err) => reject(err)
     })
 
-const isFile = (input: File | string | null): input is File => input instanceof File
-
 type PhotoInput = File | string
 type PhotoData = string | null
 

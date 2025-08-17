@@ -26,18 +26,32 @@ import { useToast } from "@/hooks/use-toast";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 import { Button } from "@/components/ui/button";
 
-interface UserItem {
+export interface UserItem {
     user_id: number;
     nama: string;
     username: string;
     role: string;
-    photo?: string; // <-- sudah diubah
+    photo?: string; 
     no_hp: string;
     jenis_kel: string;
     alamat: string;
     agama: string;
     password: string;
     NIK: string;
+}
+
+interface UserResponseItem {
+    user_id: number;
+    nama?: string;
+    username?: string;
+    role?: string;
+    photo?: number[]; 
+    no_hp?: string;
+    jenis_kel?: string;
+    alamat?: string;
+    agama?: string;
+    password?: string;
+    NIK?: string;
 }
 
 export default function DataUserPage() {
@@ -100,7 +114,7 @@ export default function DataUserPage() {
                     ? res.data.data
                     : res.data.data.users || [];
 
-                const mapped: UserItem[] = users.map((item: any) => {
+                const mapped: UserItem[] = users.map((item: UserResponseItem) => {
                     let base64Photo: string | undefined;
 
                     if (item.photo) {
@@ -151,7 +165,7 @@ export default function DataUserPage() {
         };
 
         fetchUsers();
-    }, []);
+    }, [toast]);
 
     const filteredData = userData.filter((user) => {
         const q = searchQuery.toLowerCase();
