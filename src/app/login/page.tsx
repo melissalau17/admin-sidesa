@@ -43,8 +43,12 @@ export default function LoginPage() {
 
             console.log("HTTP Status:", response.status, response.statusText);
 
-            const data = await response.json();
-            console.log("Response body:", data);
+            const data = await response.json().catch(err => {
+                console.error("JSON parse error:", err);
+                throw err;
+            });
+
+            console.log("Response body parsed:", data);
 
             if (!response.ok) {
                 throw new Error(data.message || "Login gagal");
