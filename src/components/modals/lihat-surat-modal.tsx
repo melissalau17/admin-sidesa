@@ -206,6 +206,14 @@ export function LihatSuratModal({
                 </Tabs>
 
                 <DialogFooter>
+                    {status === "Selesai" && (
+                        <Button
+                            className="bg-green-600 text-white hover:bg-green-700"
+                            onClick={() => window.open(`/api/letters/${id}/print`, "_blank")}
+                        >
+                            Cetak Surat (PDF)
+                        </Button>
+                    )}
                     <Button variant="ghost" onClick={() => setOpen(false)}>
                         Tutup
                     </Button>

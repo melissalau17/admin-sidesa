@@ -3,7 +3,7 @@ import { Alert } from "react-native";
 import { io } from "socket.io-client";
 import AppNavigator from "./navigation"; 
 
-const socket = io("http://192.168.1.10:5000");
+const socket = io("http://si-desa2.onrender.com");
 
 export default function App() {
   useEffect(() => {

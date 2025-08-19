@@ -1,5 +1,5 @@
 module.exports = {
   images: {
-    domains: ["182.253.9.70"]
+    domains: ["si-desa2.onrender.com"]
   }
 };
