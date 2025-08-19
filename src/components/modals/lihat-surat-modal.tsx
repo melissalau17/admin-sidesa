@@ -67,6 +67,23 @@ export function LihatSuratModal({
                     ? "Surat sedang dalam proses pembuatan dan penandatanganan oleh kepala desa."
                     : "Permohonan surat sedang menunggu untuk diproses."
 
+    const handlePrint = async () => {
+        try {
+            const response = await axios.get(
+                `${process.env.NEXT_PUBLIC_API_URL}/api/letters/${id}/print`,
+                {
+                    headers: { Authorization: `Bearer ${token}` },
+                    responseType: "blob", // important for PDF
+                }
+            );
+
+            const fileURL = URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
+            window.open(fileURL, "_blank");
+        } catch (error) {
+            console.error("Failed to print surat:", error);
+        }
+    };
+
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -209,7 +226,7 @@ export function LihatSuratModal({
                     {status === "Selesai" && (
                         <Button
                             className="bg-green-600 text-white hover:bg-green-700"
-                            onClick={() => window.open(`/api/letters/${id}/print`, "_blank")}
+                            onClick={handlePrint}
                         >
                             Cetak Surat (PDF)
                         </Button>
