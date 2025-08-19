@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge"
 import { Eye, FileImage } from "lucide-react"
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
 import Image from "next/image";
+import axios from "axios";
 
 interface LihatSuratModalProps {
     id: number
@@ -69,6 +70,7 @@ export function LihatSuratModal({
 
     const handlePrint = async () => {
         try {
+            const token = typeof window !== "undefined" ? localStorage.getItem("token") : null
             const response = await axios.get(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/letters/${id}/print`,
                 {
