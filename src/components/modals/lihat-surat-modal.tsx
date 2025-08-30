@@ -70,12 +70,14 @@ export function LihatSuratModal({
 
     const handlePrint = async () => {
         try {
-            const token = typeof window !== "undefined" ? localStorage.getItem("token") : null
+            const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+
+            // Call the new local proxy route
             const response = await axios.get(
-                `${process.env.NEXT_PUBLIC_API_URL}/api/letters/${id}/print`,
+                `/api/print/${id}`,
                 {
                     headers: { Authorization: `Bearer ${token}` },
-                    responseType: "blob", // important for PDF
+                    responseType: "blob",
                 }
             );
 
