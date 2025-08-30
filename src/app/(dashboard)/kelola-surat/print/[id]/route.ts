@@ -1,22 +1,24 @@
+// src/app/(dashboard)/kelola-surat/print/[id]/route.ts
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 
-export async function GET(request: NextRequest) {
+export async function GET(request: NextRequest, 
+  // @ts-ignore
+  context: { params: { id: string } }) {
   try {
+    const { id } = context.params;
     const token = request.headers.get("Authorization");
 
     if (!token) {
       return new NextResponse("Authorization header is missing", { status: 401 });
     }
 
-    // Use a robust retry mechanism for the API call
-    let response, id;
+    let response;
     const retries = 3;
     const initialDelay = 1000;
 
     for (let i = 0; i < retries; i++) {
       try {
-        // ... (your axios request)
         response = await axios.get(
           `${process.env.NEXT_PUBLIC_API_URL}/api/letters/${id}/print`,
           {
@@ -26,7 +28,7 @@ export async function GET(request: NextRequest) {
             responseType: "arraybuffer",
           }
         );
-        break; // Exit the loop on success
+        break; 
       } catch (err: unknown) {
         if (axios.isAxiosError(err)) {
           console.error(`Attempt ${i + 1} failed:`, err.message);
@@ -37,7 +39,7 @@ export async function GET(request: NextRequest) {
           const delay = initialDelay * Math.pow(2, i);
           await new Promise(resolve => setTimeout(resolve, delay));
         } else {
-          throw err; // Re-throw the error on the last attempt
+          throw err; 
         }
       }
     }
