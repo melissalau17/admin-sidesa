@@ -72,9 +72,8 @@ export function LihatSuratModal({
         try {
             const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-            // Call the new local proxy route
             const response = await axios.get(
-                `/api/print/${id}`,
+                `${process.env.NEXT_PUBLIC_API_URL}/api/letters/${id}/print`,
                 {
                     headers: { Authorization: `Bearer ${token}` },
                     responseType: "blob",
@@ -91,13 +90,15 @@ export function LihatSuratModal({
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <Button
-                    className="bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-blue-100"
-                    size="sm"
-                >
-                    <Eye className="h-4 w-4" />
-                    <span className="sr-only">Lihat</span>
-                </Button>
+                <a href={`/kelola-surat/print/${id}`} target="_blank">
+                    <Button
+                        className="bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-blue-100"
+                        size="sm"
+                    >
+                        <Eye className="h-4 w-4" />
+                        <span className="sr-only">Lihat</span>
+                    </Button>
+                </a>
             </DialogTrigger>
             <DialogContent
                 className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto"
