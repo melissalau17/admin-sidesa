@@ -1,14 +1,18 @@
 import { notFound } from 'next/navigation';
 import axios from 'axios';
 
-export default async function SuratView({ params }: { params: { id: string } }) {
+type PageParams = Promise<{ id: string }>;
+
+export default async function SuratView({ params }: { params: PageParams }) {
     try {
+        const { id } = await params; // Await the params to get the id
+        const token = localStorage.getItem("token");
         // This runs on the server
         const response = await axios.get(
-            `${process.env.BACKEND_API_URL}/api/letters/${params.id}/print`,
+            `${process.env.NEXT_PUBLIC_API_URL}/api/letters/${id}/print`,
             {
                 headers: {
-                    Authorization: `Bearer ${process.env.SECRET_TOKEN}`
+                    Authorization: `Bearer ${token}`
                 },
                 responseType: 'arraybuffer'
             }
@@ -26,7 +30,6 @@ export default async function SuratView({ params }: { params: { id: string } }) 
                 style={{ border: 'none', position: 'absolute', top: 0, left: 0 }}
             ></iframe>
         );
-
     } catch (error) {
         console.error(error);
         notFound();
