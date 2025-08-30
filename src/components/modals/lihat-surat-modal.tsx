@@ -90,15 +90,13 @@ export function LihatSuratModal({
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
-                <a href={`/kelola-surat/print/${id}`} target="_blank">
-                    <Button
-                        className="bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-blue-100"
-                        size="sm"
-                    >
-                        <Eye className="h-4 w-4" />
-                        <span className="sr-only">Lihat</span>
-                    </Button>
-                </a>
+                <Button
+                    className="bg-blue-100 text-blue-600 hover:bg-blue-600 hover:text-blue-100"
+                    size="sm"
+                >
+                    <Eye className="h-4 w-4" />
+                    <span className="sr-only">Lihat</span>
+                </Button>
             </DialogTrigger>
             <DialogContent
                 className="sm:max-w-[700px] max-h-[90vh] overflow-y-auto"
@@ -229,12 +227,14 @@ export function LihatSuratModal({
 
                 <DialogFooter>
                     {status === "Selesai" && (
-                        <Button
-                            className="bg-green-600 text-white hover:bg-green-700"
-                            onClick={handlePrint}
-                        >
-                            Cetak Surat (PDF)
-                        </Button>
+                        <DialogTrigger asChild>
+                            <a href={`/kelola-surat/print/${id}`} target="_blank">
+                                <Button className="bg-green-600 text-white hover:bg-green-700"
+                                onClick={handlePrint}>
+                                    Cetak Surat (PDF)
+                                </Button>
+                            </a>
+                        </DialogTrigger>
                     )}
                     <Button variant="ghost" onClick={() => setOpen(false)}>
                         Tutup
