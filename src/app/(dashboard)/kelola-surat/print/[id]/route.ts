@@ -12,7 +12,7 @@ export async function GET(request: NextRequest, context: { params: { id: string 
 
     // Use a robust retry mechanism for the API call
     let response;
-    let retries = 3;
+    const retries = 3;
     const initialDelay = 1000;
 
     for (let i = 0; i < retries; i++) {
