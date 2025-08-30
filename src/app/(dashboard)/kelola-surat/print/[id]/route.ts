@@ -2,8 +2,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 
-export async function GET(request: NextRequest, 
-  // @ts-ignore
+export async function GET(request: NextRequest,
   context: { params: { id: string } }) {
   try {
     const { id } = context.params;
