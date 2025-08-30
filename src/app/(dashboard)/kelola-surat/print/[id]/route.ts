@@ -1,9 +1,8 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 
-export async function GET(request: NextRequest, context: { params: { id: number } }) {
+export async function GET(request: NextRequest) {
   try {
-    const id = context.params.id;
     const token = request.headers.get("Authorization");
 
     if (!token) {
@@ -11,7 +10,7 @@ export async function GET(request: NextRequest, context: { params: { id: number 
     }
 
     // Use a robust retry mechanism for the API call
-    let response;
+    let response, id;
     const retries = 3;
     const initialDelay = 1000;
 
