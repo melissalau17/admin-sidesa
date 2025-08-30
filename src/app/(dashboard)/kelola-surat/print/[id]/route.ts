@@ -8,7 +8,6 @@ export async function GET(request: NextRequest, { params }: { params: DynamicPar
     const { id } = await params;
     const token = request.headers.get("Authorization");
 
-    // The rest of your code remains the same
     if (!token) {
       return new NextResponse("Authorization header is missing", { status: 401 });
     }
