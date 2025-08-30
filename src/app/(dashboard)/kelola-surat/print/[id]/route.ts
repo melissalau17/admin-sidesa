@@ -2,12 +2,12 @@
 import { NextRequest, NextResponse } from "next/server";
 import axios from "axios";
 
-export async function GET(request: NextRequest,
-  { params }: { params: { id: string } }) {
+export async function GET(request: NextRequest, context: any) {
   try {
-    const { id } = params;
+    const { id } = context.params;
     const token = request.headers.get("Authorization");
 
+    // The rest of your code is correct
     if (!token) {
       return new NextResponse("Authorization header is missing", { status: 401 });
     }
@@ -27,7 +27,7 @@ export async function GET(request: NextRequest,
             responseType: "arraybuffer",
           }
         );
-        break; 
+        break;
       } catch (err: unknown) {
         if (axios.isAxiosError(err)) {
           console.error(`Attempt ${i + 1} failed:`, err.message);
@@ -38,7 +38,7 @@ export async function GET(request: NextRequest,
           const delay = initialDelay * Math.pow(2, i);
           await new Promise(resolve => setTimeout(resolve, delay));
         } else {
-          throw err; 
+          throw err;
         }
       }
     }
