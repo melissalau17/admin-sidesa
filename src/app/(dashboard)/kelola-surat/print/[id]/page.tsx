@@ -1,18 +1,21 @@
 import { notFound } from 'next/navigation';
 import axios from 'axios';
 
-type PageParams = Promise<{ id: string }>;
+type PageParams = { params: { id: string } };
 
-export default async function SuratView({ params }: { params: PageParams }) {
+export default async function SuratView({ params }: PageParams) {
     try {
-        const { id } = await params; // Await the params to get the id
-        const token = localStorage.getItem("token");
-        // This runs on the server
+        const { id } = params;
+        const token = ''; // Token tidak dapat diambil di sini
+
+        // Ini akan memanggil endpoint proxy di Vercel, bukan langsung ke backend.
+        // Endpoint proxy di sisi server harus mengambil token dari header permintaan
+        // dari frontend (klien).
         const response = await axios.get(
             `${process.env.NEXT_PUBLIC_API_URL}/api/letters/${id}/print`,
             {
                 headers: {
-                    Authorization: `Bearer ${token}`
+                    Authorization: `Bearer ${token}` // Token tidak dapat diambil dari localStorage di server.
                 },
                 responseType: 'arraybuffer'
             }
