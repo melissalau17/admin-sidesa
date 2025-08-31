@@ -57,6 +57,8 @@ interface UserResponseItem {
 export default function DataUserPage() {
     const [userData, setUserData] = useState<UserItem[]>([]);
     const [searchQuery, setSearchQuery] = useState("");
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
     const [currentPage, setCurrentPage] = useState(1);
     const itemsPerPage = 5;
     const { toast } = useToast();
@@ -76,13 +78,11 @@ export default function DataUserPage() {
                 },
             });
             setUserData((prev) => prev.filter((user) => user.user_id !== id));
-        } catch (error) {
-            console.error("Gagal menghapus user:", error);
-            toast({
-                title: "Error",
-                description: "Gagal menghapus user.",
-                variant: "destructive",
-            });
+        } catch (err) {
+            setError("Gagal memuat data berita.");
+            console.error("Gagal mengambil data berita", err);
+        } finally {
+            setLoading(false);
         }
     };
 
@@ -188,106 +188,109 @@ export default function DataUserPage() {
                 </div>
                 <TambahUserModal onAddUser={handleAddUser} />
             </div>
-
-            <Card>
-                <CardHeader className="pb-2">
-                    <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
-                        <div>
-                            <CardTitle>Daftar Penduduk</CardTitle>
-                            <CardDescription>
-                                Tampilkan foto, nama, NIK, dan role
-                            </CardDescription>
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            {loading && <p className="text-gray-500 text-sm">Memuat data...</p>}
+            {!loading && (
+                <Card>
+                    <CardHeader className="pb-2">
+                        <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
+                            <div>
+                                <CardTitle>Daftar Penduduk</CardTitle>
+                                <CardDescription>
+                                    Tampilkan foto, nama, NIK, dan role
+                                </CardDescription>
+                            </div>
+                            <SearchComponent
+                                searchQuery={searchQuery}
+                                onSearchChange={handleSearchChange}
+                                placeholder="Cari Penduduk..."
+                            />
                         </div>
-                        <SearchComponent
-                            searchQuery={searchQuery}
-                            onSearchChange={handleSearchChange}
-                            placeholder="Cari Penduduk..."
-                        />
-                    </div>
-                </CardHeader>
+                    </CardHeader>
 
-                <CardContent className="overflow-x-auto">
-                    <div className="min-w-[900px]">
-                        <Table>
-                            <TableHeader>
-                                <TableRow>
-                                    <TableHead>No</TableHead>
-                                    <TableHead>Foto</TableHead>
-                                    <TableHead>Nama</TableHead>
-                                    <TableHead>NIK</TableHead>
-                                    <TableHead>Role</TableHead>
-                                    <TableHead className="text-right">Aksi</TableHead>
-                                </TableRow>
-                            </TableHeader>
-                            <TableBody>
-                                {paginatedData.length > 0 ? (
-                                    paginatedData.map((user, idx) => (
-                                        <TableRow key={user.user_id}>
-                                            <TableCell>
-                                                {(currentPage - 1) * itemsPerPage + idx + 1}
-                                            </TableCell>
-                                            <TableCell>
-                                                <Avatar className="h-8 w-8">
-                                                    {user.photo ? (
-                                                        <AvatarImage src={user.photo} alt={user.nama} />
-                                                    ) : null}
-                                                    <AvatarFallback>
-                                                        {user.nama ? user.nama[0].toUpperCase() : "?"}
-                                                    </AvatarFallback>
-                                                </Avatar>
-                                            </TableCell>
+                    <CardContent className="overflow-x-auto">
+                        <div className="min-w-[900px]">
+                            <Table>
+                                <TableHeader>
+                                    <TableRow>
+                                        <TableHead>No</TableHead>
+                                        <TableHead>Foto</TableHead>
+                                        <TableHead>Nama</TableHead>
+                                        <TableHead>NIK</TableHead>
+                                        <TableHead>Role</TableHead>
+                                        <TableHead className="text-right">Aksi</TableHead>
+                                    </TableRow>
+                                </TableHeader>
+                                <TableBody>
+                                    {paginatedData.length > 0 ? (
+                                        paginatedData.map((user, idx) => (
+                                            <TableRow key={user.user_id}>
+                                                <TableCell>
+                                                    {(currentPage - 1) * itemsPerPage + idx + 1}
+                                                </TableCell>
+                                                <TableCell>
+                                                    <Avatar className="h-8 w-8">
+                                                        {user.photo ? (
+                                                            <AvatarImage src={user.photo} alt={user.nama} />
+                                                        ) : null}
+                                                        <AvatarFallback>
+                                                            {user.nama ? user.nama[0].toUpperCase() : "?"}
+                                                        </AvatarFallback>
+                                                    </Avatar>
+                                                </TableCell>
 
-                                            <TableCell>{user.nama}</TableCell>
-                                            <TableCell>{user.NIK}</TableCell>
-                                            <TableCell>{user.role}</TableCell>
-                                            <TableCell className="text-right">
-                                                <div className="flex justify-end gap-2">
-                                                    <LihatUserModal user={user} />
-                                                    <EditUserModal
-                                                        user={user}
-                                                        onUpdateUser={handleUpdateUser}
-                                                    />
-                                                    <HapusUserModal
-                                                        id={user.user_id}
-                                                        nama={user.nama}
-                                                        onDeleteUser={handleDeleteUser}
-                                                    />
-                                                </div>
+                                                <TableCell>{user.nama}</TableCell>
+                                                <TableCell>{user.NIK}</TableCell>
+                                                <TableCell>{user.role}</TableCell>
+                                                <TableCell className="text-right">
+                                                    <div className="flex justify-end gap-2">
+                                                        <LihatUserModal user={user} />
+                                                        <EditUserModal
+                                                            user={user}
+                                                            onUpdateUser={handleUpdateUser}
+                                                        />
+                                                        <HapusUserModal
+                                                            id={user.user_id}
+                                                            nama={user.nama}
+                                                            onDeleteUser={handleDeleteUser}
+                                                        />
+                                                    </div>
+                                                </TableCell>
+                                            </TableRow>
+                                        ))
+                                    ) : (
+                                        <TableRow>
+                                            <TableCell colSpan={6} className="text-center py-4">
+                                                Tidak ada data ditemukan
                                             </TableCell>
                                         </TableRow>
-                                    ))
-                                ) : (
-                                    <TableRow>
-                                        <TableCell colSpan={6} className="text-center py-4">
-                                            Tidak ada data ditemukan
-                                        </TableCell>
-                                    </TableRow>
-                                )}
-                            </TableBody>
-                        </Table>
-                    </div>
+                                    )}
+                                </TableBody>
+                            </Table>
+                        </div>
 
-                    <div className="flex justify-center items-center gap-4 mt-4">
-                        <Button
-                            variant="outline"
-                            disabled={currentPage === 1}
-                            onClick={() => setCurrentPage((prev) => prev - 1)}
-                        >
-                            Sebelumnya
-                        </Button>
-                        <span>
-                            Halaman {currentPage} dari {totalPages}
-                        </span>
-                        <Button
-                            variant="outline"
-                            disabled={currentPage === totalPages || totalPages === 0}
-                            onClick={() => setCurrentPage((prev) => prev + 1)}
-                        >
-                            Selanjutnya
-                        </Button>
-                    </div>
-                </CardContent>
-            </Card>
+                        <div className="flex justify-center items-center gap-4 mt-4">
+                            <Button
+                                variant="outline"
+                                disabled={currentPage === 1}
+                                onClick={() => setCurrentPage((prev) => prev - 1)}
+                            >
+                                Sebelumnya
+                            </Button>
+                            <span>
+                                Halaman {currentPage} dari {totalPages}
+                            </span>
+                            <Button
+                                variant="outline"
+                                disabled={currentPage === totalPages || totalPages === 0}
+                                onClick={() => setCurrentPage((prev) => prev + 1)}
+                            >
+                                Selanjutnya
+                            </Button>
+                        </div>
+                    </CardContent>
+                </Card>
+            )}
         </div>
     );
 }

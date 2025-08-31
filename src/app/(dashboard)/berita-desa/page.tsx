@@ -93,37 +93,26 @@ export default function BeritaDesaPage() {
         setBeritaData((prevData) => prevData.map((berita) => (berita.berita_id === berita_id ? { ...berita, ...updatedBerita } : berita)))
     }
 
-    const handleDirectDelete = async (berita_id: number | undefined) => {
-        if (!berita_id) {
-            toast({
-                title: "Gagal",
-                description: "ID berita tidak ditemukan",
-                variant: "destructive",
-            })
-            return
-        }
+    const handleDirectDelete = async (id: number) => {
+        if (!confirm("Yakin ingin menghapus berita ini?")) return
 
         try {
-            const token = localStorage.getItem("token")
-            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas/${berita_id}`, {
+            const token = typeof window !== "undefined" ? localStorage.getItem("token") : null
+            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas/${id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             })
 
-            setBeritaData((prevData) => prevData.filter((berita) => berita.berita_id !== berita_id))
+            setBeritaData((prevData) => prevData.filter((berita) => berita.berita_id !== id))
 
             toast({
                 title: "Berhasil",
                 description: "Berita berhasil dihapus",
             })
-        } catch (error) {
-            console.error("Gagal menghapus berita:", error)
-            toast({
-                title: "Gagal",
-                description: "Terjadi kesalahan saat menghapus berita",
-                variant: "destructive",
-            })
+        } catch (err) {
+            console.error("Gagal menghapus berita:", err)
+            alert("Terjadi kesalahan saat menghapus berita.")
         }
     }
 
@@ -167,30 +156,28 @@ export default function BeritaDesaPage() {
                 </Tooltip.Provider>
             </div>
 
-            <Card>
-                <CardHeader className="pb-2">
-                    <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
-                        <div>
-                            <CardTitle>Daftar Berita</CardTitle>
-                            <CardDescription>Daftar berita dan informasi desa</CardDescription>
-                        </div>
-                        <div className="flex items-center gap-2">
-                            <div className="relative">
-                                <SearchComponent
-                                    searchQuery={searchQuery}
-                                    onSearchChange={handleSearchChange}
-                                    placeholder="Cari berita..."
-                                />
+            {error && <p className="text-red-500 text-sm">{error}</p>}
+            {loading && <p className="text-gray-500 text-sm">Memuat data...</p>}
+            {!loading && (
+                <Card>
+                    <CardHeader className="pb-2">
+                        <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
+                            <div>
+                                <CardTitle>Daftar Berita</CardTitle>
+                                <CardDescription>Daftar berita dan informasi desa</CardDescription>
+                            </div>
+                            <div className="flex items-center gap-2">
+                                <div className="relative">
+                                    <SearchComponent
+                                        searchQuery={searchQuery}
+                                        onSearchChange={handleSearchChange}
+                                        placeholder="Cari berita..."
+                                    />
+                                </div>
                             </div>
                         </div>
-                    </div>
-                </CardHeader>
-                <CardContent>
-                    {loading ? (
-                        <p className="text-gray-500 text-center py-4">Memuat data...</p>
-                    ) : error ? (
-                        <p className="text-red-500 text-center py-4">{error}</p>
-                    ) : (
+                    </CardHeader>
+                    <CardContent>
                         <Table>
                             <TableHeader>
                                 <TableRow>
@@ -205,8 +192,8 @@ export default function BeritaDesaPage() {
                             <TableBody>
                                 {filteredData.length > 0 ? (
                                     filteredData.map((berita, index) => (
-                                        <TableRow key={berita.berita_id ?? `fallback-${index}`}>
-                                            <TableCell>{berita.berita_id}</TableCell>
+                                        <TableRow key={berita.berita_id}>
+                                            <TableCell>{index + 1}</TableCell>
                                             <TableCell>{berita.judul}</TableCell>
                                             <TableCell>{berita.kategori}</TableCell>
                                             <TableCell>{berita.tanggal}</TableCell>
@@ -314,15 +301,15 @@ export default function BeritaDesaPage() {
                                 ) : (
                                     <TableRow>
                                         <TableCell colSpan={6} className="text-center py-4">
-                                            Tidak ada data yang sesuai dengan pencarian
+                                            Tidak ada data yang sesuai
                                         </TableCell>
                                     </TableRow>
                                 )}
                             </TableBody>
                         </Table>
-                    )}
-                </CardContent>
-            </Card>
+                    </CardContent>
+                </Card>
+            )}
         </div>
     )
 }
