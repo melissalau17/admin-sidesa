@@ -50,7 +50,7 @@ export function LihatBeritaModal({ berita_id }: LihatBeritaModalProps) {
                     );
 
                     const beritaData = res.data.data;
-                    if (beritaData && beritaData.photo && typeof beritaData.photo === 'object' && 'data' in beritaData.photo) {
+                    if (beritaData && typeof beritaData.photo === 'object' && beritaData.photo !== null && 'data' in beritaData.photo) {
                         beritaData.photo = beritaData.photo.data;
                     }
 
