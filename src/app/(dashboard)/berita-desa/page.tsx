@@ -52,20 +52,11 @@ export default function BeritaDesaPage() {
                     },
                 });
 
-                if (Array.isArray(res.data.data)) {
-                    const mappedData: BeritaApiItem[] = res.data.data.map((item: any) => ({
-                        berita_id: item.berita_id,
-                        judul: item.judul,
-                        kategori: item.kategori,
-                        tanggal: item.tanggal ?? "",
-                        status: item.status,
-                        konten: item.konten ?? "",
-                    }));
-                    setBeritaData(mappedData);
-                } else {
-                    console.error("API response data is not an array:", res.data.data);
-                    setError("Data berita tidak valid.");
-                }
+                const beritas = res.data.data.map((item: BeritaApiItem) => {
+                    const storedStatus = localStorage.getItem(`status-${item.berita_id}`)
+                    return storedStatus ? { ...item, status: storedStatus } : item
+                })
+                setBeritaData(beritas)
             } catch (err) {
                 setError("Gagal memuat data berita.");
                 console.error("Gagal mengambil data berita", err);
@@ -73,7 +64,6 @@ export default function BeritaDesaPage() {
                 setLoading(false);
             }
         };
-
         fetchBeritas();
     }, []);
 
