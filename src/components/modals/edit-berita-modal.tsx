@@ -26,7 +26,7 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Edit } from "lucide-react"
 
 interface EditBeritaModalProps {
-    id: number
+    berita_id: number
     judul: string
     kategori: string
     status: string
@@ -34,7 +34,7 @@ interface EditBeritaModalProps {
     open: boolean
     onOpenChange: (open: boolean) => void
     onBeritaUpdate: (
-        id: number,
+        berita_id: number,
         updatedBerita: {
             judul: string
             kategori: string
@@ -45,7 +45,7 @@ interface EditBeritaModalProps {
 }
 
 export function EditBeritaModal({
-    id,
+    berita_id,
     judul,
     kategori,
     status,
@@ -96,7 +96,7 @@ export function EditBeritaModal({
             const token = localStorage.getItem("token")
             let res
 
-            if (!id) {
+            if (!berita_id) {
                 // Create new (POST)
                 res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas`, {
                     method: "POST",
@@ -107,7 +107,7 @@ export function EditBeritaModal({
                 })
             } else {
                 // Update existing (PATCH)
-                res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas/${id}`, {
+                res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas/${berita_id}`, {
                     method: "PATCH",
                     body: data,
                     headers: {
@@ -119,7 +119,7 @@ export function EditBeritaModal({
             if (!res.ok) throw new Error("Gagal memperbarui berita")
 
             const updated = await res.json()
-            onBeritaUpdate(id || updated.id, updated)
+            onBeritaUpdate(berita_id || updated.berita_id, updated)
 
             toast({
                 title: "Berhasil",

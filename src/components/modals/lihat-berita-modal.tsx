@@ -16,7 +16,7 @@ import axios from "axios";
 import Image from "next/image";
 
 interface LihatBeritaModalProps {
-    id: number;
+    berita_id: number;
 }
 
 interface BeritaDetail {
@@ -28,7 +28,7 @@ interface BeritaDetail {
     photo?: string | number[];
 }
 
-export function LihatBeritaModal({ id }: LihatBeritaModalProps) {
+export function LihatBeritaModal({ berita_id }: LihatBeritaModalProps) {
     const [open, setOpen] = useState(false);
     const [berita, setBerita] = useState<BeritaDetail | null>(null);
     const [loading, setLoading] = useState(false);
@@ -42,7 +42,7 @@ export function LihatBeritaModal({ id }: LihatBeritaModalProps) {
                 try {
                     setLoading(true);
                     const res = await axios.get(
-                        `${process.env.NEXT_PUBLIC_API_URL}/api/beritas/${id}`,
+                        `${process.env.NEXT_PUBLIC_API_URL}/api/beritas/${berita_id}`,
                         {
                             headers: {
                                 Authorization: token ? `Bearer ${token}` : "",
@@ -64,7 +64,7 @@ export function LihatBeritaModal({ id }: LihatBeritaModalProps) {
 
             fetchBerita();
         }
-    }, [open, id]);
+    }, [open, berita_id]);
 
     const getStatusColor = (status: string): string => {
         switch (status) {
