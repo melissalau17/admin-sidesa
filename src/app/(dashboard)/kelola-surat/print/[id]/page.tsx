@@ -1,11 +1,13 @@
-"use client";
+"use client"
 
 import { useEffect, useState } from 'react';
 import { notFound } from 'next/navigation';
 import axios from 'axios';
 
-export default function SuratView(props: { params: { id: string } }) {
-    const { id } = props.params;
+type PageParams = Promise<{ id: string }>;
+
+export default function SuratView({ params }: { params: PageParams }) {
+    const id  = params;
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 
     useEffect(() => {
