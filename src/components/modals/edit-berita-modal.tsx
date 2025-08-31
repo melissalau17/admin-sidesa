@@ -1,7 +1,8 @@
 "use client"
 
-import { useEffect, useState, type FormEvent } from "react"
-import { Button } from "../ui/button"
+import { useEffect, useState, type FormEvent, type ChangeEvent } from "react"
+import axios from "axios"
+import { Button } from "@/components/ui/button"
 import {
     Dialog,
     DialogContent,
@@ -62,15 +63,29 @@ export function EditBeritaModal({
     })
     const [photo, setPhoto] = useState<File | null>(null)
     const [isLoading, setIsLoading] = useState(false)
+    const [previewUrl, setPreviewUrl] = useState<string | null>(null)
     const { toast } = useToast()
 
-    // Reset form values when modal opens
+    const getBase64FromUrl = async (url: string) => {
+        const res = await axios.get(url, { responseType: 'arraybuffer' });
+        const mime = res.headers['content-type'];
+        const base64 = Buffer.from(res.data, 'binary').toString('base64');
+        return `data:${mime};base64,${base64}`;
+    };
+
     useEffect(() => {
         if (open) {
-            setFormData({ judul, kategori, status, kontent })
-            setPhoto(null)
+            setFormData({ judul, kategori, status, kontent });
+            setPhoto(null);
+            // Assuming the photo comes from the API and is a URL
+            if (kontent) {
+                // Here's where we would fetch and set the preview if kontent had a photo URL
+                // For now, let's assume we don't have a photo URL and set a placeholder
+                setPreviewUrl(null);
+            }
         }
-    }, [open, judul, kategori, status, kontent])
+    }, [open, judul, kategori, status, kontent]);
+
 
     const handleChange = (field: string, value: string) => {
         setFormData((prev) => ({
@@ -87,7 +102,7 @@ export function EditBeritaModal({
         data.append("judul", formData.judul)
         data.append("kategori", formData.kategori)
         data.append("status", formData.status)
-        data.append("konten", formData.kontent)
+        data.append("kontent", formData.kontent)
         if (photo) {
             data.append("photo", photo)
         }
@@ -95,31 +110,16 @@ export function EditBeritaModal({
         try {
             const token = localStorage.getItem("token")
             let res
-
-            if (!id) {
-                // Create new (POST)
-                res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas`, {
-                    method: "POST",
-                    body: data,
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                })
-            } else {
-                // Update existing (PATCH)
-                res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas/${id}`, {
-                    method: "PATCH",
-                    body: data,
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
-                })
-            }
-
-            if (!res.ok) throw new Error("Gagal memperbarui berita")
-
-            const updated = await res.json()
-            onBeritaUpdate(id || updated.berita_id, updated)
+            
+            // Perbaikan kecil: Gunakan axios daripada fetch
+            res = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas/${id}`, data, {
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                }
+            })
+            
+            const updated = res.data;
+            onBeritaUpdate(id, updated.data);
 
             toast({
                 title: "Berhasil",
@@ -127,7 +127,8 @@ export function EditBeritaModal({
             })
 
             onOpenChange(false)
-        } catch {
+        } catch (error) {
+            console.error("Error updating berita:", error)
             toast({
                 title: "Gagal",
                 description: "Terjadi kesalahan saat memperbarui berita",
@@ -150,10 +151,14 @@ export function EditBeritaModal({
                     <span className="sr-only">Edit</span>
                 </Button>
             </DialogTrigger>
-            <DialogContent className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto">
+            <DialogContent
+                className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto"
+                aria-labelledby="dialog-title"
+                aria-describedby="dialog-description"
+            >
                 <DialogHeader>
-                    <DialogTitle>Edit Berita</DialogTitle>
-                    <DialogDescription>Perbarui berita atau informasi desa</DialogDescription>
+                    <DialogTitle id="dialog-title">Edit Berita</DialogTitle>
+                    <DialogDescription id="dialog-description">Perbarui berita atau informasi desa</DialogDescription>
                 </DialogHeader>
                 <form onSubmit={handleSubmit}>
                     <div className="grid gap-4 py-4">
@@ -203,21 +208,36 @@ export function EditBeritaModal({
                                 className="col-span-3"
                                 onChange={(e) => {
                                     const file = e.target.files?.[0]
-                                    if (file) setPhoto(file)
+                                    if (file) {
+                                        setPhoto(file)
+                                        const reader = new FileReader()
+                                        reader.onloadend = () => {
+                                            setPreviewUrl(reader.result as string)
+                                        }
+                                        reader.readAsDataURL(file)
+                                    }
                                 }}
                             />
                         </div>
+                        {previewUrl && (
+                            <div className="flex flex-col sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
+                                <Label className="sm:text-right">
+                                    Pratinjau
+                                </Label>
+                                <img src={previewUrl} alt="Pratinjau Gambar" className="col-span-3 object-cover rounded-md max-h-48 w-full" />
+                            </div>
+                        )}
                         <div className="flex flex-col sm:grid sm:grid-cols-4 sm:items-start sm:gap-4">
-                            <Label htmlFor="konten" className="sm:text-right pt-2">
+                            <Label htmlFor="kontent" className="sm:text-right pt-2">
                                 Konten Berita
                             </Label>
                             <Textarea
-                                id="konten"
+                                id="kontent"
                                 placeholder="Masukkan konten berita"
                                 className="col-span-3 min-h-[250px] text-justify border-b border-gray-300"
                                 required
                                 value={formData.kontent}
-                                onChange={(e) => handleChange("konten", e.target.value)}
+                                onChange={(e) => handleChange("kontent", e.target.value)}
                             />
                         </div>
                         <div className="flex flex-col sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">

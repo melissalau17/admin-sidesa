@@ -110,50 +110,12 @@ export default function DataUserPage() {
                     },
                 });
 
-                const users = Array.isArray(res.data.data)
-                    ? res.data.data
-                    : res.data.data.users || [];
+                const users = res.data.data.map((item: UserResponseItem) => {
+                    const storedStatus = localStorage.getItem(`status-${item.user_id}`)
+                    return storedStatus ? { ...item, status: storedStatus } : item
+                })
 
-                const mapped: UserItem[] = users.map((item: UserResponseItem) => {
-                    let base64Photo: string | undefined;
-
-                    if (item.photo) {
-                        try {
-                            const byteArray: number[] = item.photo;
-                            const mime =
-                                byteArray[0] === 0xff && byteArray[1] === 0xd8
-                                    ? "image/jpeg"
-                                    : byteArray[0] === 0x89 && byteArray[1] === 0x50
-                                        ? "image/png"
-                                        : "image/jpeg";
-
-                            const binary = byteArray
-                                .map((byte) => String.fromCharCode(byte))
-                                .join("");
-                            const base64 = btoa(binary);
-
-                            base64Photo = `data:${mime};base64,${base64}`;
-                        } catch (error) {
-                            console.error("Error converting photo to base64:", error);
-                        }
-                    }
-
-                    return {
-                        user_id: item.user_id,
-                        nama: item.nama || "-",
-                        username: item.username || "-",
-                        role: item.role || "-",
-                        photo: base64Photo,
-                        no_hp: item.no_hp || "-",
-                        jenis_kel: item.jenis_kel || "-",
-                        alamat: item.alamat || "-",
-                        agama: item.agama || "-",
-                        password: item.password || "-",
-                        NIK: item.NIK || "-",
-                    };
-                });
-
-                setUserData(mapped);
+                setUserData(users);
             } catch (error) {
                 console.error("Gagal memuat data pengguna:", error);
                 toast({

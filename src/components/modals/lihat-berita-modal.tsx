@@ -13,7 +13,6 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Eye } from "lucide-react";
 import axios from "axios";
-import Image from "next/image";
 
 interface LihatBeritaModalProps {
     berita_id: number;
@@ -50,7 +49,6 @@ export function LihatBeritaModal({ berita_id }: LihatBeritaModalProps) {
                         }
                     );
 
-                    // asumsi API return { data: {...} }
                     setBerita(res.data.data);
                     setError("");
                 } catch (err) {
@@ -110,13 +108,16 @@ export function LihatBeritaModal({ berita_id }: LihatBeritaModalProps) {
                 </Button>
             </DialogTrigger>
 
-            <DialogContent className="sm:max-w-[600px]">
+            <DialogContent
+                className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto"
+                aria-labelledby="dialog-title"
+                aria-describedby="dialog-description"
+            >
                 <DialogHeader>
-                    <DialogTitle>{berita?.judul || "Detail Berita"}</DialogTitle>
-
+                    <DialogTitle id="dialog-title">{berita?.judul || "Detail Berita"}</DialogTitle>
                     {berita && (
                         <>
-                            <DialogDescription>
+                            <DialogDescription id="dialog-description">
                                 {berita.tanggal} • {berita.kategori}
                             </DialogDescription>
                             <div className="mt-1">
@@ -135,7 +136,7 @@ export function LihatBeritaModal({ berita_id }: LihatBeritaModalProps) {
                 ) : berita ? (
                     <div className="py-4">
                         <div className="mb-4">
-                            <Image
+                            <img
                                 src={
                                     berita.photo && Array.isArray(berita.photo)
                                         ? convertPhotoToBase64(new Uint8Array(berita.photo))
