@@ -116,13 +116,11 @@ export default function DataUserPage() {
                 })
 
                 setUserData(users);
-            } catch (error) {
-                console.error("Gagal memuat data pengguna:", error);
-                toast({
-                    title: "Error",
-                    description: "Gagal memuat data pengguna dari server.",
-                    variant: "destructive",
-                });
+            } catch (err) {
+                setError("Gagal memuat data user.");
+                console.error("Gagal mengambil data user", err);
+            } finally {
+                setLoading(false);
             }
         };
 

@@ -24,7 +24,7 @@ interface BeritaDetail {
     tanggal: string;
     status: string;
     kontent: string;
-    photo?: string | number[];
+    photo?: { type: "Buffer"; data: number[] } | string;
 }
 
 export function LihatBeritaModal({ berita_id }: LihatBeritaModalProps) {
@@ -49,7 +49,12 @@ export function LihatBeritaModal({ berita_id }: LihatBeritaModalProps) {
                         }
                     );
 
-                    setBerita(res.data.data);
+                    const beritaData = res.data.data;
+                    if (beritaData && beritaData.photo && typeof beritaData.photo === 'object' && 'data' in beritaData.photo) {
+                        beritaData.photo = beritaData.photo.data;
+                    }
+
+                    setBerita(beritaData);
                     setError("");
                 } catch (err) {
                     console.error("Fetch berita gagal:", err);
