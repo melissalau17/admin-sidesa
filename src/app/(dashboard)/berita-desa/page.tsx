@@ -1,20 +1,18 @@
 "use client"
 
-import { useState, type ChangeEvent } from "react"
+import { useState, useEffect, type ChangeEvent } from "react"
 import { Button } from "@/components/ui/button"
 import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/components/ui/card"
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Trash } from "lucide-react"
-import { TambahBeritaModal } from "@/components/modals/tambah-berita-modal"
-import { LihatBeritaModal } from "@/components/modals/lihat-berita-modal"
-import { EditBeritaModal } from "@/components/modals/edit-berita-modal"
+import { TambahBeritaModal } from "../../../components/modals/tambah-berita-modal"
+import { LihatBeritaModal } from "../../../components/modals/lihat-berita-modal"
+import { EditBeritaModal } from "../../../components/modals/edit-berita-modal"
 import { useToast } from "@/hooks/use-toast"
-import { SearchComponent } from "@/components/ui/SearchComponent"
+import { SearchComponent } from "../../../components/ui/SearchComponent"
 import * as Tooltip from "@radix-ui/react-tooltip"
 import axios from "axios"
-import { useEffect } from "react"
-import { DialogContent } from "@/components/ui/dialog" // Import DialogContent for the warning fix
 
 interface BeritaApiItem {
     berita_id: number
@@ -22,7 +20,7 @@ interface BeritaApiItem {
     kategori: string
     tanggal: string
     status: string
-    kontent: string
+    konten: string
 }
 
 const getStatusColor = (status: string): string => {
@@ -54,19 +52,17 @@ export default function BeritaDesaPage() {
                     },
                 });
 
-                // **FIX:** Check if res.data.data is an array before mapping
                 if (Array.isArray(res.data.data)) {
-                    const mappedData: BeritaApiItem[] = res.data.data.map((item: BeritaApiItem) => ({
+                    const mappedData: BeritaApiItem[] = res.data.data.map((item: any) => ({
                         berita_id: item.berita_id,
                         judul: item.judul,
                         kategori: item.kategori,
                         tanggal: item.tanggal ?? "",
                         status: item.status,
-                        konten: item.kontent ?? "",
+                        konten: item.konten ?? "", // Corrected field name
                     }));
                     setBeritaData(mappedData);
                 } else {
-                    // Handle the case where the API returns a non-array value
                     console.error("API response data is not an array:", res.data.data);
                     setError("Data berita tidak valid.");
                 }
@@ -81,15 +77,12 @@ export default function BeritaDesaPage() {
         fetchBeritas();
     }, []);
 
-
-    // Function to handle search input changes
     const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value)
     }
 
-    // Function to update berita
     const handleBeritaUpdate = (
-        id: number,
+        berita_id: number,
         updatedBerita: {
             judul: string
             kategori: string
@@ -97,11 +90,11 @@ export default function BeritaDesaPage() {
             kontent: string
         },
     ) => {
-        setBeritaData((prevData) => prevData.map((berita) => (berita.berita_id === id ? { ...berita, ...updatedBerita } : berita)))
+        setBeritaData((prevData) => prevData.map((berita) => (berita.berita_id === berita_id ? { ...berita, ...updatedBerita } : berita)))
     }
 
-    const handleDirectDelete = async (id?: number) => {
-        if (!id) {
+    const handleDirectDelete = async (berita_id: number | undefined) => {
+        if (!berita_id) {
             toast({
                 title: "Gagal",
                 description: "ID berita tidak ditemukan",
@@ -112,13 +105,13 @@ export default function BeritaDesaPage() {
 
         try {
             const token = localStorage.getItem("token")
-            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas/${id}`, {
+            await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas/${berita_id}`, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 },
             })
 
-            setBeritaData((prevData) => prevData.filter((berita) => berita.berita_id !== id))
+            setBeritaData((prevData) => prevData.filter((berita) => berita.berita_id !== berita_id))
 
             toast({
                 title: "Berhasil",
@@ -134,8 +127,6 @@ export default function BeritaDesaPage() {
         }
     }
 
-
-    // Filter data based on search query
     const filteredData = beritaData.filter((berita) => {
         const query = searchQuery.toLowerCase()
         return (
@@ -195,7 +186,6 @@ export default function BeritaDesaPage() {
                     </div>
                 </CardHeader>
                 <CardContent>
-                    {/* **FIX:** Conditional rendering for loading, error, and data */}
                     {loading ? (
                         <p className="text-gray-500 text-center py-4">Memuat data...</p>
                     ) : error ? (
@@ -215,7 +205,6 @@ export default function BeritaDesaPage() {
                             <TableBody>
                                 {filteredData.length > 0 ? (
                                     filteredData.map((berita, index) => (
-                                        // **FIX:** Ensure key is always valid
                                         <TableRow key={berita.berita_id ?? `fallback-${index}`}>
                                             <TableCell>{berita.berita_id}</TableCell>
                                             <TableCell>{berita.judul}</TableCell>
@@ -251,13 +240,15 @@ export default function BeritaDesaPage() {
                                                     <Tooltip.Provider delayDuration={300}>
                                                         <Tooltip.Root>
                                                             <Tooltip.Trigger asChild>
-                                                                <Button
-                                                                    size="sm"
-                                                                    variant="outline"
-                                                                    onClick={() => setEditModalOpenId(berita.berita_id)}
-                                                                >
-                                                                    ✏️
-                                                                </Button>
+                                                                <div className="relative inline-block">
+                                                                    <Button
+                                                                        size="sm"
+                                                                        variant="outline"
+                                                                        onClick={() => setEditModalOpenId(berita.berita_id)}
+                                                                    >
+                                                                        ✏️
+                                                                    </Button>
+                                                                </div>
                                                             </Tooltip.Trigger>
                                                             <Tooltip.Portal>
                                                                 <Tooltip.Content
@@ -278,7 +269,7 @@ export default function BeritaDesaPage() {
                                                         judul={berita.judul}
                                                         kategori={berita.kategori}
                                                         status={berita.status}
-                                                        kontent={berita.kontent}
+                                                        kontent={berita.konten}
                                                         open={editModalOpenId === berita.berita_id}
                                                         onOpenChange={(open) => {
                                                             if (!open) setEditModalOpenId(null)
@@ -290,15 +281,17 @@ export default function BeritaDesaPage() {
                                                     <Tooltip.Provider delayDuration={300}>
                                                         <Tooltip.Root>
                                                             <Tooltip.Trigger asChild>
-                                                                <Button
-                                                                    variant="destructive"
-                                                                    size="sm"
-                                                                    onClick={() => handleDirectDelete(berita.berita_id)}
-                                                                    className="text-red-500 bg-red-50 hover:text-red-50 hover:bg-red-500"
-                                                                >
-                                                                    <Trash className="h-4 w-4" />
-                                                                    <span className="sr-only">Hapus</span>
-                                                                </Button>
+                                                                <div className="relative inline-block">
+                                                                    <Button
+                                                                        variant="destructive"
+                                                                        size="sm"
+                                                                        onClick={() => handleDirectDelete(berita.berita_id)}
+                                                                        className="text-red-500 bg-red-50 hover:text-red-50 hover:bg-red-500"
+                                                                    >
+                                                                        <Trash className="h-4 w-4" />
+                                                                        <span className="sr-only">Hapus</span>
+                                                                    </Button>
+                                                                </div>
                                                             </Tooltip.Trigger>
                                                             <Tooltip.Portal>
                                                                 <Tooltip.Content
@@ -319,7 +312,7 @@ export default function BeritaDesaPage() {
                                         </TableRow>
                                     ))
                                 ) : (
-                                    <TableRow key="no-data">
+                                    <TableRow>
                                         <TableCell colSpan={6} className="text-center py-4">
                                             Tidak ada data yang sesuai dengan pencarian
                                         </TableCell>
