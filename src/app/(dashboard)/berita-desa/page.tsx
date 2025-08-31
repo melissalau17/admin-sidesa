@@ -6,11 +6,11 @@ import { Card, CardContent, CardDescription, CardHeader, CardTitle } from "@/com
 import { Table, TableBody, TableCell, TableHead, TableHeader, TableRow } from "@/components/ui/table"
 import { Badge } from "@/components/ui/badge"
 import { Trash } from "lucide-react"
-import { TambahBeritaModal } from "../../../components/modals/tambah-berita-modal"
-import { LihatBeritaModal } from "../../../components/modals/lihat-berita-modal"
-import { EditBeritaModal } from "../../../components/modals/edit-berita-modal"
+import { TambahBeritaModal } from "@/components/modals/tambah-berita-modal"
+import { LihatBeritaModal } from "@/components/modals/lihat-berita-modal"
+import { EditBeritaModal } from "@/components/modals/edit-berita-modal"
 import { useToast } from "@/hooks/use-toast"
-import { SearchComponent } from "../../../components/ui/SearchComponent"
+import { SearchComponent } from "@/components/ui/SearchComponent"
 import * as Tooltip from "@radix-ui/react-tooltip"
 import axios from "axios"
 
@@ -59,7 +59,7 @@ export default function BeritaDesaPage() {
                         kategori: item.kategori,
                         tanggal: item.tanggal ?? "",
                         status: item.status,
-                        konten: item.konten ?? "", // Corrected field name
+                        konten: item.konten ?? "",
                     }));
                     setBeritaData(mappedData);
                 } else {
@@ -269,7 +269,7 @@ export default function BeritaDesaPage() {
                                                         judul={berita.judul}
                                                         kategori={berita.kategori}
                                                         status={berita.status}
-                                                        kontent={berita.konten}
+                                                        kontent={berita.konten} // Perbaikan di sini
                                                         open={editModalOpenId === berita.berita_id}
                                                         onOpenChange={(open) => {
                                                             if (!open) setEditModalOpenId(null)
