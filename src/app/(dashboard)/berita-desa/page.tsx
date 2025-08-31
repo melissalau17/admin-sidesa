@@ -261,7 +261,7 @@ export default function BeritaDesaPage() {
                                                     <Tooltip.Root>
                                                         <Tooltip.Trigger asChild>
                                                             <div className="relative inline-block">
-                                                                <LihatBeritaModal id={berita.berita_id} />
+                                                                <LihatBeritaModal berita_id={berita.berita_id} />
                                                             </div>
                                                         </Tooltip.Trigger>
                                                         <Tooltip.Portal>
