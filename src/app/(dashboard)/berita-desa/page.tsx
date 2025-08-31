@@ -85,6 +85,8 @@ const getStatusColor = (status: string): string => {
 
 export default function BeritaDesaPage() {
     const [beritaData, setBeritaData] = useState<BeritaApiItem[]>([])
+    const [loading, setLoading] = useState(true)
+    const [error, setError] = useState<string | null>(null)
     const [editModalOpenId, setEditModalOpenId] = useState<number | null>(null)
     const [searchQuery, setSearchQuery] = useState<string>("")
     const { toast } = useToast()
@@ -100,7 +102,7 @@ export default function BeritaDesaPage() {
                 });
 
                 const mappedData: BeritaApiItem[] = res.data.data.map((item: BeritaApiItem) => ({
-                    id: item.berita_id,
+                    berita_id: item.berita_id,
                     judul: item.judul,
                     kategori: item.kategori,
                     tanggal: item.tanggal ?? "",
@@ -111,7 +113,10 @@ export default function BeritaDesaPage() {
 
                 setBeritaData(mappedData);
             } catch (err) {
+                setError("Gagal memuat data surat.")
                 console.error("Gagal mengambil data berita", err);
+            } finally {
+                setLoading(false)
             }
         };
 
@@ -230,6 +235,8 @@ export default function BeritaDesaPage() {
                             </div>
                         </div>
                     </div>
+                {error && <p className="text-red-500 text-sm">{error}</p>}
+                {loading && <p className="text-gray-500 text-sm">Memuat data...</p>}
 
                 </CardHeader>
                 <CardContent>
