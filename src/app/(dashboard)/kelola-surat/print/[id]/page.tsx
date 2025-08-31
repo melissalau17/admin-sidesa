@@ -4,10 +4,8 @@ import { useEffect, useState } from 'react';
 import { notFound } from 'next/navigation';
 import axios from 'axios';
 
-type PageParams = Promise<{ id: string }>;
-
-export default async function SuratView({ params }: { params: PageParams }) {
-    const { id } = await params;
+export default function SuratView({ params }: { params: { id: string } }) {
+    const { id } = params;
     const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 
     useEffect(() => {
