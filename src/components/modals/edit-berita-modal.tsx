@@ -66,13 +66,6 @@ export function EditBeritaModal({
     const [previewUrl, setPreviewUrl] = useState<string | null>(null)
     const { toast } = useToast()
 
-    const getBase64FromUrl = async (url: string) => {
-        const res = await axios.get(url, { responseType: 'arraybuffer' });
-        const mime = res.headers['content-type'];
-        const base64 = Buffer.from(res.data, 'binary').toString('base64');
-        return `data:${mime};base64,${base64}`;
-    };
-
     useEffect(() => {
         if (open) {
             setFormData({ judul, kategori, status, kontent });
@@ -109,10 +102,9 @@ export function EditBeritaModal({
 
         try {
             const token = localStorage.getItem("token")
-            let res
             
             // Perbaikan kecil: Gunakan axios daripada fetch
-            res = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas/${id}`, data, {
+            const res = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas/${id}`, data, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }
