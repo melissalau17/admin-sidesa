@@ -12,7 +12,6 @@ import {
   MessageSquare,
   Newspaper,
   LogOut,
-  Users,
   Menu,
   X,
   type LucideIcon,

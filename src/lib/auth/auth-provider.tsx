@@ -1,9 +1,17 @@
+// Corrected Code
 "use client"
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 import { useRouter, usePathname } from "next/navigation"
 import { jwtDecode } from "jwt-decode"
 import axios from "axios"
+
+// Define a type for the data in your JWT token
+interface DecodedToken {
+    user_id: string;
+    role: string;
+    // ... add any other properties present in your token
+}
 
 interface User {
     user_id: string;
@@ -47,8 +55,8 @@ export function AuthProvider({ children }: AuthProviderProps) {
         
         if (token) {
             try {
-                // You can get basic data from the token or fetch full user data
-                const decoded: any = jwtDecode(token);
+                // Now, use the specific type for the decoded token
+                const decoded: DecodedToken = jwtDecode(token);
                 // Fetch full user data to populate the context
                 const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${decoded.user_id}`, {
                     headers: { Authorization: `Bearer ${token}` }
@@ -89,11 +97,11 @@ export function AuthProvider({ children }: AuthProviderProps) {
         localStorage.removeItem("token");
         setIsAuthenticated(false);
         setUser(null);
-        router.push("/"); // Use Next.js router for client-side navigation
+        router.push("/");
     };
 
     if (isLoading) {
-        return <div>Loading...</div>; // Show a loading state while validating session
+        return <div>Loading...</div>;
     }
 
     return (
