@@ -31,11 +31,6 @@ const menuItems: MenuItem[] = [
     icon: LayoutDashboard,
   },
   {
-    name: "Data Penduduk",
-    href: "/data-user",
-    icon: Users,
-  },
-  {
     name: "Kelola Surat",
     href: "/kelola-surat",
     icon: FileText,

@@ -16,7 +16,7 @@ import { useSocket } from "@/lib/socket/socket-provider";
 import { useEffect, useState } from "react"
 
 export function Header() {
-    const { logout } = useAuth()
+    const { logout, user } = useAuth() 
     const [notifications, setNotifications] = useState<NotificationType[]>([])
     const socket = useSocket()
 
@@ -125,8 +125,8 @@ export function Header() {
                                                 <UserCircle className="h-8 w-8 text-[#003C43]" />
                                             </div>
                                             <div className="flex flex-col space-y-0.5">
-                                                <p className="text-sm font-medium">Admin Desa</p>
-                                                <p className="text-xs text-muted-foreground">admin@desa.id</p>
+                                                <p className="text-sm font-medium">{user?.nama || "Admin Desa"}</p>
+                                                <p className="text-xs text-muted-foreground">{user?.email || "admin@desa.id"}</p>
                                             </div>
                                         </div>
                                         <DropdownMenuSeparator />

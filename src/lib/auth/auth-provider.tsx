@@ -2,65 +2,103 @@
 
 import { createContext, useContext, useEffect, useState, type ReactNode } from "react"
 import { useRouter, usePathname } from "next/navigation"
+import { jwtDecode } from "jwt-decode"
+import axios from "axios"
 
-interface AuthContextType {
-   isAuthenticated: boolean
-   login: (redirect?: boolean) => void
-   logout: () => void
+interface User {
+    user_id: string;
+    username: string;
+    nama: string;
+    email: string;
+    role: string;
 }
 
-const AuthContext = createContext<AuthContextType>({
-   isAuthenticated: false,
-   login: () => {},
-   logout: () => {},
-})
+interface AuthContextType {
+    user: User | null;
+    isAuthenticated: boolean
+    login: (token: string) => Promise<void>
+    logout: () => void
+}
 
-export const useAuth = () => useContext(AuthContext)
+const AuthContext = createContext<AuthContextType | undefined>(undefined);
+
+export const useAuth = () => {
+    const context = useContext(AuthContext);
+    if (!context) {
+        throw new Error("useAuth must be used within an AuthProvider");
+    }
+    return context;
+};
 
 interface AuthProviderProps {
-   children: ReactNode
+    children: ReactNode
 }
 
 export function AuthProvider({ children }: AuthProviderProps) {
-   const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false)
-   const [isLoading, setIsLoading] = useState<boolean>(true)
-   const router = useRouter()
-   const pathname = usePathname()
+    const [user, setUser] = useState<User | null>(null);
+    const [isAuthenticated, setIsAuthenticated] = useState<boolean>(false);
+    const [isLoading, setIsLoading] = useState<boolean>(true);
+    const router = useRouter();
+    const pathname = usePathname();
 
-   useEffect(() => {
-      const authStatus = localStorage.getItem("isAuthenticated")
-      setIsAuthenticated(authStatus === "true")
-      setIsLoading(false)
-   }, [])
+    const validateSession = async () => {
+        setIsLoading(true);
+        const token = localStorage.getItem("token");
+        
+        if (token) {
+            try {
+                // You can get basic data from the token or fetch full user data
+                const decoded: any = jwtDecode(token);
+                // Fetch full user data to populate the context
+                const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users/${decoded.user_id}`, {
+                    headers: { Authorization: `Bearer ${token}` }
+                });
+                const userData: User = response.data.data;
+                
+                setUser(userData);
+                setIsAuthenticated(true);
+            } catch (error) {
+                console.error("Session validation failed:", error);
+                localStorage.removeItem("token");
+                setIsAuthenticated(false);
+            }
+        }
+        setIsLoading(false);
+    };
 
-   useEffect(() => {
-      if (!isLoading) {
-         const isPublicRoute = pathname === "/" || pathname === "/login"
+    useEffect(() => {
+        validateSession();
+    }, []);
 
-         if (!isAuthenticated && !isPublicRoute) {
-         router.push("/login")
-         }
-      }
-   }, [isAuthenticated, isLoading, pathname, router])
+    useEffect(() => {
+        if (!isLoading) {
+            const isPublicRoute = pathname === "/" || pathname === "/login";
+            if (!isAuthenticated && !isPublicRoute) {
+                router.push("/login");
+            }
+        }
+    }, [isAuthenticated, isLoading, pathname, router]);
 
-   const login = (redirect = true) => {
-      setIsAuthenticated(true)
-      localStorage.setItem("isAuthenticated", "true")
-      if (redirect) {
-         router.push("/dashboard")
-      }
-   }
+    const login = async (token: string) => {
+        localStorage.setItem("token", token);
+        await validateSession(); // Re-validate session after login
+        router.push("/dashboard");
+    };
 
-   const logout = () => {
-      // First clear the authentication state
-      localStorage.removeItem("isAuthenticated")
-      // Then set the state to trigger UI updates
-      setIsAuthenticated(false)
-      // Force redirect to landing page
-      window.location.href = "/"
-   }
+    const logout = () => {
+        localStorage.removeItem("token");
+        setIsAuthenticated(false);
+        setUser(null);
+        router.push("/"); // Use Next.js router for client-side navigation
+    };
 
-   return (
-      <AuthContext.Provider value={{ isAuthenticated, login, logout }}>{!isLoading && children}</AuthContext.Provider>
-   )
+    if (isLoading) {
+        return <div>Loading...</div>; // Show a loading state while validating session
+    }
+
+    return (
+        <AuthContext.Provider value={{ user, isAuthenticated, login, logout }}>
+            {children}
+        </AuthContext.Provider>
+    );
 }
