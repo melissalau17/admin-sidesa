@@ -57,7 +57,8 @@ export default function LoginPage() {
             const token = data.token;
             localStorage.setItem("token", token);
 
-            login();
+            await login(token);
+            
             toast({
                 title: "Login berhasil",
                 description: "Selamat datang di panel administrasi desa",
