@@ -4,6 +4,7 @@ import { ThemeProvider } from "@/components/theme-provider";
 import { AuthProvider } from "@/lib/auth/auth-provider";
 import { Toaster } from "@/components/ui/toaster";
 import type { ReactNode } from "react";
+import { SocketProvider } from "@/lib/socket/socket-provider";
 
 const inter = Inter({ subsets: ["latin"] });
 
@@ -19,8 +20,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
       <body className={`${inter.className}`}>
         <ThemeProvider attribute="class" defaultTheme="light" enableSystem={false}>
           <AuthProvider>
+            <SocketProvider>
             {children}
             <Toaster />
+            </SocketProvider>
           </AuthProvider>
         </ThemeProvider>
       </body>

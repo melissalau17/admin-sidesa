@@ -1,26 +1,41 @@
 import React, { useEffect } from "react";
 import { Alert } from "react-native";
 import { io } from "socket.io-client";
-import AppNavigator from "./navigation"; 
+import AppNavigator from "./navigation";
 
 const socket = io("http://si-desa2.onrender.com");
 
 export default function App() {
-  useEffect(() => {
-    socket.on("connect", () => {
-      console.log("Connected to Socket.IO server");
-    });
+    useEffect(() => {
+        socket.on("connect", () => {
+            console.log("Connected to Socket.IO server");
+        });
 
-    socket.on("notification", (data) => {
-      console.log("New notification received:", data);
+        socket.on("notification", (data) => {
+            console.log("Notifikasi baru diterima:", data);
 
-      Alert.alert("Notifikasi Baru", `Laporan: ${data.keluhan || "Ada laporan baru!"}`);
-    });
+            let alertTitle = "Notifikasi Baru";
+            let alertMessage = data.message || "Ada pembaruan!";
 
-    return () => {
-      socket.disconnect();
-    };
-  }, []);
+            // Check for a specific type of notification and customize the alert
+            if (data.title === "Laporan Baru") {
+                alertTitle = data.title;
+                alertMessage = `${data.body}`;
+            } else if (data.title === "Berita Baru Diterbitkan!") {
+                alertTitle = data.title;
+                alertMessage = data.message;
+            } else if (data.title === "Pengguna Baru!") {
+                alertTitle = data.title;
+                alertMessage = data.message;
+            }
 
-  return <AppNavigator />;
+            Alert.alert(alertTitle, alertMessage);
+        });
+
+        return () => {
+            socket.disconnect();
+        };
+    }, []);
+
+    return <AppNavigator />;
 }

@@ -12,7 +12,7 @@ export const SocketProvider = ({ children }: { children: React.ReactNode }) => {
   const [socket, setSocket] = useState<SocketType>(null);
 
   useEffect(() => {
-    const socketIo = io("http://localhost:3001"); 
+    const socketIo = io("http://si-desa2.onrender.com"); 
     setSocket(socketIo);
 
     return () => {
