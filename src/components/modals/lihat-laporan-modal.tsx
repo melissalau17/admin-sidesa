@@ -125,8 +125,8 @@ export function LihatLaporanModal({
                                     <p className="text-sm font-semibold">{keluhan}</p>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-sm font-medium text-muted-foreground">Jumlah Vote</p>
-                                    <p className="text-sm">{vote}</p>
+                                    <p className="text-sm font-medium text-muted-foreground">Deskripsi</p>
+                                    <p className="text-sm">{deskripsi}</p>
                                 </div>
                             </div>
 
