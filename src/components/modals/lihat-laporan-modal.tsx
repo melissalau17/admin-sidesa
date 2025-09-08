@@ -125,8 +125,8 @@ export function LihatLaporanModal({
                                     <p className="text-sm font-semibold">{keluhan}</p>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-sm font-medium text-muted-foreground">Deskripsi</p>
-                                    <p className="text-sm">{deskripsi}</p>
+                                    <p className="text-sm font-medium text-muted-foreground">Jumlah Vote Laporan</p>
+                                    <p className="text-sm">{vote}</p>
                                 </div>
                             </div>
 
@@ -146,9 +146,9 @@ export function LihatLaporanModal({
                             </div>
 
                             <div className="space-y-1">
-                                <p className="text-sm font-medium text-muted-foreground">Jumlah Vote Laporan</p>
+                                <p className="text-sm font-medium text-muted-foreground">Deskripsi</p>
                                 <div className="text-sm p-3 bg-gray-50 rounded-md border">
-                                    <p className="whitespace-pre-line text-justify">{vote}</p>
+                                    <p className="whitespace-pre-line text-justify">{deskripsi}</p>
                                 </div>
                             </div>
 

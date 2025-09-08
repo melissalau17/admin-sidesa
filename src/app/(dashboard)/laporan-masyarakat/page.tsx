@@ -19,7 +19,7 @@ interface LaporanItem {
     status: string
     vote: number
     lokasi?: string
-    kontak?: string
+    no_hp?: string
     gambar?: string
 }
 
@@ -184,7 +184,7 @@ export default function LaporanMasyarakatPage() {
                                                         status={laporan.status}
                                                         deskripsi={laporan.deskripsi}
                                                         lokasi={laporan.lokasi}
-                                                        kontak={laporan.kontak}
+                                                        kontak={laporan.no_hp}
                                                         gambar={laporan.gambar}
                                                     />
 
