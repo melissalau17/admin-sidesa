@@ -17,7 +17,7 @@ interface LaporanItem {
     deskripsi: string
     tanggal: string
     status: string
-    isi: string
+    vote: number
     lokasi?: string
     kontak?: string
     gambar?: string
@@ -178,11 +178,11 @@ export default function LaporanMasyarakatPage() {
                                                     <LihatLaporanModal
                                                         id={laporan.laporan_id}
                                                         nama={laporan.nama}
-                                                        judul={laporan.keluhan}
-                                                        kategori={laporan.deskripsi}
+                                                        keluhan={laporan.keluhan}
+                                                        vote={laporan.vote}
                                                         tanggal={laporan.tanggal}
                                                         status={laporan.status}
-                                                        isi={laporan.isi}
+                                                        deskripsi={laporan.deskripsi}
                                                         lokasi={laporan.lokasi}
                                                         kontak={laporan.kontak}
                                                         gambar={laporan.gambar}
@@ -193,7 +193,7 @@ export default function LaporanMasyarakatPage() {
                                                     <UbahStatusLaporanModal
                                                         id={laporan.laporan_id}
                                                         nama={laporan.nama}
-                                                        judul={laporan.keluhan}
+                                                        keluhan={laporan.keluhan}
                                                         status={laporan.status}
                                                         onStatusChange={handleStatusChange}
                                                     />

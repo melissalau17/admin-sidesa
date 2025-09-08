@@ -19,11 +19,11 @@ import Image from "next/image";
 interface LihatLaporanModalProps {
     id: number
     nama: string
-    judul: string
-    kategori: string
+    keluhan: string
+    vote: number
     tanggal: string
     status: string
-    isi: string
+    deskripsi: string
     lokasi?: string
     kontak?: string
     gambar?: string | number[]
@@ -32,11 +32,11 @@ interface LihatLaporanModalProps {
 export function LihatLaporanModal({
     id,
     nama,
-    judul,
-    kategori,
+    keluhan,
+    vote,
     tanggal,
     status,
-    isi,
+    deskripsi,
     lokasi,
     kontak,
     gambar,
@@ -122,11 +122,11 @@ export function LihatLaporanModal({
                             <div className="grid grid-cols-3 gap-4">
                                 <div className="space-y-1 col-span-2">
                                     <p className="text-sm font-medium text-muted-foreground">Judul Laporan</p>
-                                    <p className="text-sm font-semibold">{judul}</p>
+                                    <p className="text-sm font-semibold">{keluhan}</p>
                                 </div>
                                 <div className="space-y-1">
-                                    <p className="text-sm font-medium text-muted-foreground">Kategori</p>
-                                    <p className="text-sm">{kategori}</p>
+                                    <p className="text-sm font-medium text-muted-foreground">Jumlah Vote</p>
+                                    <p className="text-sm">{vote}</p>
                                 </div>
                             </div>
 
@@ -146,9 +146,9 @@ export function LihatLaporanModal({
                             </div>
 
                             <div className="space-y-1">
-                                <p className="text-sm font-medium text-muted-foreground">Isi Laporan</p>
+                                <p className="text-sm font-medium text-muted-foreground">Jumlah Vote Laporan</p>
                                 <div className="text-sm p-3 bg-gray-50 rounded-md border">
-                                    <p className="whitespace-pre-line text-justify">{isi}</p>
+                                    <p className="whitespace-pre-line text-justify">{vote}</p>
                                 </div>
                             </div>
 
@@ -191,7 +191,7 @@ export function LihatLaporanModal({
                                 <div className="border rounded-md overflow-hidden">
                                     <Image
                                         src={Array.isArray(gambar) ? convertPhotoToBase64(new Uint8Array(gambar)) : gambar}
-                                        alt={`Foto laporan ${judul}`}
+                                        alt={`Foto laporan ${nama}`}
                                         width={600}
                                         height={400}
                                         className="object-contain rounded-md"

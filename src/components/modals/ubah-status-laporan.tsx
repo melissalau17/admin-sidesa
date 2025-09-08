@@ -19,7 +19,7 @@ import { ClipboardCheck } from "lucide-react"
 interface UbahStatusLaporanModalProps {
   id: number
   nama: string
-  judul: string
+  keluhan: string
   status: string
   onStatusChange: (id: number, newStatus: string) => void
 }
@@ -27,7 +27,7 @@ interface UbahStatusLaporanModalProps {
 export function UbahStatusLaporanModal({
   id,
   nama,
-  judul,
+  keluhan,
   status,
   onStatusChange,
 }: UbahStatusLaporanModalProps) {
@@ -97,7 +97,7 @@ export function UbahStatusLaporanModal({
         <DialogHeader>
           <DialogTitle>Ubah Status Laporan</DialogTitle>
           <DialogDescription>
-            Ubah status laporan dari {nama} - {judul}
+            Ubah status laporan dari {nama} - {keluhan}
           </DialogDescription>
         </DialogHeader>
         <form onSubmit={handleSubmit}>
