@@ -13,8 +13,8 @@ import axios from "axios"
 interface LaporanItem {
     laporan_id: number
     nama: string
-    judul: string
-    kategori: string
+    keluhan: string
+    deskripsi: string
     tanggal: string
     status: string
     isi: string
@@ -110,8 +110,8 @@ export default function LaporanMasyarakatPage() {
         const query = searchQuery.toLowerCase()
         return sortedData.filter(laporan =>
             laporan.nama.toLowerCase().includes(query) ||
-            laporan.judul.toLowerCase().includes(query) ||
-            laporan.kategori.toLowerCase().includes(query) ||
+            laporan.keluhan.toLowerCase().includes(query) ||
+            laporan.deskripsi.toLowerCase().includes(query) ||
             laporan.tanggal.toLowerCase().includes(query) ||
             laporan.status.toLowerCase().includes(query)
         )
@@ -156,8 +156,18 @@ export default function LaporanMasyarakatPage() {
                                     <TableRow key={laporan.laporan_id}>
                                         <TableCell>{index + 1}</TableCell>
                                         <TableCell>{laporan.nama}</TableCell>
-                                        <TableCell>{laporan.judul}</TableCell>
-                                        <TableCell>{laporan.kategori}</TableCell>
+                                        <TableCell style={{
+                                            maxWidth: 150,          
+                                            whiteSpace: 'nowrap',   
+                                            overflow: 'hidden',     
+                                            textOverflow: 'ellipsis' 
+                                        }}>{laporan.keluhan}</TableCell>
+                                        <TableCell style={{
+                                            maxWidth: 250,
+                                            whiteSpace: 'nowrap',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis',
+                                        }}>{laporan.deskripsi}</TableCell>
                                         <TableCell>{laporan.tanggal}</TableCell>
                                         <TableCell>
                                             <Badge className={getStatusColor(laporan.status)}>{laporan.status}</Badge>
@@ -168,8 +178,8 @@ export default function LaporanMasyarakatPage() {
                                                     <LihatLaporanModal
                                                         id={laporan.laporan_id}
                                                         nama={laporan.nama}
-                                                        judul={laporan.judul}
-                                                        kategori={laporan.kategori}
+                                                        judul={laporan.keluhan}
+                                                        kategori={laporan.deskripsi}
                                                         tanggal={laporan.tanggal}
                                                         status={laporan.status}
                                                         isi={laporan.isi}
@@ -183,7 +193,7 @@ export default function LaporanMasyarakatPage() {
                                                     <UbahStatusLaporanModal
                                                         id={laporan.laporan_id}
                                                         nama={laporan.nama}
-                                                        judul={laporan.judul}
+                                                        judul={laporan.keluhan}
                                                         status={laporan.status}
                                                         onStatusChange={handleStatusChange}
                                                     />
