@@ -143,8 +143,8 @@ export default function LaporanMasyarakatPage() {
                             <TableRow>
                                 <TableHead>No</TableHead>
                                 <TableHead>Nama Pelapor</TableHead>
-                                <TableHead>Judul Laporan</TableHead>
-                                <TableHead>Kategori</TableHead>
+                                <TableHead>Keluhan</TableHead>
+                                <TableHead>Jumlah Vote</TableHead>
                                 <TableHead>Tanggal</TableHead>
                                 <TableHead>Status</TableHead>
                                 <TableHead className="text-right">Aksi</TableHead>
@@ -157,17 +157,12 @@ export default function LaporanMasyarakatPage() {
                                         <TableCell>{index + 1}</TableCell>
                                         <TableCell>{laporan.nama}</TableCell>
                                         <TableCell style={{
-                                            maxWidth: 150,          
+                                            maxWidth: 250,          
                                             whiteSpace: 'nowrap',   
                                             overflow: 'hidden',     
                                             textOverflow: 'ellipsis' 
                                         }}>{laporan.keluhan}</TableCell>
-                                        <TableCell style={{
-                                            maxWidth: 250,
-                                            whiteSpace: 'nowrap',
-                                            overflow: 'hidden',
-                                            textOverflow: 'ellipsis',
-                                        }}>{laporan.deskripsi}</TableCell>
+                                        <TableCell>{laporan.vote}</TableCell>
                                         <TableCell>{laporan.tanggal}</TableCell>
                                         <TableCell>
                                             <Badge className={getStatusColor(laporan.status)}>{laporan.status}</Badge>
