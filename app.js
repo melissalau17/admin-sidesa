@@ -3,7 +3,7 @@ import { Alert } from "react-native";
 import { io } from "socket.io-client";
 import AppNavigator from "./navigation";
 
-const socket = io("http://si-desa2.onrender.com");
+const socket = io("https://si-desa2.onrender.com");
 
 export default function App() {
     useEffect(() => {
@@ -17,7 +17,6 @@ export default function App() {
             let alertTitle = "Notifikasi Baru";
             let alertMessage = data.message || "Ada pembaruan!";
 
-            // Check for a specific type of notification and customize the alert
             if (data.title === "Laporan Baru") {
                 alertTitle = data.title;
                 alertMessage = `${data.body}`;

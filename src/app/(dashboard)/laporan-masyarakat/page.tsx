@@ -109,13 +109,14 @@ export default function LaporanMasyarakatPage() {
     const filteredData = useMemo(() => {
         const query = searchQuery.toLowerCase()
         return sortedData.filter(laporan =>
-            laporan.nama.toLowerCase().includes(query) ||
-            laporan.keluhan.toLowerCase().includes(query) ||
-            laporan.deskripsi.toLowerCase().includes(query) ||
-            laporan.tanggal.toLowerCase().includes(query) ||
-            laporan.status.toLowerCase().includes(query)
+            (laporan.nama ?? "").toLowerCase().includes(query) ||
+            (laporan.keluhan ?? "").toLowerCase().includes(query) ||
+            (laporan.deskripsi ?? "").toLowerCase().includes(query) ||
+            (laporan.tanggal ?? "").toLowerCase().includes(query) ||
+            (laporan.status ?? "").toLowerCase().includes(query)
         )
     }, [sortedData, searchQuery])
+
 
     if (loading) return <p>Memuat laporan...</p>
     if (error) return <p className="text-red-500">{error}</p>
@@ -157,10 +158,10 @@ export default function LaporanMasyarakatPage() {
                                         <TableCell>{index + 1}</TableCell>
                                         <TableCell>{laporan.nama}</TableCell>
                                         <TableCell style={{
-                                            maxWidth: 250,          
-                                            whiteSpace: 'nowrap',   
-                                            overflow: 'hidden',     
-                                            textOverflow: 'ellipsis' 
+                                            maxWidth: 250,
+                                            whiteSpace: 'nowrap',
+                                            overflow: 'hidden',
+                                            textOverflow: 'ellipsis'
                                         }}>{laporan.keluhan}</TableCell>
                                         <TableCell>{laporan.vote}</TableCell>
                                         <TableCell>{laporan.tanggal}</TableCell>
