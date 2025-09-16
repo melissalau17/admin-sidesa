@@ -16,15 +16,20 @@ export function FAQSection({ openFaq, toggleFaq }: FAQSectionProps) {
                         {faqData.map((faq, index) => (
                             <div
                                 key={index}
-                                // Apply hover and border classes directly to the container
-                                className="border border-gray-300 rounded-lg overflow-hidden transition-colors hover:border-blue-500"
+                                // The parent div is now the "group"
+                                className="group border border-gray-700 rounded-lg overflow-hidden transition-colors duration-200 ease-in-out hover:border-blue-500"
                             >
                                 <button
-                                    className="w-full px-6 py-4 text-left flex justify-between items-center transition-colors focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                    // The button has no styling of its own, just padding and layout
+                                    className="w-full px-6 py-4 text-left flex justify-between items-center bg-transparent transition-colors focus:outline-none"
                                     onClick={() => toggleFaq(index)}
                                 >
-                                    <span className="font-medium">{faq.question}</span>
-                                    <ChevronDown className={`w-5 h-5 transition-transform ${openFaq === index ? "rotate-180" : ""}`} />
+                                    <span className="font-medium text-gray-800 transition-colors duration-200 ease-in-out group-hover:text-blue-600">
+                                        {faq.question}
+                                    </span>
+                                    <ChevronDown
+                                        className={`w-5 h-5 transition-transform duration-200 ease-in-out ${openFaq === index ? "rotate-180 text-blue-500" : "text-gray-500 group-hover:text-blue-500"}`}
+                                    />
                                 </button>
                                 {openFaq === index && <div className="px-6 pb-4 text-gray-800">{faq.answer}</div>}
                             </div>
