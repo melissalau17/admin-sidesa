@@ -1,208 +1,197 @@
-"use client"
+"use client";
 
-import { useState, useEffect, type ChangeEvent } from "react"
-import axios from "axios"
+import { useEffect, useState, type ChangeEvent } from "react";
+import axios from "axios";
 import {
     Card, CardContent, CardDescription, CardHeader, CardTitle
-} from "@/components/ui/card"
+} from "@/components/ui/card";
 import {
     Table, TableBody, TableCell, TableHead, TableHeader, TableRow
-} from "@/components/ui/table"
-import { Badge } from "@/components/ui/badge"
-import { SearchComponent } from "@/components/ui/SearchComponent"
-import { TambahSuratModal } from "@/components/modals/tambah-surat-modal"
-import { UbahStatusSuratModal } from "@/components/modals/ubah-status-surat-modal"
-import { LihatSuratModal } from "@/components/modals/lihat-surat-modal"
-import * as Tooltip from "@radix-ui/react-tooltip"
+} from "@/components/ui/table";
+import { Badge } from "@/components/ui/badge";
+import { SearchComponent } from "@/components/ui/SearchComponent";
+import { TambahSuratModal } from "@/components/modals/tambah-surat-modal";
+import { UbahStatusSuratModal } from "@/components/modals/ubah-status-surat-modal";
+import { LihatSuratModal } from "@/components/modals/lihat-surat-modal";
+import * as Tooltip from "@radix-ui/react-tooltip";
 
-const fileToBase64 = (file: File): Promise<string> =>
-    new Promise((resolve, reject) => {
-        const reader = new FileReader()
-        reader.readAsDataURL(file)
-        reader.onload = () => resolve(reader.result as string)
-        reader.onerror = (err) => reject(err)
-    })
-
-type PhotoInput = File | string
-type PhotoData = string | null
+// Use a direct string (URL) for photo data
+type PhotoData = string | null;
 
 interface SuratItem {
-    surat_id: number
-    nama: string
-    jenis_surat: string
-    tanggal: string
-    status: string
-    nik: string
-    alamat: string
-    tujuan_surat: string
-    photo_ktp: PhotoData
-    photo_kk: PhotoData
-    foto_usaha?: PhotoData
-    gaji_ortu?: PhotoData
+    surat_id: number;
+    nama: string;
+    jenis_surat: string;
+    tanggal: string;
+    status: string;
+    nik: string;
+    alamat: string;
+    tujuan_surat: string;
+    photo_ktp?: PhotoData;
+    photo_kk?: PhotoData;
+    foto_usaha?: PhotoData;
+    gaji_ortu?: PhotoData;
 }
 
 const getStatusColor = (status: string): string => {
     switch (status) {
-        case "Menunggu": return "bg-yellow-100 text-yellow-800"
-        case "Diproses": return "bg-gray-100 text-gray-800"
-        case "Selesai": return "bg-green-100 text-green-800"
-        case "Ditolak": return "bg-red-100 text-red-800"
-        default: return "bg-gray-100 text-gray-800"
+        case "Menunggu": return "bg-yellow-100 text-yellow-800";
+        case "Diproses": return "bg-gray-100 text-gray-800";
+        case "Selesai": return "bg-green-100 text-green-800";
+        case "Ditolak": return "bg-red-100 text-red-800";
+        default: return "bg-gray-100 text-gray-800";
     }
-}
+};
 
 const getSavedStatus = (surat_id: number, defaultStatus: string) => {
-    if (typeof window === "undefined") return defaultStatus
-    const saved = localStorage.getItem(`status-${surat_id}`)
-    return saved || defaultStatus
-}
+    if (typeof window === "undefined") return defaultStatus;
+    const saved = localStorage.getItem(`status-${surat_id}`);
+    return saved || defaultStatus;
+};
 
 const saveStatus = (surat_id: number, status: string) => {
     if (typeof window !== "undefined") {
-        localStorage.setItem(`status-${surat_id}`, status)
+        localStorage.setItem(`status-${surat_id}`, status);
     }
-}
+};
 
 export default function KelolaSuratPage() {
-    const [suratData, setSuratData] = useState<SuratItem[]>([])
-    const [loading, setLoading] = useState(true)
-    const [error, setError] = useState<string | null>(null)
-    const [searchQuery, setSearchQuery] = useState("")
+    const [suratData, setSuratData] = useState<SuratItem[]>([]);
+    const [loading, setLoading] = useState(true);
+    const [error, setError] = useState<string | null>(null);
+    const [searchQuery, setSearchQuery] = useState("");
 
     useEffect(() => {
         const fetchSurat = async () => {
             try {
-                const token = typeof window !== "undefined" ? localStorage.getItem("token") : null
+                const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
                 const response = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/letters`, {
                     headers: { Authorization: `Bearer ${token}` }
-                })
+                });
 
                 const rawData = Array.isArray(response.data.data)
-                ? response.data.data
-                : Array.isArray(response.data)
+                    ? response.data.data
+                    : Array.isArray(response.data)
                     ? response.data
-                    : []
-
-                const convertPhotoToBase64 = (photoData: PhotoData): string | null => {
-                    if (!photoData) return null
-                    return typeof photoData === "string" ? photoData : null
-                }
+                    : [];
 
                 const formatted: SuratItem[] = rawData.map((surat: SuratItem) => ({
                     ...surat,
                     tanggal: new Date(surat.tanggal).toLocaleDateString("id-ID", {
                         day: "2-digit", month: "short", year: "numeric"
                     }),
-                    photo_ktp: convertPhotoToBase64(surat.photo_ktp),
-                    photo_kk: convertPhotoToBase64(surat.photo_kk),
-                    foto_usaha: convertPhotoToBase64(surat.foto_usaha ?? null),
-                    gaji_ortu: convertPhotoToBase64(surat.gaji_ortu ?? null),
-                }))
+                    // Assuming backend now returns URLs directly
+                    photo_ktp: surat.photo_ktp || null,
+                    photo_kk: surat.photo_kk || null,
+                    foto_usaha: surat.foto_usaha || null,
+                    gaji_ortu: surat.gaji_ortu || null,
+                }));
 
-                setSuratData(formatted)
+                setSuratData(formatted);
             } catch (err) {
-                console.error("Fetch gagal:", err)
-                setError("Gagal memuat data surat.")
+                console.error("Fetch gagal:", err);
+                setError("Gagal memuat data surat.");
             } finally {
-                setLoading(false)
+                setLoading(false);
             }
-        }
+        };
 
-        fetchSurat()
-    }, [])
+        fetchSurat();
+    }, []);
 
     useEffect(() => {
         setSuratData(prev =>
             prev.map(surat => ({
-            ...surat,
-            status: getSavedStatus(surat.surat_id, surat.status),
+                ...surat,
+                status: getSavedStatus(surat.surat_id, surat.status),
             }))
-        )
-    }, [])
+        );
+    }, []);
 
     const handleDeleteSurat = async (id: number) => {
-        if (!confirm("Yakin ingin menghapus surat ini?")) return
+        if (!confirm("Yakin ingin menghapus surat ini?")) return;
 
         try {
-            const token = typeof window !== "undefined" ? localStorage.getItem("token") : null
+            const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
             await axios.delete(`${process.env.NEXT_PUBLIC_API_URL}/api/letters/${id}`, {
                 headers: { Authorization: `Bearer ${token}` },
-            })
+            });
 
-            setSuratData(prev => prev.filter((surat) => surat.surat_id !== id))
+            setSuratData(prev => prev.filter((surat) => surat.surat_id !== id));
         } catch (err) {
-            console.error("Gagal menghapus surat:", err)
-            alert("Terjadi kesalahan saat menghapus surat.")
+            console.error("Gagal menghapus surat:", err);
+            alert("Terjadi kesalahan saat menghapus surat.");
         }
-    }
+    };
 
     const handleStatusChange = (id: number, newStatus: string) => {
         setSuratData(prev =>
             prev.map(surat =>
                 surat.surat_id === id ? { ...surat, status: newStatus } : surat
             )
-        )
-        saveStatus(id, newStatus)
-    }
+        );
+        saveStatus(id, newStatus);
+    };
 
     const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
-        setSearchQuery(e.target.value)
-    }
+        setSearchQuery(e.target.value);
+    };
 
-    const handleAddSurat = async (newSurat: Omit<SuratItem, "surat_id" | "photo_ktp" | "photo_kk"> & {
-        photo_ktp: PhotoInput
-        photo_kk: PhotoInput
+    const handleAddSurat = async (newSurat: {
+        nama: string;
+        jenis: string;
+        tanggal: string;
+        status: string;
+        nik: string;
+        alamat: string;
+        keperluan: string;
+        ktpImage?: File;
+        kkImage?: File;
     }) => {
         try {
-            const token = typeof window !== "undefined" ? localStorage.getItem("token") : null
+            const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
 
-            const isFile = (file: PhotoInput): file is File => file instanceof File
-
-            const ktpBase64 = isFile(newSurat.photo_ktp)
-                ? await fileToBase64(newSurat.photo_ktp)
-                : newSurat.photo_ktp
-
-            const kkBase64 = isFile(newSurat.photo_kk)
-                ? await fileToBase64(newSurat.photo_kk)
-                : newSurat.photo_kk
-
-            // Prepare FormData for backend
-            const formData = new FormData()
-            Object.entries({ ...newSurat, photo_ktp: ktpBase64, photo_kk: kkBase64 }).forEach(([key, value]) => {
-                if (value !== undefined && value !== null) formData.append(key, value as string | Blob)
-            })
+            const formData = new FormData();
+            formData.append("nama", newSurat.nama);
+            formData.append("nik", newSurat.nik);
+            formData.append("jenis_surat", newSurat.jenis);
+            formData.append("alamat", newSurat.alamat);
+            formData.append("tujuan_surat", newSurat.keperluan);
+            if (newSurat.ktpImage) formData.append("photo_ktp", newSurat.ktpImage);
+            if (newSurat.kkImage) formData.append("photo_kk", newSurat.kkImage);
 
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/letters`, formData, {
-                headers: { Authorization: `Bearer ${token}` }
-            })
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data', // Axios usually adds this automatically, but it's good to be explicit
+                }
+            });
 
-            // Store Base64 string in state
+            // Assuming the backend returns the newly created surat object with URLs
             const savedSurat: SuratItem = {
-                ...response.data,
-                tanggal: new Date(response.data.tanggal).toLocaleDateString("id-ID", {
+                ...response.data.data,
+                tanggal: new Date(response.data.data.tanggal).toLocaleDateString("id-ID", {
                     day: "2-digit", month: "short", year: "numeric"
                 }),
-                photo_ktp: ktpBase64,
-                photo_kk: kkBase64
-            }
+            };
 
-            setSuratData(prev => [...prev, savedSurat])
+            setSuratData(prev => [...prev, savedSurat]);
         } catch (err) {
-            console.error("Gagal menambahkan surat:", err)
+            console.error("Gagal menambahkan surat:", err);
         }
-    }
+    };
 
 
     const filteredData = suratData.filter((surat) => {
-        const q = searchQuery.toLowerCase()
+        const q = searchQuery.toLowerCase();
         return (
             surat.nama.toLowerCase().includes(q) ||
             surat.jenis_surat.toLowerCase().includes(q) ||
             surat.tanggal.toLowerCase().includes(q) ||
             surat.status.toLowerCase().includes(q) ||
             surat.nik.toLowerCase().includes(q)
-        )
-    })
+        );
+    });
 
     return (
         <div className="space-y-6">
@@ -218,18 +207,17 @@ export default function KelolaSuratPage() {
                             <div className="relative inline-block">
                                 <TambahSuratModal
                                     onAddSurat={(surat) => {
-                                        if (!surat.ktpImage || !surat.kkImage) return
                                         handleAddSurat({
                                             nama: surat.nama,
-                                            jenis_surat: surat.jenis,
+                                            jenis: surat.jenis,
                                             tanggal: surat.tanggal,
                                             status: surat.status,
                                             nik: surat.nik,
                                             alamat: surat.alamat,
-                                            tujuan_surat: surat.keperluan,
-                                            photo_ktp: surat.ktpImage,
-                                            photo_kk: surat.kkImage,
-                                        })
+                                            keperluan: surat.keperluan,
+                                            ktpImage: surat.ktpImage,
+                                            kkImage: surat.kkImage,
+                                        });
                                     }}
                                 />
                             </div>
@@ -298,8 +286,8 @@ export default function KelolaSuratPage() {
                                                         nik={surat.nik}
                                                         alamat={surat.alamat}
                                                         tujuan_surat={surat.tujuan_surat}
-                                                        photo_ktp={surat.photo_ktp}
-                                                        photo_kk={surat.photo_kk}
+                                                        photo_ktp={surat.photo_ktp || null}
+                                                        photo_kk={surat.photo_kk || null}
                                                     />
                                                     <UbahStatusSuratModal
                                                         id={surat.surat_id}
@@ -331,5 +319,5 @@ export default function KelolaSuratPage() {
                 </Card>
             )}
         </div>
-    )
+    );
 }

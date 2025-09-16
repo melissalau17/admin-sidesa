@@ -27,21 +27,49 @@ import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
 import { Plus } from "lucide-react"
 
 export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerOpen?: boolean; onSuccess?: () => void }) {
-    const [open, setOpen] = useState(triggerOpen);
+    const [open, setOpen] = useState(triggerOpen)
     const [isLoading, setIsLoading] = useState(false)
 
-    const [judul, setJudul] = useState("")
-    const [kategori, setKategori] = useState("")
-    const [kontent, setKontent] = useState("")
-    const [status, setStatus] = useState("Draft")
-    const [photo, setPhoto] = useState<File | null>(null)
+    // Using a single state object for all form data
+    const [formData, setFormData] = useState({
+        judul: "",
+        kategori: "",
+        kontent: "",
+        status: "Draft",
+        photo: null as File | null,
+    })
 
     const { toast } = useToast()
+
+    // Generic handler for text inputs and textareas
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
+        const { id, value } = e.target
+        setFormData((prev) => ({ ...prev, [id]: value }))
+    }
+    
+    // Handler for the file input
+    const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0] || null
+        setFormData((prev) => ({ ...prev, photo: file }))
+    }
+    
+    // Handler for the Select component
+    const handleSelectChange = (value: string) => {
+        setFormData((prev) => ({ ...prev, kategori: value }))
+    }
+
+    // Handler for the RadioGroup
+    const handleRadioChange = (value: string) => {
+        setFormData((prev) => ({ ...prev, status: value }))
+    }
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault()
         setIsLoading(true)
 
+        const { judul, kategori, kontent, status, photo } = formData
+
+        // Validate form data
         if (!judul || !kategori || !kontent || !status || !photo) {
             toast({
                 title: "Gagal",
@@ -53,18 +81,18 @@ export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerO
         }
 
         try {
-            const formData = new FormData()
-            formData.append("judul", judul)
-            formData.append("kategori", kategori)
-            formData.append("kontent", kontent)
-            formData.append("status", status)
+            const data = new FormData()
+            data.append("judul", judul)
+            data.append("kategori", kategori)
+            data.append("kontent", kontent)
+            data.append("status", status)
             if (photo) {
-                formData.append("photo", photo)
+                data.append("photo", photo)
             }
 
-            const token = localStorage.getItem("token");
+            const token = localStorage.getItem("token")
 
-            await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas`, formData, {
+            await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas`, data, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }
@@ -76,11 +104,14 @@ export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerO
             })
 
             setOpen(false)
-            setJudul("")
-            setKategori("")
-            setKontent("")
-            setStatus("Draft")
-            setPhoto(null)
+            // Reset form state after successful submission
+            setFormData({
+                judul: "",
+                kategori: "",
+                kontent: "",
+                status: "Draft",
+                photo: null,
+            })
 
             onSuccess?.()
         } catch (error) {
@@ -112,11 +143,18 @@ export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerO
                     <div className="grid gap-4 py-4">
                         <div className="flex flex-col gap-1 sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
                             <Label htmlFor="judul" className="sm:text-right">Judul Berita</Label>
-                            <Input id="judul" value={judul} onChange={(e) => setJudul(e.target.value)} placeholder="Masukkan judul berita" className="sm:col-span-3 w-full" required />
+                            <Input
+                                id="judul"
+                                value={formData.judul}
+                                onChange={handleInputChange}
+                                placeholder="Masukkan judul berita"
+                                className="sm:col-span-3 w-full"
+                                required
+                            />
                         </div>
                         <div className="flex flex-col sm:grid sm:grid-cols-4 sm:items-center gap-4">
                             <Label htmlFor="kategori" className="sm:text-right">Kategori</Label>
-                            <Select onValueChange={(val) => setKategori(val)} value={kategori} required>
+                            <Select onValueChange={handleSelectChange} value={formData.kategori} required>
                                 <SelectTrigger id="kategori" className="sm:col-span-3 border-b border-gray-300">
                                     <SelectValue placeholder="Pilih kategori" />
                                 </SelectTrigger>
@@ -132,14 +170,21 @@ export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerO
                         </div>
                         <div className="flex flex-col sm:grid sm:grid-cols-4 sm:items-center gap-4">
                             <Label htmlFor="gambar" className="sm:text-right">Gambar</Label>
-                            <Input id="gambar" type="file" accept="image/*" onChange={(e: ChangeEvent<HTMLInputElement>) => setPhoto(e.target.files?.[0] || null)} className="sm:col-span-3 w-full" required/>
+                            <Input
+                                id="gambar"
+                                type="file"
+                                accept="image/*"
+                                onChange={handleFileChange}
+                                className="sm:col-span-3 w-full"
+                                required
+                            />
                         </div>
                         <div className="flex flex-col sm:grid sm:grid-cols-4 sm:items-start gap-4">
                             <Label htmlFor="kontent" className="sm:text-right pt-2">Konten Berita</Label>
                             <Textarea
                                 id="kontent"
-                                value={kontent}
-                                onChange={(e: ChangeEvent<HTMLTextAreaElement>) => setKontent(e.target.value)}
+                                value={formData.kontent}
+                                onChange={handleInputChange}
                                 placeholder="Masukkan konten berita"
                                 className="sm:col-span-3 min-h-[150px] border-b border-gray-300 w-full"
                                 required
@@ -147,7 +192,7 @@ export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerO
                         </div>
                         <div className="flex flex-col sm:grid sm:grid-cols-4 sm:items-center gap-4">
                             <Label className="sm:text-right">Status</Label>
-                            <RadioGroup value={status} onValueChange={(val) => setStatus(val)} className="sm:col-span-3 space-y-2">
+                            <RadioGroup value={formData.status} onValueChange={handleRadioChange} className="sm:col-span-3 space-y-2">
                                 <div className="flex items-center space-x-2">
                                     <RadioGroupItem value="Draft" id="draft" />
                                     <Label htmlFor="draft">Draft</Label>
@@ -163,7 +208,11 @@ export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerO
                         <Button type="button" variant="destructive" onClick={() => setOpen(false)}>
                             Batal
                         </Button>
-                        <Button type="submit" variant="ghost" disabled={isLoading || !judul || !kategori || !kontent || !photo}>
+                        <Button
+                            type="submit"
+                            variant="ghost"
+                            disabled={isLoading || !formData.judul || !formData.kategori || !formData.kontent || !formData.photo}
+                        >
                             {isLoading ? "Menyimpan..." : "Simpan"}
                         </Button>
                     </DialogFooter>

@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useEffect, useState, type FormEvent } from "react"
-import axios from "axios"
-import { Button } from "@/components/ui/button"
+import { useEffect, useState, type FormEvent } from "react";
+import axios from "axios";
+import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
@@ -10,40 +10,44 @@ import {
     DialogFooter,
     DialogHeader,
     DialogTitle,
-    DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { useToast } from "@/hooks/use-toast"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Edit } from "lucide-react"
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Edit } from "lucide-react";
+import Image from "next/image"; // Import Next.js Image component
 
 interface EditBeritaModalProps {
-    id: number
-    judul: string
-    kategori: string
-    status: string
-    kontent: string
-    open: boolean
-    onOpenChange: (open: boolean) => void
+    id: number;
+    judul: string;
+    kategori: string;
+    status: string;
+    kontent: string;
+    photoUrl?: string | null; // Added initial photoUrl prop
+    open: boolean;
+    onOpenChange: (open: boolean) => void;
     onBeritaUpdate: (
         berita_id: number,
         updatedBerita: {
-            judul: string
-            kategori: string
-            status: string
-            kontent: string
+            judul: string;
+            kategori: string;
+            status: string;
+            kontent: string;
+            photo_url?: string; // Corrected to photo_url
         }
-    ) => void
+    ) => void;
 }
+
+const jenisSuratOptions = ["Infrastruktur", "Pertanian", "Kesehatan", "Ekonomi", "Budaya", "Pendidikan"];
 
 export function EditBeritaModal({
     id,
@@ -51,98 +55,94 @@ export function EditBeritaModal({
     kategori,
     status,
     kontent,
+    photoUrl, // Destructure new prop
     open,
     onOpenChange,
     onBeritaUpdate,
 }: EditBeritaModalProps) {
-    const [formData, setFormData] = useState({
-        judul,
-        kategori,
-        status,
-        kontent,
-    })
-    const [photo, setPhoto] = useState<File | null>(null)
-    const [isLoading, setIsLoading] = useState(false)
-    const [previewUrl, setPreviewUrl] = useState<string | null>(null)
-    const { toast } = useToast()
+    const [formData, setFormData] = useState({ judul, kategori, status, kontent });
+    const [photo, setPhoto] = useState<File | null>(null);
+    const [isLoading, setIsLoading] = useState(false);
+    const [previewUrl, setPreviewUrl] = useState<string | null>(photoUrl || null); // Initialize with prop
+    const { toast } = useToast();
 
+    // Sync form data and preview URL with incoming props
     useEffect(() => {
-        if (open) {
-            setFormData({ judul, kategori, status, kontent });
-            setPhoto(null);
-            // Assuming the photo comes from the API and is a URL
-            if (kontent) {
-                // Here's where we would fetch and set the preview if kontent had a photo URL
-                // For now, let's assume we don't have a photo URL and set a placeholder
-                setPreviewUrl(null);
-            }
-        }
-    }, [open, judul, kategori, status, kontent]);
+        setFormData({ judul, kategori, status, kontent });
+        setPreviewUrl(photoUrl || null);
+        setPhoto(null);
+    }, [judul, kategori, status, kontent, photoUrl, open]);
 
 
     const handleChange = (field: string, value: string) => {
         setFormData((prev) => ({
             ...prev,
             [field]: value,
-        }))
-    }
+        }));
+    };
+
+    const handleFileChange = (e: React.ChangeEvent<HTMLInputElement>) => {
+        const file = e.target.files?.[0];
+        if (file) {
+            setPhoto(file);
+            const reader = new FileReader();
+            reader.onloadend = () => {
+                setPreviewUrl(reader.result as string);
+            };
+            reader.readAsDataURL(file);
+        } else {
+            setPhoto(null);
+            setPreviewUrl(photoUrl || null);
+        }
+    };
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        setIsLoading(true)
+        e.preventDefault();
+        setIsLoading(true);
 
-        const data = new FormData()
-        data.append("judul", formData.judul)
-        data.append("kategori", formData.kategori)
-        data.append("status", formData.status)
-        data.append("kontent", formData.kontent)
+        const data = new FormData();
+        data.append("judul", formData.judul);
+        data.append("kategori", formData.kategori);
+        data.append("status", formData.status);
+        data.append("kontent", formData.kontent);
         if (photo) {
-            data.append("photo", photo)
+            data.append("photo", photo);
         }
 
         try {
-            const token = localStorage.getItem("token")
-            
-            // Perbaikan kecil: Gunakan axios daripada fetch
-            const res = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas/${id}`, data, {
+            const token = localStorage.getItem("token");
+
+            await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas/${id}`, data, {
                 headers: {
                     Authorization: `Bearer ${token}`,
                 }
-            })
-            
-            const updated = res.data;
-            onBeritaUpdate(id, updated.data);
+            });
+
+            // Update the state in the parent component
+            onBeritaUpdate(id, { ...formData, photo_url: previewUrl || undefined });
 
             toast({
                 title: "Berhasil",
                 description: "Berita berhasil diperbarui",
-            })
+            });
 
-            onOpenChange(false)
+            onOpenChange(false);
         } catch (error) {
-            console.error("Error updating berita:", error)
+            console.error("Error updating berita:", error);
             toast({
                 title: "Gagal",
                 description: "Terjadi kesalahan saat memperbarui berita",
                 variant: "destructive",
-            })
+            });
         } finally {
-            setIsLoading(false)
+            setIsLoading(false);
         }
-    }
+    };
 
 
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            <DialogTrigger asChild>
-                <Button
-                    className="bg-amber-100 text-amber-600 hover:bg-amber-600 hover:text-white"
-                    size="sm"
-                >
-                    <Edit className="h-4 w-4" />
-                    <span className="sr-only">Edit</span>
-                </Button>
-            </DialogTrigger>
+            {/* Removed redundant DialogTrigger, as the parent component manages 'open' state */}
             <DialogContent
                 className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto"
                 aria-labelledby="dialog-title"
@@ -180,12 +180,9 @@ export function EditBeritaModal({
                                     <SelectValue placeholder="Pilih kategori" />
                                 </SelectTrigger>
                                 <SelectContent>
-                                    <SelectItem value="Infrastruktur">Infrastruktur</SelectItem>
-                                    <SelectItem value="Pertanian">Pertanian</SelectItem>
-                                    <SelectItem value="Kesehatan">Kesehatan</SelectItem>
-                                    <SelectItem value="Ekonomi">Ekonomi</SelectItem>
-                                    <SelectItem value="Budaya">Budaya</SelectItem>
-                                    <SelectItem value="Pendidikan">Pendidikan</SelectItem>
+                                    {jenisSuratOptions.map((opt) => (
+                                        <SelectItem key={opt} value={opt}>{opt}</SelectItem>
+                                    ))}
                                 </SelectContent>
                             </Select>
                         </div>
@@ -198,17 +195,7 @@ export function EditBeritaModal({
                                 type="file"
                                 accept="image/*"
                                 className="col-span-3"
-                                onChange={(e) => {
-                                    const file = e.target.files?.[0]
-                                    if (file) {
-                                        setPhoto(file)
-                                        const reader = new FileReader()
-                                        reader.onloadend = () => {
-                                            setPreviewUrl(reader.result as string)
-                                        }
-                                        reader.readAsDataURL(file)
-                                    }
-                                }}
+                                onChange={handleFileChange}
                             />
                         </div>
                         {previewUrl && (
@@ -216,7 +203,16 @@ export function EditBeritaModal({
                                 <Label className="sm:text-right">
                                     Pratinjau
                                 </Label>
-                                <img src={previewUrl} alt="Pratinjau Gambar" className="col-span-3 object-cover rounded-md max-h-48 w-full" />
+                                <div className="col-span-3">
+                                    <Image
+                                        src={previewUrl}
+                                        alt="Pratinjau Gambar"
+                                        width={400}
+                                        height={200}
+                                        className="object-cover rounded-md max-h-48 w-full"
+                                        unoptimized // Required for Base64 or external URLs
+                                    />
+                                </div>
                             </div>
                         )}
                         <div className="flex flex-col sm:grid sm:grid-cols-4 sm:items-start sm:gap-4">
@@ -274,5 +270,5 @@ export function EditBeritaModal({
                 </form>
             </DialogContent>
         </Dialog>
-    )
+    );
 }

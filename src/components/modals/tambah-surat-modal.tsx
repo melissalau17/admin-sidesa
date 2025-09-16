@@ -99,7 +99,10 @@ export function TambahSuratModal({ onAddSurat }: TambahSuratModalProps) {
         try {
             const token = localStorage.getItem("token")
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/letters`, data, {
-                headers: { Authorization: `Bearer ${token}` }
+                headers: {
+                    Authorization: `Bearer ${token}`,
+                    'Content-Type': 'multipart/form-data' // Specify content type for FormData
+                }
             })
 
             const surat_id = response.data?.surat_id ?? Math.floor(Math.random() * 1000000)
@@ -111,8 +114,8 @@ export function TambahSuratModal({ onAddSurat }: TambahSuratModalProps) {
                 jenis,
                 alamat,
                 keperluan,
-                status: "Menunggu", 
-                tanggal: new Date().toISOString() 
+                status: "Menunggu",
+                tanggal: new Date().toISOString()
             }
 
             onAddSurat(newSurat)
@@ -186,7 +189,7 @@ export function TambahSuratModal({ onAddSurat }: TambahSuratModalProps) {
                                     id={id}
                                     type={type}
                                     required
-                                    value={formData[id as keyof typeof formData] as string}
+                                    value={formData[id as "nama" | "nik"]}
                                     onChange={handleInputChange}
                                     placeholder={`Masukkan ${label.toLowerCase()}`}
                                     className="sm:col-span-3"
@@ -221,7 +224,7 @@ export function TambahSuratModal({ onAddSurat }: TambahSuratModalProps) {
                                     required
                                     placeholder={`Masukkan ${label.toLowerCase()}`}
                                     className="sm:col-span-3"
-                                    value={formData[id as keyof typeof formData] as string}
+                                    value={formData[id as "alamat" | "keperluan"]}
                                     onChange={handleInputChange}
                                 />
                             </div>
@@ -236,7 +239,6 @@ export function TambahSuratModal({ onAddSurat }: TambahSuratModalProps) {
                                 <Input
                                     id={id}
                                     type="file"
-                                    required
                                     accept="image/*"
                                     className="sm:col-span-3"
                                     onChange={(e) => handleFileChange(e, field as "ktpImage" | "kkImage")}

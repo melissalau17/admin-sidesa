@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "@/components/ui/button"
+import { useState } from "react";
+import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
@@ -10,24 +10,24 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "@/components/ui/dialog"
-import { Badge } from "@/components/ui/badge"
-import { Eye, FileImage } from "lucide-react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Eye, FileImage } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 import axios from "axios";
 
 interface LihatSuratModalProps {
-    id: number
-    nama: string
-    jenis_surat: string
-    tanggal: string
-    status: string
-    nik: string
-    alamat: string
-    tujuan_surat: string
-    photo_ktp: string | null
-    photo_kk: string | null
+    id: number;
+    nama: string;
+    jenis_surat: string;
+    tanggal: string;
+    status: string;
+    nik: string;
+    alamat: string;
+    tujuan_surat: string;
+    photo_ktp: string | null;
+    photo_kk: string | null;
 }
 
 export function LihatSuratModal({
@@ -42,35 +42,35 @@ export function LihatSuratModal({
     photo_ktp,
     photo_kk,
 }: LihatSuratModalProps) {
-    const [open, setOpen] = useState(false)
+    const [open, setOpen] = useState(false);
 
     const getStatusColor = (status: string): string => {
         switch (status) {
             case "Menunggu":
-                return "bg-yellow-100 text-yellow-800"
+                return "bg-yellow-100 text-yellow-800";
             case "Diproses":
-                return "bg-blue-100 text-blue-800"
+                return "bg-blue-100 text-blue-800";
             case "Selesai":
-                return "bg-green-100 text-green-800"
+                return "bg-green-100 text-green-800";
             case "Ditolak":
-                return "bg-red-100 text-red-800"
+                return "bg-red-100 text-red-800";
             default:
-                return "bg-gray-100 text-gray-800"
+                return "bg-gray-100 text-gray-800";
         }
-    }
+    };
 
     const keterangan =
         status === "Ditolak"
             ? "Permohonan ditolak karena data tidak lengkap. Silakan lengkapi data dan ajukan kembali."
             : status === "Selesai"
-                ? "Surat telah selesai diproses dan dapat diambil di kantor desa."
-                : status === "Diproses"
-                    ? "Surat sedang dalam proses pembuatan dan penandatanganan oleh kepala desa."
-                    : "Permohonan surat sedang menunggu untuk diproses."
+            ? "Surat telah selesai diproses dan dapat diambil di kantor desa."
+            : status === "Diproses"
+            ? "Surat sedang dalam proses pembuatan dan penandatanganan oleh kepala desa."
+            : "Permohonan surat sedang menunggu untuk diproses.";
 
     const handlePrint = async () => {
         try {
-            const token = typeof window !== "undefined" ? localStorage.getItem("token") : null;
+            const token = localStorage.getItem("token");
 
             const response = await axios.get(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/letters/${id}/print`,
@@ -188,7 +188,10 @@ export function LihatSuratModal({
                                     <Image
                                         src={photo_ktp}
                                         alt="Scan KTP"
+                                        width={500}
+                                        height={300}
                                         className="max-w-full h-auto object-contain"
+                                        unoptimized
                                     />
                                 </div>
                             </div>
@@ -210,7 +213,10 @@ export function LihatSuratModal({
                                     <Image
                                         src={photo_kk}
                                         alt="Scan KK"
+                                        width={500}
+                                        height={300}
                                         className="max-w-full h-auto object-contain"
+                                        unoptimized
                                     />
                                 </div>
                             </div>
@@ -225,16 +231,14 @@ export function LihatSuratModal({
                     </TabsContent>
                 </Tabs>
 
-                <DialogFooter>
+                <DialogFooter className="flex flex-col sm:flex-row sm:justify-end gap-2">
                     {status === "Selesai" && (
-                        <DialogTrigger asChild>
-                            <a href={`/kelola-surat/print/${id}`} target="_blank">
-                                <Button className="bg-green-600 text-white hover:bg-green-700"
-                                onClick={handlePrint}>
-                                    Cetak Surat (PDF)
-                                </Button>
-                            </a>
-                        </DialogTrigger>
+                        <Button
+                            className="bg-green-600 text-white hover:bg-green-700"
+                            onClick={handlePrint}
+                        >
+                            Cetak Surat (PDF)
+                        </Button>
                     )}
                     <Button variant="ghost" onClick={() => setOpen(false)}>
                         Tutup
@@ -242,5 +246,5 @@ export function LihatSuratModal({
                 </DialogFooter>
             </DialogContent>
         </Dialog>
-    )
+    );
 }

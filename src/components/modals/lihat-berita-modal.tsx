@@ -13,6 +13,7 @@ import {
 import { Badge } from "@/components/ui/badge";
 import { Eye } from "lucide-react";
 import axios from "axios";
+import Image from "next/image"; // Import Next.js Image component
 
 interface LihatBeritaModalProps {
     berita_id: number;
@@ -24,7 +25,8 @@ interface BeritaDetail {
     tanggal: string;
     status: string;
     kontent: string;
-    photo?: { type: "Buffer"; data: number[] } | string;
+    // We assume the backend is refactored to always return a URL string
+    photo_url?: string;
 }
 
 export function LihatBeritaModal({ berita_id }: LihatBeritaModalProps) {
@@ -49,11 +51,8 @@ export function LihatBeritaModal({ berita_id }: LihatBeritaModalProps) {
                         }
                     );
 
+                    // Assume backend now returns a direct URL in 'photo_url'
                     const beritaData = res.data.data;
-                    if (beritaData && typeof beritaData.photo === 'object' && beritaData.photo !== null && 'data' in beritaData.photo) {
-                        beritaData.photo = beritaData.photo.data;
-                    }
-
                     setBerita(beritaData);
                     setError("");
                 } catch (err) {
@@ -79,28 +78,7 @@ export function LihatBeritaModal({ berita_id }: LihatBeritaModalProps) {
                 return "bg-gray-100 text-gray-800";
         }
     };
-
-    const convertPhotoToBase64 = (photoData: Uint8Array): string => {
-        try {
-            const mime =
-                photoData[0] === 0xff && photoData[1] === 0xd8
-                    ? "image/jpeg"
-                    : photoData[0] === 0x89 && photoData[1] === 0x50
-                        ? "image/png"
-                        : "image/jpeg";
-
-            let binary = "";
-            for (let i = 0; i < photoData.length; i++) {
-                binary += String.fromCharCode(photoData[i]);
-            }
-
-            return `data:${mime};base64,${btoa(binary)}`;
-        } catch (err) {
-            console.error("Gagal konversi gambar:", err);
-            return "/placeholder.svg?height=200&width=600";
-        }
-    };
-
+    
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -141,19 +119,25 @@ export function LihatBeritaModal({ berita_id }: LihatBeritaModalProps) {
                 ) : berita ? (
                     <div className="py-4">
                         <div className="mb-4">
-                            <img
-                                src={
-                                    berita.photo && Array.isArray(berita.photo)
-                                        ? convertPhotoToBase64(new Uint8Array(berita.photo))
-                                        : typeof berita.photo === "string"
-                                            ? berita.photo
-                                            : "/placeholder.svg?height=200&width=600"
-                                }
-                                alt={berita.judul}
-                                width={600}
-                                height={200}
-                                className="w-full h-full object-cover rounded-md"
-                            />
+                            {berita.photo_url ? (
+                                <Image
+                                    src={berita.photo_url}
+                                    alt={berita.judul}
+                                    width={600}
+                                    height={200}
+                                    className="w-full h-full object-cover rounded-md"
+                                    // Use unoptimized for external URLs, though Next.js can be configured for it
+                                    unoptimized
+                                />
+                            ) : (
+                                <Image
+                                    src="/placeholder.svg"
+                                    alt="Placeholder"
+                                    width={600}
+                                    height={200}
+                                    className="w-full h-full object-cover rounded-md"
+                                />
+                            )}
                         </div>
                         <div className="space-y-4 pr-6">
                             <p className="text-sm text-gray-700 whitespace-pre-line text-justify">

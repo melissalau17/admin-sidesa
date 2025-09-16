@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, type FormEvent, type ChangeEvent } from "react";
+import { useState, type FormEvent, type ChangeEvent, useEffect } from "react";
 import { Button } from "@/components/ui/button";
 import {
     Dialog,
@@ -22,8 +22,8 @@ interface UserItem {
     user_id: number;
     nama: string;
     username: string;
-    password: string;
-    photo?: string;
+    password?: string; // Password should be optional on update
+    photo_url?: string; // Changed to photo_url for better practice
     NIK: string;
     alamat: string;
     jenis_kel: string;
@@ -40,13 +40,17 @@ interface EditUserModalProps {
 export function EditUserModal({ user, onUpdateUser }: EditUserModalProps) {
     const [open, setOpen] = useState(false);
     const [isLoading, setIsLoading] = useState(false);
-    const [formData, setFormData] = useState<UserItem>({ ...user });
+    const [formData, setFormData] = useState<UserItem>({ ...user, password: "" }); // Password is reset
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [showPassword, setShowPassword] = useState(false);
 
-    const handleInputChange = (
-        e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>
-    ) => {
+    // Sync state with props whenever the modal is opened or the user prop changes
+    useEffect(() => {
+        setFormData({ ...user, password: "" });
+        setSelectedFile(null);
+    }, [user]);
+
+    const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { id, value } = e.target;
         setFormData((prev) => ({ ...prev, [id]: value }));
     };
@@ -60,48 +64,41 @@ export function EditUserModal({ user, onUpdateUser }: EditUserModalProps) {
         setFormData((prev) => ({ ...prev, [field]: value }));
     };
 
-    const toBase64 = (file: File): Promise<string> =>
-        new Promise((resolve, reject) => {
-            const reader = new FileReader();
-            reader.readAsDataURL(file);
-            reader.onload = () => resolve(reader.result as string);
-            reader.onerror = (error) => reject(error);
-        });
-
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
         e.preventDefault();
         setIsLoading(true);
 
+        const data = new FormData();
+        data.append("nama", formData.nama);
+        data.append("username", formData.username);
+        if (formData.password) data.append("password", formData.password);
+        data.append("NIK", formData.NIK);
+        data.append("alamat", formData.alamat);
+        data.append("jenis_kel", formData.jenis_kel);
+        data.append("no_hp", formData.no_hp);
+        data.append("agama", formData.agama);
+        data.append("role", formData.role);
+        if (selectedFile) data.append("photo", selectedFile);
+
         try {
-            const token = localStorage.getItem("token"); 
+            const token = localStorage.getItem("token");
 
-            const data = new FormData();
-            data.append("nama", formData.nama);
-            data.append("username", formData.username);
-            if (formData.password) data.append("password", formData.password);
-            data.append("NIK", formData.NIK);
-            data.append("alamat", formData.alamat);
-            data.append("jenis_kel", formData.jenis_kel);
-            data.append("no_hp", formData.no_hp);
-            data.append("agama", formData.agama);
-            data.append("role", formData.role);
-            if (selectedFile) data.append("photo", selectedFile);
-
-            await axios.patch(
+            const response = await axios.patch(
                 `${process.env.NEXT_PUBLIC_API_URL}/api/users/${formData.user_id}`,
                 data,
                 {
                     headers: {
                         Authorization: token ? `Bearer ${token}` : "",
+                        'Content-Type': 'multipart/form-data',
                     },
                 }
             );
 
-            const updatedPhoto = selectedFile
-                ? await toBase64(selectedFile)
-                : formData.photo;
-
-            onUpdateUser?.({ ...formData, photo: updatedPhoto });
+            // The backend should return the updated user object, including the new photo_url
+            const updatedUser = response.data.data;
+            if (onUpdateUser) {
+                onUpdateUser(updatedUser);
+            }
 
             setOpen(false);
         } catch (error) {
@@ -112,6 +109,15 @@ export function EditUserModal({ user, onUpdateUser }: EditUserModalProps) {
         }
     };
 
+    // Helper component for form rows
+    const FormRow = ({ label, id, children }: { label: string; id: string; children: React.ReactNode }) => (
+        <div className="grid grid-cols-4 items-center gap-4">
+            <Label htmlFor={id} className="text-right">
+                {label}
+            </Label>
+            <div className="col-span-3">{children}</div>
+        </div>
+    );
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -155,7 +161,7 @@ export function EditUserModal({ user, onUpdateUser }: EditUserModalProps) {
                                     id="password"
                                     type={showPassword ? "text" : "password"}
                                     placeholder="Kosongkan jika tidak ingin ubah"
-                                    value={""}
+                                    value={formData.password}
                                     onChange={handleInputChange}
                                 />
                                 <button
@@ -170,7 +176,7 @@ export function EditUserModal({ user, onUpdateUser }: EditUserModalProps) {
 
                         <FormRow label="NIK" id="nik">
                             <Input
-                                id="nik"
+                                id="NIK"
                                 value={formData.NIK}
                                 onChange={handleInputChange}
                                 required
@@ -190,9 +196,7 @@ export function EditUserModal({ user, onUpdateUser }: EditUserModalProps) {
                             <Label className="text-right">Jenis Kelamin</Label>
                             <RadioGroup
                                 value={formData.jenis_kel}
-                                onValueChange={(value) =>
-                                    handleSelectChange("jenis_kel", value)
-                                }
+                                onValueChange={(value) => handleSelectChange("jenis_kel", value)}
                                 className="col-span-3 flex space-x-4"
                             >
                                 <div className="flex items-center space-x-2">
@@ -222,7 +226,7 @@ export function EditUserModal({ user, onUpdateUser }: EditUserModalProps) {
                             </select>
                         </FormRow>
 
-                        <FormRow label="Alamat" id="alamat" isTextarea>
+                        <FormRow label="Alamat" id="alamat">
                             <Textarea
                                 id="alamat"
                                 value={formData.alamat}
@@ -275,7 +279,7 @@ export function EditUserModal({ user, onUpdateUser }: EditUserModalProps) {
     );
 }
 
-// Komponen Form Row
+// Helper component for form rows
 function FormRow({
     label,
     id,
@@ -288,10 +292,7 @@ function FormRow({
     isTextarea?: boolean;
 }) {
     return (
-        <div
-            className={`grid grid-cols-4 items-${isTextarea ? "start" : "center"
-                } gap-4`}
-        >
+        <div className={`grid grid-cols-4 items-start gap-4`}>
             <Label htmlFor={id} className="text-right">
                 {label}
             </Label>

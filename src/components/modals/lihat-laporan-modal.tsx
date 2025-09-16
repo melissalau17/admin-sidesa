@@ -1,7 +1,7 @@
-"use client"
+"use client";
 
-import { useState } from "react"
-import { Button } from "../ui/button"
+import { useState } from "react";
+import { Button } from "../ui/button";
 import {
     Dialog,
     DialogContent,
@@ -10,23 +10,23 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "@/components/ui/dialog"
-import { Badge } from "@/components/ui/badge"
-import { Eye, FileImage } from "lucide-react"
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs"
+} from "@/components/ui/dialog";
+import { Badge } from "@/components/ui/badge";
+import { Eye, FileImage } from "lucide-react";
+import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 
 interface LihatLaporanModalProps {
-    id: number
-    nama: string
-    keluhan: string
-    vote: number
-    tanggal: string
-    status: string
-    deskripsi: string
-    lokasi?: string
-    kontak?: string
-    gambar?: string | number[]
+    id: number;
+    nama: string;
+    keluhan: string;
+    vote: number;
+    tanggal: string;
+    status: string;
+    deskripsi: string;
+    lokasi?: string;
+    kontak?: string;
+    gambar?: string | null; // Changed to string | null
 }
 
 export function LihatLaporanModal({
@@ -41,50 +41,37 @@ export function LihatLaporanModal({
     kontak,
     gambar,
 }: LihatLaporanModalProps) {
-    const [open, setOpen] = useState<boolean>(false)
+    const [open, setOpen] = useState<boolean>(false);
 
     const getStatusColor = (status: string): string => {
         switch (status) {
             case "Diproses":
-                return "bg-blue-100 text-blue-800"
+                return "bg-blue-100 text-blue-800";
             case "Selesai":
-                return "bg-green-100 text-green-800"
+                return "bg-green-100 text-green-800";
             case "Ditolak":
-                return "bg-red-100 text-red-800"
+                return "bg-red-100 text-red-800";
             default:
-                return "bg-gray-100 text-gray-800"
+                return "bg-gray-100 text-gray-800";
         }
-    }
+    };
 
     const keterangan =
         status === "Selesai"
             ? "Laporan telah ditindaklanjuti dan diselesaikan oleh petugas desa."
             : status === "Diproses"
-                ? "Laporan sedang dalam proses penanganan oleh petugas desa."
-                : status === "Ditolak"
-                    ? "Laporan telah ditolak dan tidak akan ditindaklanjuti lebih lanjut."
-                    : "Status laporan belum tersedia."
+            ? "Laporan sedang dalam proses penanganan oleh petugas desa."
+            : status === "Ditolak"
+            ? "Laporan telah ditolak dan tidak akan ditindaklanjuti lebih lanjut."
+            : "Status laporan belum tersedia.";
 
-    const convertPhotoToBase64 = (photoData: Uint8Array): string => {
-        try {
-            const mime =
-                photoData[0] === 0xff && photoData[1] === 0xd8
-                    ? "image/jpeg"
-                    : photoData[0] === 0x89 && photoData[1] === 0x50
-                        ? "image/png"
-                        : "image/jpeg"
+    // Logic to convert from binary to a URL is now unnecessary if the backend sends a URL string.
+    // If the backend MUST send binary, this is how you would render it.
+    // Note: This is an inefficient approach.
+    const imageSrc = Array.isArray(gambar) 
+        ? `data:image/jpeg;base64,${btoa(String.fromCharCode(...gambar))}` 
+        : gambar;
 
-            let binary = ""
-            for (let i = 0; i < photoData.length; i++) {
-                binary += String.fromCharCode(photoData[i])
-            }
-
-            return `data:${mime};base64,${btoa(binary)}`
-        } catch (error) {
-            console.error("Konversi Base64 gagal:", error)
-            return ""
-        }
-    }
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -185,17 +172,18 @@ export function LihatLaporanModal({
 
                     {/* TAB GAMBAR */}
                     <TabsContent value="gambar" className="py-4">
-                        {gambar ? (
+                        {imageSrc ? (
                             <div className="flex flex-col items-center space-y-3">
                                 <h3 className="text-lg font-medium">Foto Laporan</h3>
                                 <div className="border rounded-md overflow-hidden">
                                     <Image
-                                        src={Array.isArray(gambar) ? convertPhotoToBase64(new Uint8Array(gambar)) : gambar}
+                                        src={imageSrc}
                                         alt={`Foto laporan ${nama}`}
                                         width={600}
                                         height={400}
                                         className="object-contain rounded-md"
                                         style={{ maxWidth: "100%", height: "auto" }}
+                                        unoptimized={typeof gambar === 'string' && !gambar.startsWith('http')} // Only unoptimized for base64
                                     />
                                 </div>
                                 <p className="text-sm text-muted-foreground italic">
@@ -216,5 +204,5 @@ export function LihatLaporanModal({
                 </DialogFooter>
             </DialogContent>
         </Dialog>
-    )
+    );
 }
