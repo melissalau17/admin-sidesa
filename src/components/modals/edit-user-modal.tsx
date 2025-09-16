@@ -278,25 +278,3 @@ export function EditUserModal({ user, onUpdateUser }: EditUserModalProps) {
         </Dialog>
     );
 }
-
-// Helper component for form rows
-function FormRow({
-    label,
-    id,
-    children,
-    isTextarea = false,
-}: {
-    label: string;
-    id: string;
-    children: React.ReactNode;
-    isTextarea?: boolean;
-}) {
-    return (
-        <div className={`grid grid-cols-4 items-start gap-4`}>
-            <Label htmlFor={id} className="text-right">
-                {label}
-            </Label>
-            <div className="col-span-3">{children}</div>
-        </div>
-    );
-}

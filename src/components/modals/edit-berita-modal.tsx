@@ -23,7 +23,6 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import { Edit } from "lucide-react";
 import Image from "next/image"; // Import Next.js Image component
 
 interface EditBeritaModalProps {
