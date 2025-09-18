@@ -132,8 +132,8 @@ export default function LoginPage() {
                     </form>
                 </CardContent>
                 <p className="text-xs md:text-sm text-muted-foreground text-gray-500 p-5">
-                    Gunakan username: <span className="font-semibold">admin</span>,
-                    password: <span className="font-semibold">admin</span>
+                    Gunakan username: <span className="font-semibold">melu</span>,
+                    password: <span className="font-semibold">123321</span>
                 </p>
             </Card>
         </div>

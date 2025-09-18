@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent, useCallback } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import {
@@ -23,15 +23,15 @@ import {
 import { Textarea } from "@/components/ui/textarea";
 import { useToast } from "@/hooks/use-toast";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
-import Image from "next/image"; // Import Next.js Image component
+import Image from "next/image";
 
 interface EditBeritaModalProps {
     id: number;
     judul: string;
     kategori: string;
     status: string;
-    kontent: string;
-    photoUrl?: string | null; // Added initial photoUrl prop
+    kontent: string; 
+    photoUrl?: string | null;
     open: boolean;
     onOpenChange: (open: boolean) => void;
     onBeritaUpdate: (
@@ -40,8 +40,8 @@ interface EditBeritaModalProps {
             judul: string;
             kategori: string;
             status: string;
-            kontent: string;
-            photo_url?: string; // Corrected to photo_url
+            kontent: string; 
+            photo_url?: string;
         }
     ) => void;
 }
@@ -53,25 +53,23 @@ export function EditBeritaModal({
     judul,
     kategori,
     status,
-    kontent,
-    photoUrl, // Destructure new prop
+    kontent, 
+    photoUrl,
     open,
     onOpenChange,
     onBeritaUpdate,
 }: EditBeritaModalProps) {
-    const [formData, setFormData] = useState({ judul, kategori, status, kontent });
+    const [formData, setFormData] = useState({ judul, kategori, status, kontent }); 
     const [photo, setPhoto] = useState<File | null>(null);
     const [isLoading, setIsLoading] = useState(false);
-    const [previewUrl, setPreviewUrl] = useState<string | null>(photoUrl || null); // Initialize with prop
+    const [previewUrl, setPreviewUrl] = useState<string | null>(photoUrl || null);
     const { toast } = useToast();
 
-    // Sync form data and preview URL with incoming props
     useEffect(() => {
-        setFormData({ judul, kategori, status, kontent });
+        setFormData({ judul, kategori, status, kontent }); 
         setPreviewUrl(photoUrl || null);
         setPhoto(null);
     }, [judul, kategori, status, kontent, photoUrl, open]);
-
 
     const handleChange = (field: string, value: string) => {
         setFormData((prev) => ({
@@ -103,7 +101,8 @@ export function EditBeritaModal({
         data.append("judul", formData.judul);
         data.append("kategori", formData.kategori);
         data.append("status", formData.status);
-        data.append("kontent", formData.kontent);
+        data.append("konten", formData.kontent); 
+        
         if (photo) {
             data.append("photo", photo);
         }
@@ -111,14 +110,20 @@ export function EditBeritaModal({
         try {
             const token = localStorage.getItem("token");
 
-            await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas/${id}`, data, {
+            // ✅ Fix: Add explicit Content-Type header
+            const res = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas/${id}`, data, {
                 headers: {
                     Authorization: `Bearer ${token}`,
+                    "Content-Type": "multipart/form-data",
                 }
             });
 
-            // Update the state in the parent component
-            onBeritaUpdate(id, { ...formData, photo_url: previewUrl || undefined });
+            // Update the state in the parent component with the new URL from the server
+            const updatedBeritaData = res.data.data;
+            onBeritaUpdate(id, {
+                ...updatedBeritaData,
+                photo_url: updatedBeritaData.photo_url || null,
+            });
 
             toast({
                 title: "Berhasil",
@@ -138,10 +143,8 @@ export function EditBeritaModal({
         }
     };
 
-
     return (
         <Dialog open={open} onOpenChange={onOpenChange}>
-            {/* Removed redundant DialogTrigger, as the parent component manages 'open' state */}
             <DialogContent
                 className="sm:max-w-[600px] max-h-[90vh] overflow-y-auto"
                 aria-labelledby="dialog-title"
@@ -209,22 +212,21 @@ export function EditBeritaModal({
                                         width={400}
                                         height={200}
                                         className="object-cover rounded-md max-h-48 w-full"
-                                        unoptimized // Required for Base64 or external URLs
+                                        unoptimized
                                     />
                                 </div>
                             </div>
                         )}
                         <div className="flex flex-col sm:grid sm:grid-cols-4 sm:items-start sm:gap-4">
-                            <Label htmlFor="kontent" className="sm:text-right pt-2">
-                                Konten Berita
+                            <Label htmlFor="konten" className="sm:text-right pt-2"> 
                             </Label>
                             <Textarea
-                                id="kontent"
+                                id="konten" 
                                 placeholder="Masukkan konten berita"
                                 className="col-span-3 min-h-[250px] text-justify border-b border-gray-300"
                                 required
-                                value={formData.kontent}
-                                onChange={(e) => handleChange("kontent", e.target.value)}
+                                value={formData.kontent} 
+                                onChange={(e) => handleChange("konten", e.target.value)}
                             />
                         </div>
                         <div className="flex flex-col sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">

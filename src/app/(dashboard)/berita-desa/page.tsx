@@ -20,7 +20,7 @@ interface BeritaApiItem {
     kategori: string
     tanggal: string
     status: string
-    konten: string
+    kontent: string
 }
 
 const getStatusColor = (status: string): string => {
@@ -246,7 +246,7 @@ export default function BeritaDesaPage() {
                                                         judul={berita.judul}
                                                         kategori={berita.kategori}
                                                         status={berita.status}
-                                                        kontent={berita.konten} // Perbaikan di sini
+                                                        kontent={berita.kontent} // Perbaikan di sini
                                                         open={editModalOpenId === berita.berita_id}
                                                         onOpenChange={(open) => {
                                                             if (!open) setEditModalOpenId(null)

@@ -26,7 +26,7 @@ interface LihatLaporanModalProps {
     deskripsi: string;
     lokasi?: string;
     kontak?: string;
-    gambar?: string | null; // Changed to string | null
+    gambar?: string | null;
 }
 
 export function LihatLaporanModal({
@@ -65,14 +65,6 @@ export function LihatLaporanModal({
             ? "Laporan telah ditolak dan tidak akan ditindaklanjuti lebih lanjut."
             : "Status laporan belum tersedia.";
 
-    // Logic to convert from binary to a URL is now unnecessary if the backend sends a URL string.
-    // If the backend MUST send binary, this is how you would render it.
-    // Note: This is an inefficient approach.
-    const imageSrc = Array.isArray(gambar) 
-        ? `data:image/jpeg;base64,${btoa(String.fromCharCode(...gambar))}` 
-        : gambar;
-
-
     return (
         <Dialog open={open} onOpenChange={setOpen}>
             <DialogTrigger asChild>
@@ -103,7 +95,6 @@ export function LihatLaporanModal({
                         </TabsTrigger>
                     </TabsList>
 
-                    {/* TAB INFO */}
                     <TabsContent value="info" className="py-4">
                         <div className="space-y-4">
                             <div className="grid grid-cols-3 gap-4">
@@ -170,20 +161,19 @@ export function LihatLaporanModal({
                         </div>
                     </TabsContent>
 
-                    {/* TAB GAMBAR */}
                     <TabsContent value="gambar" className="py-4">
-                        {imageSrc ? (
+                        {gambar ? (
                             <div className="flex flex-col items-center space-y-3">
                                 <h3 className="text-lg font-medium">Foto Laporan</h3>
                                 <div className="border rounded-md overflow-hidden">
                                     <Image
-                                        src={imageSrc}
+                                        src={gambar}
                                         alt={`Foto laporan ${nama}`}
                                         width={600}
                                         height={400}
                                         className="object-contain rounded-md"
                                         style={{ maxWidth: "100%", height: "auto" }}
-                                        unoptimized={typeof gambar === 'string' && !gambar.startsWith('http')} // Only unoptimized for base64
+                                        unoptimized
                                     />
                                 </div>
                                 <p className="text-sm text-muted-foreground italic">

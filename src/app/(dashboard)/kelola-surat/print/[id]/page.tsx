@@ -16,8 +16,6 @@ export default function SuratView({ params }: { params: PageParams }) {
                 const token = localStorage.getItem("token");
                 if (!token) {
                     console.error("Authorization token not found.");
-                    // Sebagai alternatif, Anda bisa mengarahkan pengguna ke halaman login
-                    // router.push('/login');
                     notFound();
                     return;
                 }

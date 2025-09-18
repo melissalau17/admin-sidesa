@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
@@ -10,10 +9,11 @@ import {
     DialogTitle,
     DialogTrigger,
 } from "@/components/ui/dialog";
+import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Eye } from "lucide-react";
 import axios from "axios";
-import Image from "next/image"; // Import Next.js Image component
+import Image from "next/image";
 
 interface LihatBeritaModalProps {
     berita_id: number;
@@ -25,8 +25,7 @@ interface BeritaDetail {
     tanggal: string;
     status: string;
     kontent: string;
-    // We assume the backend is refactored to always return a URL string
-    photo_url?: string;
+    photo_url?: string; 
 }
 
 export function LihatBeritaModal({ berita_id }: LihatBeritaModalProps) {
@@ -51,7 +50,6 @@ export function LihatBeritaModal({ berita_id }: LihatBeritaModalProps) {
                         }
                     );
 
-                    // Assume backend now returns a direct URL in 'photo_url'
                     const beritaData = res.data.data;
                     setBerita(beritaData);
                     setError("");
@@ -119,14 +117,14 @@ export function LihatBeritaModal({ berita_id }: LihatBeritaModalProps) {
                 ) : berita ? (
                     <div className="py-4">
                         <div className="mb-4">
+                            {/* ✅ Corrected conditional rendering for the photo */}
                             {berita.photo_url ? (
                                 <Image
                                     src={berita.photo_url}
                                     alt={berita.judul}
                                     width={600}
-                                    height={200}
+                                    height={400} // A fixed height is often required by Next.js Image
                                     className="w-full h-full object-cover rounded-md"
-                                    // Use unoptimized for external URLs, though Next.js can be configured for it
                                     unoptimized
                                 />
                             ) : (
@@ -134,14 +132,14 @@ export function LihatBeritaModal({ berita_id }: LihatBeritaModalProps) {
                                     src="/placeholder.svg"
                                     alt="Placeholder"
                                     width={600}
-                                    height={200}
+                                    height={400}
                                     className="w-full h-full object-cover rounded-md"
                                 />
                             )}
                         </div>
                         <div className="space-y-4 pr-6">
                             <p className="text-sm text-gray-700 whitespace-pre-line text-justify">
-                                {berita.kontent}
+                                {berita.kontent} 
                             </p>
                         </div>
                     </div>
