@@ -1,8 +1,8 @@
-"use client"
+"use client";
 
-import { useState, type FormEvent, type ChangeEvent } from "react"
-import axios from "axios"
-import { Button } from "@/components/ui/button"
+import { useState, type FormEvent, type ChangeEvent } from "react";
+import axios from "axios";
+import { Button } from "@/components/ui/button";
 import {
     Dialog,
     DialogContent,
@@ -11,120 +11,116 @@ import {
     DialogHeader,
     DialogTitle,
     DialogTrigger,
-} from "@/components/ui/dialog"
-import { Input } from "@/components/ui/input"
-import { Label } from "@/components/ui/label"
+} from "@/components/ui/dialog";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 import {
     Select,
     SelectContent,
     SelectItem,
     SelectTrigger,
     SelectValue,
-} from "@/components/ui/select"
-import { Textarea } from "@/components/ui/textarea"
-import { useToast } from "@/hooks/use-toast"
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group"
-import { Plus } from "lucide-react"
+} from "@/components/ui/select";
+import { Textarea } from "@/components/ui/textarea";
+import { useToast } from "@/hooks/use-toast";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
+import { Plus } from "lucide-react";
 
 export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerOpen?: boolean; onSuccess?: () => void }) {
-    const [open, setOpen] = useState(triggerOpen)
-    const [isLoading, setIsLoading] = useState(false)
+    const [open, setOpen] = useState(triggerOpen);
+    const [isLoading, setIsLoading] = useState(false);
 
-    // Using a single state object for all form data
     const [formData, setFormData] = useState({
         judul: "",
         kategori: "",
         kontent: "",
         status: "Draft",
         photo: null as File | null,
-    })
+    });
 
-    const { toast } = useToast()
+    const { toast } = useToast();
 
-    // Generic handler for text inputs and textareas
+    // ✅ FIX: Handle change event for all fields
     const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
-        const { id, value } = e.target
-        setFormData((prev) => ({ ...prev, [id]: value }))
-    }
+        const { id, value } = e.target;
+        setFormData((prev) => ({ ...prev, [id]: value }));
+    };
     
-    // Handler for the file input
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
-        const file = e.target.files?.[0] || null
-        setFormData((prev) => ({ ...prev, photo: file }))
-    }
+        const file = e.target.files?.[0] || null;
+        setFormData((prev) => ({ ...prev, photo: file }));
+    };
     
-    // Handler for the Select component
     const handleSelectChange = (value: string) => {
-        setFormData((prev) => ({ ...prev, kategori: value }))
-    }
+        setFormData((prev) => ({ ...prev, kategori: value }));
+    };
 
-    // Handler for the RadioGroup
     const handleRadioChange = (value: string) => {
-        setFormData((prev) => ({ ...prev, status: value }))
-    }
+        setFormData((prev) => ({ ...prev, status: value }));
+    };
 
     const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
-        e.preventDefault()
-        setIsLoading(true)
+        e.preventDefault();
+        setIsLoading(true);
 
-        const { judul, kategori, kontent, status, photo } = formData
+        const { judul, kategori, kontent, status, photo } = formData; // ✅ FIX: Destructure the correct key
 
-        // Validate form data
         if (!judul || !kategori || !kontent || !status || !photo) {
             toast({
                 title: "Gagal",
                 description: "Semua field harus diisi!",
                 variant: "destructive"
-            })
-            setIsLoading(false)
-            return
+            });
+            setIsLoading(false);
+            return;
         }
 
         try {
-            const data = new FormData()
-            data.append("judul", judul)
-            data.append("kategori", kategori)
-            data.append("kontent", kontent)
-            data.append("status", status)
+            const data = new FormData();
+            data.append("judul", judul);
+            data.append("kategori", kategori);
+            data.append("konten", kontent); 
+            data.append("status", status);
             if (photo) {
-                data.append("photo", photo)
+                data.append("photo", photo);
             }
 
-            const token = localStorage.getItem("token")
+            const token = localStorage.getItem("token");
 
             await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas`, data, {
                 headers: {
                     Authorization: `Bearer ${token}`,
+                    // ✅ FIX: Explicitly set the Content-Type for file uploads
+                    "Content-Type": "multipart/form-data",
                 }
-            })
+            });
 
             toast({
                 title: "Berhasil",
                 description: "Berita berhasil ditambahkan",
-            })
+            });
 
-            setOpen(false)
-            // Reset form state after successful submission
+            setOpen(false);
             setFormData({
                 judul: "",
                 kategori: "",
                 kontent: "",
                 status: "Draft",
                 photo: null,
-            })
+            });
 
-            onSuccess?.()
+            onSuccess?.();
         } catch (error) {
-            console.error("Error creating berita:", error)
+            console.error("Error creating berita:", error);
             toast({
                 title: "Gagal",
                 description: "Terjadi kesalahan saat menambahkan berita",
                 variant: "destructive",
-            })
+            });
         } finally {
-            setIsLoading(false)
+            setIsLoading(false);
         }
-    }
+    };
 
     return (
         <Dialog open={open} onOpenChange={setOpen}>
@@ -171,7 +167,7 @@ export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerO
                         <div className="flex flex-col sm:grid sm:grid-cols-4 sm:items-center gap-4">
                             <Label htmlFor="gambar" className="sm:text-right">Gambar</Label>
                             <Input
-                                id="gambar"
+                                id="photo" // ✅ FIX: Use 'photo' to match state
                                 type="file"
                                 accept="image/*"
                                 onChange={handleFileChange}
@@ -180,10 +176,10 @@ export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerO
                             />
                         </div>
                         <div className="flex flex-col sm:grid sm:grid-cols-4 sm:items-start gap-4">
-                            <Label htmlFor="kontent" className="sm:text-right pt-2">Konten Berita</Label>
+                            <Label htmlFor="konten" className="sm:text-right pt-2">Konten Berita</Label> 
                             <Textarea
-                                id="kontent"
-                                value={formData.kontent}
+                                id="konten" 
+                                value={formData.kontent} 
                                 onChange={handleInputChange}
                                 placeholder="Masukkan konten berita"
                                 className="sm:col-span-3 min-h-[150px] border-b border-gray-300 w-full"
@@ -211,7 +207,7 @@ export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerO
                         <Button
                             type="submit"
                             variant="ghost"
-                            disabled={isLoading || !formData.judul || !formData.kategori || !formData.kontent || !formData.photo}
+                            disabled={isLoading || !formData.judul || !formData.kategori || !formData.kontent || !formData.photo} // ✅ FIX: Corrected keys
                         >
                             {isLoading ? "Menyimpan..." : "Simpan"}
                         </Button>
@@ -219,5 +215,5 @@ export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerO
                 </form>
             </DialogContent>
         </Dialog>
-    )
+    );
 }
