@@ -33,9 +33,9 @@ export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerO
     const [formData, setFormData] = useState({
         judul: "",
         kategori: "",
-        kontent: "", // ✅ Corrected state to be consistent with the database
+        kontent: "", 
         status: "Draft",
-        photo: null as File | null,
+        photo_url: null as File | null,
     });
 
     const { toast } = useToast();
@@ -47,7 +47,7 @@ export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerO
     
     const handleFileChange = (e: ChangeEvent<HTMLInputElement>) => {
         const file = e.target.files?.[0] || null;
-        setFormData((prev) => ({ ...prev, photo: file }));
+        setFormData((prev) => ({ ...prev, photo_url: file }));
     };
     
     const handleSelectChange = (value: string) => {
@@ -62,9 +62,9 @@ export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerO
         e.preventDefault();
         setIsLoading(true);
 
-        const { judul, kategori, kontent, status, photo } = formData;
+        const { judul, kategori, kontent, status, photo_url } = formData;
 
-        if (!judul || !kategori || !kontent || !status || !photo) {
+        if (!judul || !kategori || !kontent || !status || !photo_url) {
             toast({
                 title: "Gagal",
                 description: "Semua field harus diisi!",
@@ -78,10 +78,10 @@ export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerO
             const data = new FormData();
             data.append("judul", judul);
             data.append("kategori", kategori);
-            data.append("kontent", kontent); // ✅ Now correctly appending 'kontent'
+            data.append("kontent", kontent);
             data.append("status", status);
-            if (photo) {
-                data.append("photo", photo);
+            if (photo_url) {
+                data.append("photo", photo_url);
             }
 
             const token = localStorage.getItem("token");
@@ -104,7 +104,7 @@ export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerO
                 kategori: "",
                 kontent: "",
                 status: "Draft",
-                photo: null,
+                photo_url: null,
             });
 
             onSuccess?.();
@@ -205,7 +205,7 @@ export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerO
                         <Button
                             type="submit"
                             variant="ghost"
-                            disabled={isLoading || !formData.judul || !formData.kategori || !formData.kontent || !formData.photo}
+                            disabled={isLoading || !formData.judul || !formData.kategori || !formData.kontent || !formData.photo_url}
                         >
                             {isLoading ? "Menyimpan..." : "Simpan"}
                         </Button>

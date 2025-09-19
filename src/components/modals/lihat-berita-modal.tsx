@@ -25,7 +25,7 @@ interface BeritaDetail {
     tanggal: string;
     status: string;
     kontent: string;
-    photo_url?: string; 
+    photo_url?: string;
 }
 
 export function LihatBeritaModal({ berita_id }: LihatBeritaModalProps) {
@@ -117,13 +117,12 @@ export function LihatBeritaModal({ berita_id }: LihatBeritaModalProps) {
                 ) : berita ? (
                     <div className="py-4">
                         <div className="mb-4">
-                            {/* ✅ Corrected conditional rendering for the photo */}
                             {berita.photo_url ? (
                                 <Image
                                     src={berita.photo_url}
                                     alt={berita.judul}
                                     width={600}
-                                    height={400} // A fixed height is often required by Next.js Image
+                                    height={400} 
                                     className="w-full h-full object-cover rounded-md"
                                     unoptimized
                                 />
@@ -139,7 +138,7 @@ export function LihatBeritaModal({ berita_id }: LihatBeritaModalProps) {
                         </div>
                         <div className="space-y-4 pr-6">
                             <p className="text-sm text-gray-700 whitespace-pre-line text-justify">
-                                {berita.kontent} 
+                                {berita.kontent}
                             </p>
                         </div>
                     </div>
