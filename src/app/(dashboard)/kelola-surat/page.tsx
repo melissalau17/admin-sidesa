@@ -80,7 +80,6 @@ export default function KelolaSuratPage() {
                     tanggal: new Date(surat.tanggal).toLocaleDateString("id-ID", {
                         day: "2-digit", month: "short", year: "numeric"
                     }),
-                    // Assuming backend now returns URLs directly
                     photo_ktp: surat.photo_ktp || null,
                     photo_kk: surat.photo_kk || null,
                     foto_usaha: surat.foto_usaha || null,
@@ -163,11 +162,10 @@ export default function KelolaSuratPage() {
             const response = await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/letters`, formData, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    'Content-Type': 'multipart/form-data', // Axios usually adds this automatically, but it's good to be explicit
+                    'Content-Type': 'multipart/form-data',
                 }
             });
 
-            // Assuming the backend returns the newly created surat object with URLs
             const savedSurat: SuratItem = {
                 ...response.data.data,
                 tanggal: new Date(response.data.data.tanggal).toLocaleDateString("id-ID", {
@@ -180,7 +178,6 @@ export default function KelolaSuratPage() {
             console.error("Gagal menambahkan surat:", err);
         }
     };
-
 
     const filteredData = suratData.filter((surat) => {
         const q = searchQuery.toLowerCase();
@@ -277,6 +274,7 @@ export default function KelolaSuratPage() {
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-2">
+                                                    {/* ✅ FIX: Pass all required props to LihatSuratModal */}
                                                     <LihatSuratModal
                                                         id={surat.surat_id}
                                                         nama={surat.nama}
@@ -289,6 +287,7 @@ export default function KelolaSuratPage() {
                                                         photo_ktp={surat.photo_ktp || null}
                                                         photo_kk={surat.photo_kk || null}
                                                     />
+                                                    {/* ✅ FIX: Pass all required props to UbahStatusSuratModal */}
                                                     <UbahStatusSuratModal
                                                         id={surat.surat_id}
                                                         nama={surat.nama}
@@ -320,4 +319,4 @@ export default function KelolaSuratPage() {
             )}
         </div>
     );
-}
+}   
