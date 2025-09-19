@@ -16,7 +16,7 @@ export default function SuratView({ params }: { params: PageParams }) {
                 const token = localStorage.getItem("token");
                 if (!token) {
                     console.error("Authorization token not found.");
-                    notFound();
+                    window.location.href = '/login'; 
                     return;
                 }
 
@@ -34,11 +34,13 @@ export default function SuratView({ params }: { params: PageParams }) {
                 setPdfUrl(fileURL);
             } catch (error) {
                 console.error("Failed to fetch PDF:", error);
-                notFound();
+                setPdfUrl(null); 
             }
         };
 
-        fetchPdf();
+        if (id) {
+            fetchPdf();
+        }
     }, [id]);
 
     if (!pdfUrl) {
