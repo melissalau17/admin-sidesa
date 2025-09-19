@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect, useState, type FormEvent } from "react";
+import { useEffect, useState, type FormEvent, type ChangeEvent } from "react";
 import axios from "axios";
 import { Button } from "@/components/ui/button";
 import {
@@ -101,7 +101,7 @@ export function EditBeritaModal({
         data.append("judul", formData.judul);
         data.append("kategori", formData.kategori);
         data.append("status", formData.status);
-        data.append("konten", formData.kontent); 
+        data.append("kontent", formData.kontent); 
         
         if (photo) {
             data.append("photo", photo);
@@ -110,7 +110,6 @@ export function EditBeritaModal({
         try {
             const token = localStorage.getItem("token");
 
-            // ✅ Fix: Add explicit Content-Type header
             const res = await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas/${id}`, data, {
                 headers: {
                     Authorization: `Bearer ${token}`,
@@ -118,7 +117,6 @@ export function EditBeritaModal({
                 }
             });
 
-            // Update the state in the parent component with the new URL from the server
             const updatedBeritaData = res.data.data;
             onBeritaUpdate(id, {
                 ...updatedBeritaData,
@@ -218,15 +216,16 @@ export function EditBeritaModal({
                             </div>
                         )}
                         <div className="flex flex-col sm:grid sm:grid-cols-4 sm:items-start sm:gap-4">
-                            <Label htmlFor="konten" className="sm:text-right pt-2"> 
+                            <Label htmlFor="kontent" className="sm:text-right pt-2">
+                                Konten Berita
                             </Label>
                             <Textarea
-                                id="konten" 
+                                id="kontent"
                                 placeholder="Masukkan konten berita"
                                 className="col-span-3 min-h-[250px] text-justify border-b border-gray-300"
                                 required
-                                value={formData.kontent} 
-                                onChange={(e) => handleChange("konten", e.target.value)}
+                                value={formData.kontent}
+                                onChange={(e) => handleChange("kontent", e.target.value)}
                             />
                         </div>
                         <div className="flex flex-col sm:grid sm:grid-cols-4 sm:items-center sm:gap-4">
