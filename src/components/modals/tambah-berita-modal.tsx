@@ -33,14 +33,13 @@ export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerO
     const [formData, setFormData] = useState({
         judul: "",
         kategori: "",
-        kontent: "",
+        kontent: "", // ✅ Corrected state to be consistent with the database
         status: "Draft",
         photo: null as File | null,
     });
 
     const { toast } = useToast();
 
-    // ✅ FIX: Handle change event for all fields
     const handleInputChange = (e: ChangeEvent<HTMLInputElement | HTMLTextAreaElement>) => {
         const { id, value } = e.target;
         setFormData((prev) => ({ ...prev, [id]: value }));
@@ -63,7 +62,7 @@ export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerO
         e.preventDefault();
         setIsLoading(true);
 
-        const { judul, kategori, kontent, status, photo } = formData; // ✅ FIX: Destructure the correct key
+        const { judul, kategori, kontent, status, photo } = formData;
 
         if (!judul || !kategori || !kontent || !status || !photo) {
             toast({
@@ -79,7 +78,7 @@ export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerO
             const data = new FormData();
             data.append("judul", judul);
             data.append("kategori", kategori);
-            data.append("konten", kontent); 
+            data.append("kontent", kontent); // ✅ Now correctly appending 'kontent'
             data.append("status", status);
             if (photo) {
                 data.append("photo", photo);
@@ -90,7 +89,6 @@ export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerO
             await axios.post(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas`, data, {
                 headers: {
                     Authorization: `Bearer ${token}`,
-                    // ✅ FIX: Explicitly set the Content-Type for file uploads
                     "Content-Type": "multipart/form-data",
                 }
             });
@@ -167,7 +165,7 @@ export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerO
                         <div className="flex flex-col sm:grid sm:grid-cols-4 sm:items-center gap-4">
                             <Label htmlFor="gambar" className="sm:text-right">Gambar</Label>
                             <Input
-                                id="photo" // ✅ FIX: Use 'photo' to match state
+                                id="photo"
                                 type="file"
                                 accept="image/*"
                                 onChange={handleFileChange}
@@ -176,10 +174,10 @@ export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerO
                             />
                         </div>
                         <div className="flex flex-col sm:grid sm:grid-cols-4 sm:items-start gap-4">
-                            <Label htmlFor="konten" className="sm:text-right pt-2">Konten Berita</Label> 
+                            <Label htmlFor="kontent" className="sm:text-right pt-2">Konten Berita</Label>
                             <Textarea
-                                id="konten" 
-                                value={formData.kontent} 
+                                id="kontent"
+                                value={formData.kontent}
                                 onChange={handleInputChange}
                                 placeholder="Masukkan konten berita"
                                 className="sm:col-span-3 min-h-[150px] border-b border-gray-300 w-full"
@@ -207,7 +205,7 @@ export function TambahBeritaModal({ triggerOpen = false, onSuccess }: { triggerO
                         <Button
                             type="submit"
                             variant="ghost"
-                            disabled={isLoading || !formData.judul || !formData.kategori || !formData.kontent || !formData.photo} // ✅ FIX: Corrected keys
+                            disabled={isLoading || !formData.judul || !formData.kategori || !formData.kontent || !formData.photo}
                         >
                             {isLoading ? "Menyimpan..." : "Simpan"}
                         </Button>

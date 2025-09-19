@@ -246,7 +246,7 @@ export default function BeritaDesaPage() {
                                                         judul={berita.judul}
                                                         kategori={berita.kategori}
                                                         status={berita.status}
-                                                        kontent={berita.kontent} // Perbaikan di sini
+                                                        kontent={berita.kontent} 
                                                         open={editModalOpenId === berita.berita_id}
                                                         onOpenChange={(open) => {
                                                             if (!open) setEditModalOpenId(null)
