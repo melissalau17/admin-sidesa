@@ -191,7 +191,6 @@ export default function KelolaSuratPage() {
 
     return (
         <div className="space-y-6">
-            {/* Header */}
             <div className="flex flex-col sm:flex-row items-start sm:items-center justify-between gap-4">
                 <div>
                     <h1 className="text-2xl font-bold">Kelola Surat</h1>
@@ -273,7 +272,6 @@ export default function KelolaSuratPage() {
                                             </TableCell>
                                             <TableCell className="text-right">
                                                 <div className="flex justify-end gap-2">
-                                                    {/* ✅ FIX: Pass all required props to LihatSuratModal */}
                                                     <LihatSuratModal
                                                         id={surat.surat_id}
                                                         nama={surat.nama}

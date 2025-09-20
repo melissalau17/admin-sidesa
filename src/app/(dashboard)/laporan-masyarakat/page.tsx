@@ -88,14 +88,27 @@ export default function LaporanMasyarakatPage() {
         fetchLaporan()
     }, [])
 
-    const handleStatusChange = (id: number, newStatus: string) => {
+    const handleStatusChange = async (id: number, newStatus: string) => {
+        // Update the local state
         setLaporanData(prev =>
             prev.map(laporan =>
                 laporan.laporan_id === id ? { ...laporan, status: newStatus } : laporan
             )
-        )
-        localStorage.setItem(`status-${id}`, newStatus)
-    }
+        );
+        localStorage.setItem(`status-${id}`, newStatus);
+
+        try {
+            const token = localStorage.getItem("token");
+            await axios.patch(`${process.env.NEXT_PUBLIC_API_URL}/api/reports/${id}`, {
+                status: newStatus,
+            }, {
+                headers: { Authorization: `Bearer ${token}` },
+            });
+        } catch (error) {
+            console.error("Gagal mengubah status laporan:", error);
+            setError("Gagal mengubah status laporan");
+        }
+    };
 
     const handleSearchChange = (e: ChangeEvent<HTMLInputElement>) => {
         setSearchQuery(e.target.value)
