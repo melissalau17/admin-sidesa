@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from 'react';
-import { notFound } from 'next/navigation';
 import axios from 'axios';
 
 type PageParams = { id: string };
