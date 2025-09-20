@@ -3,14 +3,12 @@
 import { useEffect, useState } from 'react';
 import axios from 'axios';
 
-type PageParams = { id: string };
-
-interface SuratViewProps {
-  params: PageParams; // This can be inferred correctly from Next.js types
+interface PageProps {
+  params: { id: string }; // Expected shape for params
 }
 
-export default function SuratView({ params }: SuratViewProps) {
-  const { id } = params; // Extracting the ID from params
+export default function SuratView({ params }: PageProps) {
+  const { id } = params;
   const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 
   useEffect(() => {
