@@ -15,7 +15,6 @@ import { UbahStatusSuratModal } from "@/components/modals/ubah-status-surat-moda
 import { LihatSuratModal } from "@/components/modals/lihat-surat-modal";
 import * as Tooltip from "@radix-ui/react-tooltip";
 
-// Use a direct string (URL) for photo data
 type PhotoData = string | null;
 
 interface SuratItem {

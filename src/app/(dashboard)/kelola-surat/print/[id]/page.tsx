@@ -5,53 +5,61 @@ import axios from 'axios';
 
 type PageParams = { id: string };
 
-export default function SuratView({ params }: { params: PageParams }) {
-    const { id } = params;
-    const [pdfUrl, setPdfUrl] = useState<string | null>(null);
+interface SuratViewProps {
+  params: PageParams; // This can be inferred correctly from Next.js types
+}
 
-    useEffect(() => {
-        const fetchPdf = async () => {
-            try {
-                const token = localStorage.getItem("token");
-                if (!token) {
-                    console.error("Authorization token not found.");
-                    window.location.href = '/login'; 
-                    return;
-                }
+export default function SuratView({ params }: SuratViewProps) {
+  const { id } = params; // Extracting the ID from params
+  const [pdfUrl, setPdfUrl] = useState<string | null>(null);
 
-                const response = await axios.get(
-                    `${process.env.NEXT_PUBLIC_API_URL}/api/letters/${id}/print`,
-                    {
-                        headers: {
-                            Authorization: `Bearer ${token}`
-                        },
-                        responseType: 'blob'
-                    }
-                );
-
-                const fileURL = URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
-                setPdfUrl(fileURL);
-            } catch (error) {
-                console.error("Failed to fetch PDF:", error);
-                setPdfUrl(null); 
-            }
-        };
-
-        if (id) {
-            fetchPdf();
+  useEffect(() => {
+    const fetchPdf = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.error("Authorization token not found.");
+          window.location.href = '/login'; 
+          return;
         }
-    }, [id]);
 
-    if (!pdfUrl) {
-        return <div className="flex items-center justify-center h-screen text-gray-500">Memuat PDF...</div>;
+        const response = await axios.get(
+          `${process.env.NEXT_PUBLIC_API_URL}/api/letters/${id}/print`,
+          {
+            headers: {
+              Authorization: `Bearer ${token}`
+            },
+            responseType: 'blob'
+          }
+        );
+
+        const fileURL = URL.createObjectURL(new Blob([response.data], { type: "application/pdf" }));
+        setPdfUrl(fileURL);
+      } catch (error) {
+        console.error("Failed to fetch PDF:", error);
+        setPdfUrl(null); 
+      }
+    };
+
+    if (id) {
+      fetchPdf();
     }
+  }, [id]);
 
+  if (!pdfUrl) {
     return (
-        <iframe
-            src={pdfUrl}
-            width="100%"
-            height="100%"
-            style={{ border: 'none', position: 'absolute', top: 0, left: 0 }}
-        ></iframe>
+      <div className="flex items-center justify-center h-screen text-gray-500">
+        Memuat PDF...
+      </div>
     );
+  }
+
+  return (
+    <iframe
+      src={pdfUrl}
+      width="100%"
+      height="100%"
+      style={{ border: 'none', position: 'absolute', top: 0, left: 0 }}
+    ></iframe>
+  );
 }
