@@ -284,7 +284,6 @@ export default function KelolaSuratPage() {
                                                         photo_ktp={surat.photo_ktp || null}
                                                         photo_kk={surat.photo_kk || null}
                                                     />
-                                                    {/* ✅ FIX: Pass all required props to UbahStatusSuratModal */}
                                                     <UbahStatusSuratModal
                                                         id={surat.surat_id}
                                                         nama={surat.nama}
