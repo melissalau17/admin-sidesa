@@ -71,10 +71,16 @@ export default function LaporanMasyarakatPage() {
                     headers: { Authorization: `Bearer ${token}` },
                 })
 
-                const laporan = res.data.data.map((item: LaporanItem) => {
+                const laporan = res.data.data.map((item: any) => {
                     const storedStatus = localStorage.getItem(`status-${item.laporan_id}`)
-                    return storedStatus ? { ...item, status: storedStatus } : item
+                    return {
+                        ...item,
+                        nama: item.user?.nama ?? "Tidak ada nama",
+                        no_hp: item.user?.no_hp ?? "-",
+                        status: storedStatus ?? item.status
+                    }
                 })
+
 
                 setLaporanData(laporan)
             } catch (error) {
@@ -89,7 +95,6 @@ export default function LaporanMasyarakatPage() {
     }, [])
 
     const handleStatusChange = async (id: number, newStatus: string) => {
-        // Update the local state
         setLaporanData(prev =>
             prev.map(laporan =>
                 laporan.laporan_id === id ? { ...laporan, status: newStatus } : laporan
