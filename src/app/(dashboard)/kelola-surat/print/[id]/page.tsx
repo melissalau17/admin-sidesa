@@ -4,7 +4,13 @@ import { useEffect, useState } from "react"
 import { notFound } from "next/navigation"
 import axios from "axios"
 
-export default function SuratView({ params }: { params: { id: string } }) {
+interface SuratViewProps {
+  params: {
+    id: string
+  }
+}
+
+export default function SuratView({ params }: SuratViewProps) {
   const { id } = params
   const [pdfUrl, setPdfUrl] = useState<string | null>(null)
 
@@ -19,11 +25,9 @@ export default function SuratView({ params }: { params: { id: string } }) {
         }
 
         const response = await axios.get(
-          `${process.env.NEXT_PUBLIC_API_URL}/api/surat/${id}/print`, // 🔥 pastikan endpoint sama persis dengan backend
+          `${process.env.NEXT_PUBLIC_API_URL}/api/surat/${id}/print`,
           {
-            headers: {
-              Authorization: `Bearer ${token}`,
-            },
+            headers: { Authorization: `Bearer ${token}` },
             responseType: "blob",
           }
         )
@@ -55,6 +59,6 @@ export default function SuratView({ params }: { params: { id: string } }) {
       width="100%"
       height="100%"
       style={{ border: "none", position: "absolute", top: 0, left: 0 }}
-    ></iframe>
+    />
   )
 }
