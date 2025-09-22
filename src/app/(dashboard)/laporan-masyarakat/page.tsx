@@ -23,6 +23,21 @@ interface LaporanItem {
     gambar?: string
 }
 
+interface ApiLaporanItem {
+  laporan_id: number
+  keluhan: string
+  deskripsi: string
+  tanggal: string
+  status: string
+  vote: number
+  lokasi?: string
+  photo_url?: string
+  user?: {
+    nama?: string
+    no_hp?: string
+  }
+}
+
 const getStatusColor = (status: string): string => {
     switch (status) {
         case "Diproses":
@@ -36,7 +51,6 @@ const getStatusColor = (status: string): string => {
     }
 }
 
-// Wrapper untuk tooltip agar tidak menulis ulang kode
 const TooltipWrapper = ({ children, label }: { children: React.ReactNode, label: string }) => (
     <Tooltip.Provider delayDuration={300}>
         <Tooltip.Root>
@@ -71,13 +85,19 @@ export default function LaporanMasyarakatPage() {
                     headers: { Authorization: `Bearer ${token}` },
                 })
 
-                const laporan = res.data.data.map((item: any) => {
+                const laporan: LaporanItem[] = res.data.data.map((item: ApiLaporanItem) => {
                     const storedStatus = localStorage.getItem(`status-${item.laporan_id}`)
                     return {
-                        ...item,
+                        laporan_id: item.laporan_id,
                         nama: item.user?.nama ?? "Tidak ada nama",
                         no_hp: item.user?.no_hp ?? "-",
-                        status: storedStatus ?? item.status
+                        keluhan: item.keluhan,
+                        deskripsi: item.deskripsi,
+                        tanggal: item.tanggal,
+                        status: storedStatus ?? item.status,
+                        vote: item.vote,
+                        lokasi: item.lokasi,
+                        gambar: item.photo_url,
                     }
                 })
 
