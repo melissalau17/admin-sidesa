@@ -9,8 +9,6 @@ import Image from 'next/image';
 export function PublicHeader() {
    const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
    return (
-      // Header kembali ke gaya yang Anda inginkan (backdrop-blur + gradient transparan)
-      // Tidak ada lagi kelas `dark:` di sini karena tidak ada fitur tema.
       <header className="sticky top-0 z-50 backdrop-blur-sm bg-gradient-to-r from-[#f2f7fd]/90 to-white/60">
          <div className="container mx-auto px-5">
          <div className="flex items-center justify-between h-16">

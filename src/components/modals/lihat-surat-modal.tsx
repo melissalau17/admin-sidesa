@@ -63,10 +63,10 @@ export function LihatSuratModal({
         status === "Ditolak"
             ? "Permohonan ditolak karena data tidak lengkap. Silakan lengkapi data dan ajukan kembali."
             : status === "Selesai"
-            ? "Surat telah selesai diproses dan dapat diambil di kantor desa."
-            : status === "Diproses"
-            ? "Surat sedang dalam proses pembuatan dan penandatanganan oleh kepala desa."
-            : "Permohonan surat sedang menunggu untuk diproses.";
+                ? "Surat telah selesai diproses dan dapat diambil di kantor desa."
+                : status === "Diproses"
+                    ? "Surat sedang dalam proses pembuatan dan penandatanganan oleh kepala desa."
+                    : "Permohonan surat sedang menunggu untuk diproses.";
 
     const handlePrint = async () => {
         try {
@@ -186,7 +186,7 @@ export function LihatSuratModal({
                                 <h3 className="text-lg font-medium">Scan KTP</h3>
                                 <div className="border rounded-md overflow-hidden">
                                     <Image
-                                        src={photo_ktp}
+                                        src={`${process.env.R2_PUBLIC_URL}/${photo_ktp}`}
                                         alt="Scan KTP"
                                         width={500}
                                         height={300}
@@ -211,7 +211,7 @@ export function LihatSuratModal({
                                 <h3 className="text-lg font-medium">Scan Kartu Keluarga</h3>
                                 <div className="border rounded-md overflow-hidden">
                                     <Image
-                                        src={photo_kk}
+                                        src={`${process.env.R2_PUBLIC_URL}/${photo_kk}`}
                                         alt="Scan KK"
                                         width={500}
                                         height={300}
@@ -234,8 +234,9 @@ export function LihatSuratModal({
                 <DialogFooter className="flex flex-col sm:flex-row sm:justify-end gap-2">
                     {status === "Selesai" && (
                         <Button
-                            className="bg-green-600 text-white hover:bg-green-700"
+                            className={`bg-green-600 text-white hover:bg-green-700 ${status !== "Selesai" ? "opacity-50 cursor-not-allowed" : ""}`}
                             onClick={handlePrint}
+                            disabled={status !== "Selesai"}
                         >
                             Cetak Surat (PDF)
                         </Button>

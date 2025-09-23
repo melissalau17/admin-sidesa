@@ -119,7 +119,7 @@ export function LihatBeritaModal({ berita_id }: LihatBeritaModalProps) {
                         <div className="mb-4">
                             {berita.photo_url ? (
                                 <Image
-                                    src={berita.photo_url}
+                                    src={`${process.env.R2_PUBLIC_URL}/${berita.photo_url}`}
                                     alt={berita.judul}
                                     width={600}
                                     height={400} 

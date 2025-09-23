@@ -22,8 +22,8 @@ interface UserItem {
     user_id: number;
     nama: string;
     username: string;
-    password?: string; // Password should be optional on update
-    photo_url?: string; // Changed to photo_url for better practice
+    password?: string; 
+    photo_url?: string; 
     NIK: string;
     alamat: string;
     jenis_kel: string;
@@ -94,7 +94,6 @@ export function EditUserModal({ user, onUpdateUser }: EditUserModalProps) {
                 }
             );
 
-            // The backend should return the updated user object, including the new photo_url
             const updatedUser = response.data.data;
             if (onUpdateUser) {
                 onUpdateUser(updatedUser);
