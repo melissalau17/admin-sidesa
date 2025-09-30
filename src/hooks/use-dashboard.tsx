@@ -95,8 +95,18 @@ export function useDashboard(token: string | null) {
             auth: { token },
         });
 
-        socket.on("dashboard:update", (newStats: DashboardStats) => {
-            setStats(newStats);
+        socket.on("dashboard:update", (newStats: any) => {
+            const activities = newStats.activities.map((a: any) => ({
+                ...a,
+                timeAgo: formatTimeAgo(a.time),
+            }));
+
+            setStats({
+                ...newStats,
+                beritas: { total: newStats.beritas.total, newThisWeek: newStats.beritas.newThisWeek },
+                users: { total: newStats.users.total, newThisMonth: newStats.users.newThisMonth },
+                activities,
+            });
         });
 
         return () => {
