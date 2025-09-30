@@ -1,73 +1,57 @@
 import { useEffect, useState } from "react";
-import axios from "axios";
 
 interface DashboardStats {
-  users: number;
   permohonans: number;
   newPermohonans: number;
   laporans: number;
   newLaporans: number;
   beritas: number;
   newBeritas: number;
+  users: number;
+  newUsers: number;
+  activities: {
+    type: "permohonan" | "laporan" | "berita" | string;
+    title: string;
+    timeAgo: string;
+  }[];
 }
 
-// tipe data dasar untuk respon (bisa kamu refine sesuai schema API)
-interface BaseItem {
-  status?: string;
-  createdAt?: string;
-}
-
-export function useDashboardStats(token: string | null) {
+export function useDashboard(token: string | null) {
   const [stats, setStats] = useState<DashboardStats | null>(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState<string | null>(null);
 
   useEffect(() => {
     if (!token) {
-      console.warn("No token found.");
       setLoading(false);
       return;
     }
 
-    const fetchStats = async () => {
+    const fetchData = async () => {
       try {
-        const headers = { Authorization: `Bearer ${token}` };
+        const res = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/dashboard`,
+          {
+            headers: { Authorization: `Bearer ${token}` },
+          }
+        );
 
-        const [users, permohonans, laporans, beritas] = await Promise.all([
-          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/users`, { headers }),
-          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/letters`, { headers }),
-          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/reports`, { headers }),
-          axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas`, { headers }),
-        ]);
+        if (!res.ok) {
+          throw new Error(`Failed to fetch: ${res.status}`);
+        }
 
-        const countNew = <T extends BaseItem>(
-          data: T[],
-          key: keyof T = "status",
-          val: string = "baru"
-        ) =>
-          Array.isArray(data)
-            ? data.filter((item) => item[key] === val).length
-            : 0;
-
-        setStats({
-          users: users.data.length,
-          permohonans: permohonans.data.length,
-          newPermohonans: countNew(permohonans.data),
-          laporans: laporans.data.length,
-          newLaporans: countNew(laporans.data),
-          beritas: beritas.data.length,
-          // ini masih dummy, tergantung logika new beritas kamu
-          newBeritas: countNew(beritas.data, "createdAt", ""),
-        });
-      } catch (err) {
-        console.error("Gagal memuat statistik dashboard:", err);
-        setStats(null);
+        const json = await res.json();
+        setStats(json.data);
+      } catch (err: any) {
+        console.error("Failed to fetch dashboard data:", err);
+        setError(err.message || "Unknown error");
       } finally {
         setLoading(false);
       }
     };
 
-    fetchStats();
+    fetchData();
   }, [token]);
 
-  return { stats, loading };
+  return { stats, loading, error };
 }

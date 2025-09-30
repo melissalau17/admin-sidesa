@@ -61,7 +61,7 @@ export default function LoginPage() {
             
             toast({
                 title: "Login berhasil",
-                description: "Selamat datang di panel administrasi desa",
+                description: "Selamat datang di panel administrasi desa Hamparan Perak",
             });
         } catch (error) {
             console.error("Login error:", error);
