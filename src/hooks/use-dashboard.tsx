@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { io } from "socket.io-client";
+import { io, Socket } from "socket.io-client";
 
 interface Activity {
     type: "permohonan" | "laporan" | "berita" | string;
@@ -24,6 +24,13 @@ interface DashboardStats {
     activities: Activity[];
 }
 
+interface ApiActivity {
+    type: string;
+    title: string;
+    time: string; // ISO string
+}
+
+// Format time difference nicely
 function formatTimeAgo(dateString: string): string {
     const time = new Date(dateString).getTime();
     if (isNaN(time)) return "waktu tidak valid";
@@ -31,9 +38,8 @@ function formatTimeAgo(dateString: string): string {
     const diffMs = Date.now() - time;
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
 
-    if (diffMinutes < 60) {
-        return `${diffMinutes} menit lalu`;
-    }
+    if (diffMinutes < 1) return "baru saja";
+    if (diffMinutes < 60) return `${diffMinutes} menit lalu`;
 
     const hours = Math.floor(diffMinutes / 60);
     const minutes = diffMinutes % 60;
@@ -45,14 +51,10 @@ function formatTimeAgo(dateString: string): string {
     }
 
     const days = Math.floor(hours / 24);
-    return `${days} hari ${hours % 24} jam lalu`;
-}
-
-
-interface ApiActivity {
-    type: string;
-    title: string;
-    time: string;
+    const remHours = hours % 24;
+    return remHours === 0
+        ? `${days} hari lalu`
+        : `${days} hari ${remHours} jam lalu`;
 }
 
 export function useDashboard(token: string | null) {
@@ -66,7 +68,7 @@ export function useDashboard(token: string | null) {
             return;
         }
 
-        let socket: ReturnType<typeof io> | null = null;
+        let socket: Socket;
 
         const fetchData = async () => {
             try {
@@ -83,12 +85,7 @@ export function useDashboard(token: string | null) {
                     timeAgo: formatTimeAgo(a.time),
                 }));
 
-                setStats({
-                    ...json.data,
-                    beritas: { ...json.data.beritas },
-                    users: { ...json.data.users },
-                    activities,
-                });
+                setStats({ ...json.data, activities });
             } catch (err: unknown) {
                 console.error("Failed to fetch dashboard data:", err);
                 setError(err instanceof Error ? err.message : "Unknown error");
@@ -99,6 +96,7 @@ export function useDashboard(token: string | null) {
 
         fetchData();
 
+        // Initialize Socket.IO
         socket = io(process.env.NEXT_PUBLIC_API_URL as string, { auth: { token } });
 
         socket.on("dashboard:update", (newStats: DashboardStats) => {
@@ -110,7 +108,7 @@ export function useDashboard(token: string | null) {
         });
 
         return () => {
-            socket?.disconnect();
+            socket.disconnect();
         };
     }, [token]);
 
