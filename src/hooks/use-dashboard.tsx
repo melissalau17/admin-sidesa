@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { io, Socket } from "socket.io-client";
+import { io, type Socket } from "socket.io-client";
 
 interface Activity {
-    type: "permohonan" | "laporan" | "berita" | string;
+    type: string;
     title: string;
-    time: string;
+    time: string; // ISO string
     timeAgo: string;
 }
 
@@ -13,24 +13,11 @@ interface DashboardStats {
     newPermohonans: number;
     laporans: number;
     newLaporans: number;
-    beritas: {
-        total: number;
-        newThisWeek: number;
-    };
-    users: {
-        total: number;
-        newThisMonth: number;
-    };
+    beritas: { total: number; newThisWeek: number };
+    users: { total: number; newThisMonth: number };
     activities: Activity[];
 }
 
-interface ApiActivity {
-    type: string;
-    title: string;
-    time: string; // ISO string
-}
-
-// Format time difference nicely
 function formatTimeAgo(dateString: string): string {
     const time = new Date(dateString).getTime();
     if (isNaN(time)) return "waktu tidak valid";
@@ -44,17 +31,11 @@ function formatTimeAgo(dateString: string): string {
     const hours = Math.floor(diffMinutes / 60);
     const minutes = diffMinutes % 60;
 
-    if (hours < 24) {
-        return minutes === 0
-            ? `${hours} jam lalu`
-            : `${hours} jam ${minutes} menit lalu`;
-    }
+    if (hours < 24) return minutes === 0 ? `${hours} jam lalu` : `${hours} jam ${minutes} menit lalu`;
 
     const days = Math.floor(hours / 24);
     const remHours = hours % 24;
-    return remHours === 0
-        ? `${days} hari lalu`
-        : `${days} hari ${remHours} jam lalu`;
+    return remHours === 0 ? `${days} hari lalu` : `${days} hari ${remHours} jam lalu`;
 }
 
 export function useDashboard(token: string | null) {
@@ -68,47 +49,39 @@ export function useDashboard(token: string | null) {
             return;
         }
 
-        let socket: Socket;
-
         const fetchData = async () => {
-            try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/dashboard`, {
-                    headers: { Authorization: `Bearer ${token}` },
-                });
-
-                if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
-
-                const json = await res.json();
-
-                const activities: Activity[] = json.data.activities.map((a: ApiActivity) => ({
-                    ...a,
-                    timeAgo: formatTimeAgo(a.time),
-                }));
-
-                setStats({ ...json.data, activities });
-            } catch (err: unknown) {
-                console.error("Failed to fetch dashboard data:", err);
-                setError(err instanceof Error ? err.message : "Unknown error");
-            } finally {
-                setLoading(false);
-            }
+            // fetch logic
         };
 
         fetchData();
 
         // Initialize Socket.IO
-        socket = io(process.env.NEXT_PUBLIC_API_URL as string, { auth: { token } });
+        const socket: Socket = io(process.env.NEXT_PUBLIC_API_URL as string, { auth: { token } });
 
         socket.on("dashboard:update", (newStats: DashboardStats) => {
-            const activities: Activity[] = newStats.activities.map((a: Activity) => ({
+            const activities: Activity[] = newStats.activities.map(a => ({
                 ...a,
                 timeAgo: formatTimeAgo(a.time),
             }));
             setStats({ ...newStats, activities });
         });
 
+        const interval = setInterval(() => {
+            setStats(prev => {
+                if (!prev) return prev;
+                return {
+                    ...prev,
+                    activities: prev.activities.map(a => ({
+                        ...a,
+                        timeAgo: formatTimeAgo(a.time),
+                    })),
+                };
+            });
+        }, 60_000);
+
         return () => {
             socket.disconnect();
+            clearInterval(interval);
         };
     }, [token]);
 
