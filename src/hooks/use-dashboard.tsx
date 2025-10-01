@@ -28,18 +28,26 @@ function formatTimeAgo(dateString: string): string {
     const time = new Date(dateString).getTime();
     if (isNaN(time)) return "waktu tidak valid";
 
-    const now = new Date().getTime(); 
-    const diffMs = now - time;
-
+    const diffMs = Date.now() - time;
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
-    if (diffMinutes < 60) return `${diffMinutes} menit lalu`;
 
-    const diffHours = Math.floor(diffMinutes / 60);
-    if (diffHours < 24) return `${diffHours} jam lalu`;
+    if (diffMinutes < 60) {
+        return `${diffMinutes} menit lalu`;
+    }
 
-    const diffDays = Math.floor(diffHours / 24);
-    return `${diffDays} hari lalu`;
+    const hours = Math.floor(diffMinutes / 60);
+    const minutes = diffMinutes % 60;
+
+    if (hours < 24) {
+        return minutes === 0
+            ? `${hours} jam lalu`
+            : `${hours} jam ${minutes} menit lalu`;
+    }
+
+    const days = Math.floor(hours / 24);
+    return `${days} hari ${hours % 24} jam lalu`;
 }
+
 
 interface ApiActivity {
     type: string;
