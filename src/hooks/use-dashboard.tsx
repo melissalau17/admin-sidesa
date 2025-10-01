@@ -55,7 +55,7 @@ export function useDashboard(token: string | null) {
 
         const fetchData = async () => {
             try {
-                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/dashboard`, {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard`, {
                     headers: { Authorization: `Bearer ${token}` },
                 });
 
