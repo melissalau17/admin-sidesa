@@ -53,7 +53,7 @@ function formatTimeAgo(dateString: string): string {
 interface ApiActivity {
     type: string;
     title: string;
-    createdAt: string;
+    time: string;
 }
 
 export function useDashboard(token: string | null) {
@@ -80,10 +80,8 @@ export function useDashboard(token: string | null) {
                 const json = await res.json();
 
                 const activities: Activity[] = json.data.activities.map((a: ApiActivity) => ({
-                    type: a.type,
-                    title: a.title,
-                    time: a.createdAt,           // store original timestamp
-                    timeAgo: formatTimeAgo(a.createdAt), // calculate "x menit lalu"
+                    ...a,
+                    timeAgo: formatTimeAgo(a.time),
                 }));
 
                 setStats({
@@ -104,12 +102,10 @@ export function useDashboard(token: string | null) {
 
         socket = io(process.env.NEXT_PUBLIC_API_URL as string, { auth: { token } });
 
-        socket.on("dashboard:update", (newStats: { activities: ApiActivity[] } & Omit<DashboardStats, 'activities'>) => {
-            const activities: Activity[] = newStats.activities.map((a: ApiActivity) => ({
-                type: a.type,
-                title: a.title,
-                time: a.createdAt,
-                timeAgo: formatTimeAgo(a.createdAt),
+        socket.on("dashboard:update", (newStats: DashboardStats) => {
+            const activities: Activity[] = newStats.activities.map((a: Activity) => ({
+                ...a,
+                timeAgo: formatTimeAgo(a.time),
             }));
             setStats({ ...newStats, activities });
         });
