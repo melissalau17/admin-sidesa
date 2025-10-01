@@ -28,7 +28,11 @@ function formatTimeAgo(dateString: string): string {
     const time = new Date(dateString).getTime();
     if (isNaN(time)) return "waktu tidak valid";
 
-    const diffMs = Date.now() - time;
+    const now = new Date().getTime(); // client local time
+    const diffMs = now - time;
+
+    if (diffMs < 0) return "baru saja"; // future or almost now
+
     const diffMinutes = Math.floor(diffMs / (1000 * 60));
     if (diffMinutes < 60) return `${diffMinutes} menit lalu`;
 
