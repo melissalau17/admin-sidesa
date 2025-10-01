@@ -1,10 +1,10 @@
 import { useEffect, useState } from "react";
-import { io, type Socket } from "socket.io-client";
+import { io } from "socket.io-client";
 
 interface Activity {
-    type: string;
+    type: "permohonan" | "laporan" | "berita" | string;
     title: string;
-    time: string; // ISO string
+    time: string;
     timeAgo: string;
 }
 
@@ -13,8 +13,14 @@ interface DashboardStats {
     newPermohonans: number;
     laporans: number;
     newLaporans: number;
-    beritas: { total: number; newThisWeek: number };
-    users: { total: number; newThisMonth: number };
+    beritas: {
+        total: number;
+        newThisWeek: number;
+    };
+    users: {
+        total: number;
+        newThisMonth: number;
+    };
     activities: Activity[];
 }
 
@@ -31,11 +37,23 @@ function formatTimeAgo(dateString: string): string {
     const hours = Math.floor(diffMinutes / 60);
     const minutes = diffMinutes % 60;
 
-    if (hours < 24) return minutes === 0 ? `${hours} jam lalu` : `${hours} jam ${minutes} menit lalu`;
+    if (hours < 24) {
+        return minutes === 0
+            ? `${hours} jam lalu`
+            : `${hours} jam ${minutes} menit lalu`;
+    }
 
     const days = Math.floor(hours / 24);
     const remHours = hours % 24;
-    return remHours === 0 ? `${days} hari lalu` : `${days} hari ${remHours} jam lalu`;
+    return remHours === 0
+        ? `${days} hari lalu`
+        : `${days} hari ${remHours} jam lalu`;
+}
+
+interface ApiActivity {
+    type: string;
+    title: string;
+    createdAt: string;
 }
 
 export function useDashboard(token: string | null) {
@@ -49,39 +67,55 @@ export function useDashboard(token: string | null) {
             return;
         }
 
+        let socket: ReturnType<typeof io> | null = null;
+
         const fetchData = async () => {
-            // fetch logic
+            try {
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/api/dashboard`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
+                if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
+
+                const json = await res.json();
+
+                const activities: Activity[] = json.data.activities.map((a: ApiActivity) => ({
+                    type: a.type,
+                    title: a.title,
+                    time: a.createdAt,           // store original timestamp
+                    timeAgo: formatTimeAgo(a.createdAt), // calculate "x menit lalu"
+                }));
+
+                setStats({
+                    ...json.data,
+                    beritas: { ...json.data.beritas },
+                    users: { ...json.data.users },
+                    activities,
+                });
+            } catch (err: unknown) {
+                console.error("Failed to fetch dashboard data:", err);
+                setError(err instanceof Error ? err.message : "Unknown error");
+            } finally {
+                setLoading(false);
+            }
         };
 
         fetchData();
 
-        // Initialize Socket.IO
-        const socket: Socket = io(process.env.NEXT_PUBLIC_API_URL as string, { auth: { token } });
+        socket = io(process.env.NEXT_PUBLIC_API_URL as string, { auth: { token } });
 
-        socket.on("dashboard:update", (newStats: DashboardStats) => {
-            const activities: Activity[] = newStats.activities.map(a => ({
-                ...a,
-                timeAgo: formatTimeAgo(a.time),
+        socket.on("dashboard:update", (newStats: { activities: ApiActivity[] } & Omit<DashboardStats, 'activities'>) => {
+            const activities: Activity[] = newStats.activities.map((a: ApiActivity) => ({
+                type: a.type,
+                title: a.title,
+                time: a.createdAt,
+                timeAgo: formatTimeAgo(a.createdAt),
             }));
             setStats({ ...newStats, activities });
         });
 
-        const interval = setInterval(() => {
-            setStats(prev => {
-                if (!prev) return prev;
-                return {
-                    ...prev,
-                    activities: prev.activities.map(a => ({
-                        ...a,
-                        timeAgo: formatTimeAgo(a.time),
-                    })),
-                };
-            });
-        }, 60_000);
-
         return () => {
-            socket.disconnect();
-            clearInterval(interval);
+            socket?.disconnect();
         };
     }, [token]);
 
