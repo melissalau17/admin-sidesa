@@ -45,55 +45,37 @@ export function useDashboard(token: string | null) {
             return;
         }
 
-        let socket: Socket | null = null;
-
         const fetchData = async () => {
             try {
                 const res = await fetch(
                     `${process.env.NEXT_PUBLIC_API_URL}/dashboard`,
-                    {
-                        headers: { Authorization: `Bearer ${token}` },
-                    }
+                    { headers: { Authorization: `Bearer ${token}` } }
                 );
-
-                if (!res.ok) {
-                    throw new Error(`Failed to fetch: ${res.status}`);
-                }
-
+                if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
                 const json = await res.json();
 
-                const activities = json.data.activities.map((a: { type: string; title: string; time: string }) => ({
+                const activities = json.data.activities.map((a: any) => ({
                     ...a,
                     timeAgo: formatTimeAgo(a.time),
                 }));
 
                 setStats({
                     ...json.data,
-                    beritas: {
-                        total: json.data.beritas.total,
-                        newThisWeek: json.data.beritas.newThisWeek,
-                    },
-                    users: {
-                        total: json.data.users.total,
-                        newThisMonth: json.data.users.newThisMonth,
-                    },
+                    beritas: { total: json.data.beritas.total, newThisWeek: json.data.beritas.newThisWeek },
+                    users: { total: json.data.users.total, newThisMonth: json.data.users.newThisMonth },
                     activities,
                 });
             } catch (err: unknown) {
                 console.error("Failed to fetch dashboard data:", err);
-                if (err instanceof Error) {
-                    setError(err.message);
-                } else {
-                    setError("Unknown error");
-                }
+                setError(err instanceof Error ? err.message : "Unknown error");
             } finally {
                 setLoading(false);
             }
         };
 
-        socket = io(process.env.NEXT_PUBLIC_API_URL as string, {
-            auth: { token },
-        });
+        fetchData();
+
+        const socket = io(process.env.NEXT_PUBLIC_API_URL as string, { auth: { token } });
 
         socket.on("dashboard:update", (newStats: any) => {
             const activities = newStats.activities.map((a: any) => ({
@@ -110,10 +92,8 @@ export function useDashboard(token: string | null) {
         });
 
         return () => {
-            if (socket) socket.disconnect();
+            socket.disconnect();
         };
-
-        fetchData();
     }, [token]);
 
     return { stats, loading, error };

@@ -1,6 +1,6 @@
 "use client";
 
-import { useEffect } from "react";
+import { useState, useEffect } from "react";
 import { useRouter } from "next/navigation";
 import { useDashboard } from "@/hooks/use-dashboard";
 import { StatCard } from "@/components/stat-card";
@@ -9,15 +9,19 @@ import { FileText, MessageSquare, Newspaper } from "lucide-react";
 
 export default function DashboardPage() {
     const router = useRouter();
-    const token =
-        typeof window !== "undefined" ? localStorage.getItem("token") : null;
-    const { stats, loading } = useDashboard(token);
+    const [token, setToken] = useState<string | null>(null);
 
     useEffect(() => {
-        if (!token) router.push("/login");
-    }, [token, router]);
+        if (typeof window !== "undefined") {
+            const t = localStorage.getItem("token");
+            setToken(t);
+            if (!t) router.push("/login");
+        }
+    }, [router]);
 
-    if (loading || !stats) return null;
+    const { stats, loading } = useDashboard(token);
+
+    if (!token || loading || !stats) return <p>Loading...</p>;
 
     const getIcon = (type: string) => {
         switch (type) {
