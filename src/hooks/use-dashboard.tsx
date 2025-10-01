@@ -24,27 +24,19 @@ interface DashboardStats {
     activities: Activity[];
 }
 
-// More human-friendly time formatting
 function formatTimeAgo(dateString: string): string {
-    const now = Date.now();
     const time = new Date(dateString).getTime();
     if (isNaN(time)) return "waktu tidak valid";
 
-    let diffSec = Math.floor((now - time) / 1000);
+    const diffMs = Date.now() - time;
+    const diffMinutes = Math.floor(diffMs / (1000 * 60));
+    if (diffMinutes < 60) return `${diffMinutes} menit lalu`;
 
-    if (diffSec < 60) return "baru saja";
+    const diffHours = Math.floor(diffMinutes / 60);
+    if (diffHours < 24) return `${diffHours} jam lalu`;
 
-    const days = Math.floor(diffSec / 86400);
-    diffSec -= days * 86400;
-
-    const hours = Math.floor(diffSec / 3600);
-    diffSec -= hours * 3600;
-
-    const minutes = Math.floor(diffSec / 60);
-
-    if (days > 0) return `${days} hari lalu`;
-    if (hours > 0) return `${hours} jam ${minutes > 0 ? `${minutes} menit ` : ""}lalu`;
-    return `${minutes} menit lalu`;
+    const diffDays = Math.floor(diffHours / 24);
+    return `${diffDays} hari lalu`;
 }
 
 interface ApiActivity {
