@@ -1,5 +1,5 @@
 import { useEffect, useState } from "react";
-import { io, Socket } from "socket.io-client";
+import { io } from "socket.io-client";
 
 interface Activity {
     type: "permohonan" | "laporan" | "berita" | string;
@@ -34,6 +34,12 @@ function formatTimeAgo(dateString: string): string {
     return `${days} hari lalu`;
 }
 
+interface ApiActivity {
+    type: string;
+    title: string;
+    time: string;
+}
+
 export function useDashboard(token: string | null) {
     const [stats, setStats] = useState<DashboardStats | null>(null);
     const [loading, setLoading] = useState(true);
@@ -45,24 +51,27 @@ export function useDashboard(token: string | null) {
             return;
         }
 
+        let socket: ReturnType<typeof io> | null = null;
+
         const fetchData = async () => {
             try {
-                const res = await fetch(
-                    `${process.env.NEXT_PUBLIC_API_URL}/dashboard`,
-                    { headers: { Authorization: `Bearer ${token}` } }
-                );
+                const res = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/dashboard`, {
+                    headers: { Authorization: `Bearer ${token}` },
+                });
+
                 if (!res.ok) throw new Error(`Failed to fetch: ${res.status}`);
+
                 const json = await res.json();
 
-                const activities = json.data.activities.map((a: any) => ({
+                const activities: Activity[] = json.data.activities.map((a: ApiActivity) => ({
                     ...a,
                     timeAgo: formatTimeAgo(a.time),
                 }));
 
                 setStats({
                     ...json.data,
-                    beritas: { total: json.data.beritas.total, newThisWeek: json.data.beritas.newThisWeek },
-                    users: { total: json.data.users.total, newThisMonth: json.data.users.newThisMonth },
+                    beritas: { ...json.data.beritas },
+                    users: { ...json.data.users },
                     activities,
                 });
             } catch (err: unknown) {
@@ -75,24 +84,18 @@ export function useDashboard(token: string | null) {
 
         fetchData();
 
-        const socket = io(process.env.NEXT_PUBLIC_API_URL as string, { auth: { token } });
+        socket = io(process.env.NEXT_PUBLIC_API_URL as string, { auth: { token } });
 
-        socket.on("dashboard:update", (newStats: any) => {
-            const activities = newStats.activities.map((a: any) => ({
+        socket.on("dashboard:update", (newStats: DashboardStats) => {
+            const activities: Activity[] = newStats.activities.map((a: Activity) => ({
                 ...a,
                 timeAgo: formatTimeAgo(a.time),
             }));
-
-            setStats({
-                ...newStats,
-                beritas: { total: newStats.beritas.total, newThisWeek: newStats.beritas.newThisWeek },
-                users: { total: newStats.users.total, newThisMonth: newStats.users.newThisMonth },
-                activities,
-            });
+            setStats({ ...newStats, activities });
         });
 
         return () => {
-            socket.disconnect();
+            socket?.disconnect();
         };
     }, [token]);
 
