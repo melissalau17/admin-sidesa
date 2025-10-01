@@ -9,43 +9,39 @@ import { FileText, MessageSquare, Newspaper } from "lucide-react";
 
 export default function DashboardPage() {
     const router = useRouter();
-    const [token, setToken] = useState<string | null>(null);
+    const [token, setToken] = useState<string | null | undefined>(undefined);
 
     useEffect(() => {
         if (typeof window !== "undefined") {
             const t = localStorage.getItem("token");
-            setToken(t);
-            if (!t) router.push("/login");
+            setToken(t ?? null);
         }
-    }, [router]);
+    }, []);
 
-    const { stats, loading } = useDashboard(token);
+    useEffect(() => {
+        if (token === null) router.push("/login");
+    }, [token, router]);
 
-    if (!token || loading || !stats) return <p>Loading...</p>;
+    const { stats, loading } = useDashboard(token ?? null);
+
+    if (token === undefined || loading) return <p>Loading...</p>;
+    if (!stats) return <p>Gagal memuat data dashboard.</p>;
 
     const getIcon = (type: string) => {
         switch (type) {
-            case "permohonan":
-                return <FileText className="h-3 w-3 md:h-4 md:w-4 text-blue-600" />;
-            case "laporan":
-                return <MessageSquare className="h-3 w-3 md:h-4 md:w-4 text-green-600" />;
-            case "berita":
-                return <Newspaper className="h-3 w-3 md:h-4 md:w-4 text-purple-600" />;
-            default:
-                return null;
+            case "permohonan": return <FileText className="h-3 w-3 md:h-4 md:w-4 text-blue-600" />;
+            case "laporan": return <MessageSquare className="h-3 w-3 md:h-4 md:w-4 text-green-600" />;
+            case "berita": return <Newspaper className="h-3 w-3 md:h-4 md:w-4 text-purple-600" />;
+            default: return null;
         }
     };
 
     const getBgColor = (type: string) => {
         switch (type) {
-            case "permohonan":
-                return "bg-blue-100";
-            case "laporan":
-                return "bg-green-100";
-            case "berita":
-                return "bg-purple-100";
-            default:
-                return "bg-gray-100";
+            case "permohonan": return "bg-blue-100";
+            case "laporan": return "bg-green-100";
+            case "berita": return "bg-purple-100";
+            default: return "bg-gray-100";
         }
     };
 
@@ -77,9 +73,7 @@ export default function DashboardPage() {
                         {stats.activities.length > 0 ? (
                             stats.activities.map((activity, idx) => (
                                 <div key={idx} className="flex items-center gap-3 md:gap-4">
-                                    <div
-                                        className={`rounded-full p-1.5 md:p-2 ${getBgColor(activity.type)}`}
-                                    >
+                                    <div className={`rounded-full p-1.5 md:p-2 ${getBgColor(activity.type)}`}>
                                         {getIcon(activity.type)}
                                     </div>
                                     <div>
@@ -97,21 +91,16 @@ export default function DashboardPage() {
                 <SummaryCard title="Berita Desa" subtitle="Informasi terkini">
                     <div className="space-y-2">
                         <p className="text-lg md:text-2xl font-bold">{stats.beritas.total}</p>
-                        <p className="text-sm text-muted-foreground">
-                            {stats.beritas.newThisWeek} dipublikasikan minggu ini
-                        </p>
+                        <p className="text-sm text-muted-foreground">{stats.beritas.newThisWeek} dipublikasikan minggu ini</p>
                     </div>
                 </SummaryCard>
 
                 <SummaryCard title="Penduduk" subtitle="Statistik jumlah penduduk">
                     <div className="space-y-2">
                         <p className="text-lg md:text-2xl font-bold">{stats.users.total}</p>
-                        <p className="text-sm text-muted-foreground">
-                            +{stats.users.newThisMonth} bulan ini
-                        </p>
+                        <p className="text-sm text-muted-foreground">+{stats.users.newThisMonth} bulan ini</p>
                     </div>
                 </SummaryCard>
-
             </div>
         </div>
     );
