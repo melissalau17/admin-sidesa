@@ -186,7 +186,7 @@ export function LihatSuratModal({
                                 <h3 className="text-lg font-medium">Scan KTP</h3>
                                 <div className="border rounded-md overflow-hidden">
                                     <Image
-                                        src={`${process.env.R2_PUBLIC_URL}/${photo_ktp}`}
+                                        src={`${process.env.NEXT_R2_PUBLIC_URL}/${photo_ktp}`}
                                         alt="Scan KTP"
                                         width={500}
                                         height={300}
@@ -211,7 +211,7 @@ export function LihatSuratModal({
                                 <h3 className="text-lg font-medium">Scan Kartu Keluarga</h3>
                                 <div className="border rounded-md overflow-hidden">
                                     <Image
-                                        src={`${process.env.R2_PUBLIC_URL}/${photo_kk}`}
+                                        src={`${process.env.NEXT_R2_PUBLIC_URL}/${photo_kk}`}
                                         alt="Scan KK"
                                         width={500}
                                         height={300}

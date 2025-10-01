@@ -167,7 +167,7 @@ export function LihatLaporanModal({
                                 <h3 className="text-lg font-medium">Foto Laporan</h3>
                                 <div className="border rounded-md overflow-hidden">
                                     <Image
-                                        src={`${process.env.R2_PUBLIC_URL}/${gambar}`}
+                                        src={`${process.env.NEXT_R2_PUBLIC_URL}/${gambar}`}
                                         alt={`Foto laporan ${nama}`}
                                         width={600}
                                         height={400}

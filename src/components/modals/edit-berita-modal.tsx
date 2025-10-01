@@ -205,7 +205,7 @@ export function EditBeritaModal({
                                 </Label>
                                 <div className="col-span-3">
                                     <Image
-                                        src={`${process.env.R2_PUBLIC_URL}/${previewUrl}`}
+                                        src={`${process.env.NEXT_R2_PUBLIC_URL}/${previewUrl}`}
                                         alt="Pratinjau Gambar"
                                         width={400}
                                         height={200}
