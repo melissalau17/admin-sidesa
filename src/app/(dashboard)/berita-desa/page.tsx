@@ -46,24 +46,33 @@ export default function BeritaDesaPage() {
         const fetchBeritas = async () => {
             try {
                 const token = localStorage.getItem("token");
+                console.log("Token:", token);
+
                 const res = await axios.get(`${process.env.NEXT_PUBLIC_API_URL}/api/beritas`, {
-                    headers: {
-                        Authorization: `Bearer ${token}`,
-                    },
+                    headers: { Authorization: `Bearer ${token}` },
                 });
 
-                const beritas = res.data.data.map((item: BeritaApiItem) => {
-                    const storedStatus = localStorage.getItem(`status-${item.berita_id}`)
-                    return storedStatus ? { ...item, status: storedStatus } : item
-                })
-                setBeritaData(beritas)
+                console.log("API response:", res.data);
+
+                // Safely handle missing data
+                const beritas: BeritaApiItem[] = Array.isArray(res.data.data) ? res.data.data : [];
+                console.log("Fetched beritas:", beritas);
+
+                // Optional: bypass stored status for now to simplify
+                const mappedBeritas = beritas.map((item) => ({
+                    ...item,
+                    status: item.status || "Draft",
+                }));
+
+                setBeritaData(mappedBeritas);
             } catch (err) {
-                setError("Gagal memuat data berita.");
                 console.error("Gagal mengambil data berita", err);
+                setError("Gagal memuat data berita.");
             } finally {
                 setLoading(false);
             }
         };
+
         fetchBeritas();
     }, []);
 
@@ -246,7 +255,7 @@ export default function BeritaDesaPage() {
                                                         judul={berita.judul}
                                                         kategori={berita.kategori}
                                                         status={berita.status}
-                                                        kontent={berita.kontent} 
+                                                        kontent={berita.kontent}
                                                         open={editModalOpenId === berita.berita_id}
                                                         onOpenChange={(open) => {
                                                             if (!open) setEditModalOpenId(null)
