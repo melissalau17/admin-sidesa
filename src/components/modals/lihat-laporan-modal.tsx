@@ -15,6 +15,7 @@ import { Badge } from "@/components/ui/badge";
 import { Eye, FileImage } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
+import { transformPhotoUrl } from "@/lib/utils/image";
 
 interface LihatLaporanModalProps {
     id: number;
@@ -167,7 +168,7 @@ export function LihatLaporanModal({
                                 <h3 className="text-lg font-medium">Foto Laporan</h3>
                                 <div className="border rounded-md overflow-hidden">
                                     <Image
-                                        src={`${process.env.NEXT_R2_PUBLIC_URL}/${gambar}`}
+                                        src={transformPhotoUrl(gambar) || ''}
                                         alt={`Foto laporan ${nama}`}
                                         width={600}
                                         height={400}

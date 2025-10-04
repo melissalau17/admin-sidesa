@@ -14,6 +14,7 @@ import { Badge } from "@/components/ui/badge";
 import { Eye } from "lucide-react";
 import axios from "axios";
 import Image from "next/image";
+import { transformPhotoUrl } from "@/lib/utils/image";
 
 interface LihatBeritaModalProps {
     berita_id: number;
@@ -119,7 +120,7 @@ export function LihatBeritaModal({ berita_id }: LihatBeritaModalProps) {
                         <div className="mb-4">
                             {berita.photo_url ? (
                                 <Image
-                                    src={`${process.env.NEXT_R2_PUBLIC_URL}/${berita.photo_url}`}
+                                    src={transformPhotoUrl(berita.photo_url) || ''}
                                     alt={berita.judul}
                                     width={600}
                                     height={400} 
