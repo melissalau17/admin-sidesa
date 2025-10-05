@@ -85,12 +85,14 @@ export default function LaporanMasyarakatPage() {
                     headers: { Authorization: `Bearer ${token}` },
                 })
 
-                const laporan: LaporanItem[] = res.data.data.map((item: ApiLaporanItem) => {
+                console.log("API response:", res.data)
+
+                const laporan: LaporanItem[] = (res.data.data || []).map((item: any) => {
                     const storedStatus = localStorage.getItem(`status-${item.laporan_id}`)
                     return {
                         laporan_id: item.laporan_id,
-                        nama: item.user?.nama ?? "Tidak ada nama",
-                        no_hp: item.user?.no_hp ?? "-",
+                        nama: item.user?.nama ?? item.nama ?? item.user_nama ?? "Tidak ada nama",
+                        no_hp: item.user?.no_hp ?? item.no_hp ?? item.user_no_hp ?? "-",
                         keluhan: item.keluhan,
                         deskripsi: item.deskripsi,
                         tanggal: item.tanggal,
@@ -101,10 +103,9 @@ export default function LaporanMasyarakatPage() {
                     }
                 })
 
-
                 setLaporanData(laporan)
-            } catch (error) {
-                console.error("Gagal memuat laporan:", error)
+            } catch (error: any) {
+                console.error("Gagal memuat laporan:", error.response?.data || error)
                 setError("Gagal memuat laporan")
             } finally {
                 setLoading(false)
@@ -230,8 +231,8 @@ export default function LaporanMasyarakatPage() {
                                                 </TooltipWrapper>
                                                 <TooltipWrapper label={
                                                     laporan.vote < 50
-                                                    ? "Status hanya bisa diubah setelah 50 vote"
-                                                    : "Ubah Status Laporan"
+                                                        ? "Status hanya bisa diubah setelah 50 vote"
+                                                        : "Ubah Status Laporan"
                                                 }
                                                 >
                                                     <UbahStatusLaporanModal
