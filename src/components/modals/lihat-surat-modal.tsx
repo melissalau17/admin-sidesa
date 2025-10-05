@@ -17,6 +17,7 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 import axios from "axios";
 import { Loader2 } from "lucide-react";
+import { transformPhotoUrl } from "@/lib/utils/image";
 
 interface LihatSuratModalProps {
     id: number;
@@ -188,7 +189,7 @@ export function LihatSuratModal({
                                 <h3 className="text-lg font-medium">Scan KTP</h3>
                                 <div className="border rounded-md overflow-hidden">
                                     <Image
-                                        src={`${process.env.NEXT_R2_PUBLIC_URL}/${photo_ktp}`}
+                                        src={transformPhotoUrl(photo_ktp) || ''}
                                         alt="Scan KTP"
                                         width={500}
                                         height={300}
@@ -213,7 +214,7 @@ export function LihatSuratModal({
                                 <h3 className="text-lg font-medium">Scan Kartu Keluarga</h3>
                                 <div className="border rounded-md overflow-hidden">
                                     <Image
-                                        src={`${process.env.NEXT_R2_PUBLIC_URL}/${photo_kk}`}
+                                        src={transformPhotoUrl(photo_kk) || ''}
                                         alt="Scan KK"
                                         width={500}
                                         height={300}
