@@ -16,6 +16,7 @@ import { Eye, FileImage } from "lucide-react";
 import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import Image from "next/image";
 import axios from "axios";
+import { Loader2 } from "lucide-react";
 
 interface LihatSuratModalProps {
     id: number;
@@ -43,6 +44,7 @@ export function LihatSuratModal({
     photo_kk,
 }: LihatSuratModalProps) {
     const [open, setOpen] = useState(false);
+    const [isPrinting, setIsPrinting] = useState(false);
 
     const getStatusColor = (status: string): string => {
         switch (status) {
@@ -234,11 +236,27 @@ export function LihatSuratModal({
                 <DialogFooter className="flex flex-col sm:flex-row sm:justify-end gap-2">
                     {status === "Selesai" && (
                         <Button
-                            className={`bg-green-600 text-white hover:bg-green-700 ${status !== "Selesai" ? "opacity-50 cursor-not-allowed" : ""}`}
-                            onClick={handlePrint}
-                            disabled={status !== "Selesai"}
+                            className={`bg-green-600 text-white hover:bg-green-700 ${status !== "Selesai" ? "opacity-50 cursor-not-allowed" : ""
+                                }`}
+                            onClick={async () => {
+                                setIsPrinting(true);
+                                try {
+                                    await handlePrint();
+                                } finally {
+                                    setIsPrinting(false);
+                                    setOpen(false);
+                                }
+                            }}
+                            disabled={status !== "Selesai" || isPrinting}
                         >
-                            Cetak Surat (PDF)
+                            {isPrinting ? (
+                                <>
+                                    <Loader2 className="mr-2 h-4 w-4 animate-spin" />
+                                    Sedang Mencetak...
+                                </>
+                            ) : (
+                                "Cetak Surat (PDF)"
+                            )}
                         </Button>
                     )}
                     <Button variant="ghost" onClick={() => setOpen(false)}>
