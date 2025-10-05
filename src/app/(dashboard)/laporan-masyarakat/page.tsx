@@ -228,12 +228,18 @@ export default function LaporanMasyarakatPage() {
                                                     />
 
                                                 </TooltipWrapper>
-                                                <TooltipWrapper label="Ubah Status Laporan">
+                                                <TooltipWrapper label={
+                                                    laporan.vote < 50
+                                                    ? "Status hanya bisa diubah setelah 50 vote"
+                                                    : "Ubah Status Laporan"
+                                                }
+                                                >
                                                     <UbahStatusLaporanModal
                                                         id={laporan.laporan_id}
                                                         nama={laporan.nama}
                                                         keluhan={laporan.keluhan}
                                                         status={laporan.status}
+                                                        voteCount={laporan.vote ?? 0}
                                                         onStatusChange={handleStatusChange}
                                                     />
                                                 </TooltipWrapper>
