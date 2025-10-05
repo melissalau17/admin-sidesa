@@ -24,18 +24,18 @@ interface LaporanItem {
 }
 
 interface ApiLaporanItem {
-  laporan_id: number
-  keluhan: string
-  deskripsi: string
-  tanggal: string
-  status: string
-  vote: number
-  lokasi?: string
-  photo_url?: string
-  user?: {
-    nama?: string
-    no_hp?: string
-  }
+    laporan_id: number
+    keluhan: string
+    deskripsi: string
+    tanggal: string
+    status: string
+    vote: number
+    lokasi?: string
+    photo_url?: string
+    user?: {
+        nama?: string
+        no_hp?: string
+    }
 }
 
 const getStatusColor = (status: string): string => {
@@ -144,17 +144,22 @@ export default function LaporanMasyarakatPage() {
         [laporanData]
     )
 
-    const filteredData = useMemo(() => {
-        const query = searchQuery.toLowerCase()
-        return sortedData.filter(laporan =>
-            (laporan.nama ?? "").toLowerCase().includes(query) ||
-            (laporan.keluhan ?? "").toLowerCase().includes(query) ||
-            (laporan.deskripsi ?? "").toLowerCase().includes(query) ||
-            (laporan.tanggal ?? "").toLowerCase().includes(query) ||
-            (laporan.status ?? "").toLowerCase().includes(query)
-        )
-    }, [sortedData, searchQuery])
+    function normalizeText(text: string = "") {
+        return text
+            .normalize("NFD") // separate letters and diacritics
+            .replace(/[\u0300-\u036f]/g, "") // remove diacritics
+            .toLowerCase(); // make lowercase
+    }
 
+
+    const filteredData = useMemo(() => {
+        const query = normalizeText(searchQuery);
+
+        return sortedData.filter((laporan) =>
+            [laporan.nama, laporan.keluhan, laporan.deskripsi, laporan.tanggal, laporan.status]
+                .some(field => normalizeText(field).includes(query))
+        );
+    }, [sortedData, searchQuery]);
 
     if (loading) return <p>Memuat laporan...</p>
     if (error) return <p className="text-red-500">{error}</p>
@@ -223,12 +228,18 @@ export default function LaporanMasyarakatPage() {
                                                     />
 
                                                 </TooltipWrapper>
-                                                <TooltipWrapper label="Ubah Status Laporan">
+                                                <TooltipWrapper label={
+                                                    laporan.vote < 50
+                                                    ? "Status hanya bisa diubah setelah 50 vote"
+                                                    : "Ubah Status Laporan"
+                                                }
+                                                >
                                                     <UbahStatusLaporanModal
                                                         id={laporan.laporan_id}
                                                         nama={laporan.nama}
                                                         keluhan={laporan.keluhan}
                                                         status={laporan.status}
+                                                        voteCount={laporan.vote ?? 0}
                                                         onStatusChange={handleStatusChange}
                                                     />
                                                 </TooltipWrapper>

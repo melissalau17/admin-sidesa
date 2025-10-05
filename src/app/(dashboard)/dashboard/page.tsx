@@ -25,7 +25,7 @@ export default function DashboardPage() {
     const { stats, loading } = useDashboard(token ?? null);
 
     if (token === undefined || loading) return <p>Loading...</p>;
-    if (!stats) return <p>Gagal memuat data dashboard.</p>;
+    if (!stats) return <p>Memuat data...</p>;
 
     const getIcon = (type: string) => {
         switch (type) {

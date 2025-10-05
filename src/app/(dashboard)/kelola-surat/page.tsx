@@ -71,8 +71,8 @@ export default function KelolaSuratPage() {
                 const rawData = Array.isArray(response.data.data)
                     ? response.data.data
                     : Array.isArray(response.data)
-                    ? response.data
-                    : [];
+                        ? response.data
+                        : [];
 
                 const formatted: SuratItem[] = rawData.map((surat: SuratItem) => ({
                     ...surat,
@@ -178,14 +178,23 @@ export default function KelolaSuratPage() {
         }
     };
 
+    function normalizeText(text?: string | null): string {
+        if (typeof text !== "string") return "";
+        return text
+            .normalize("NFD")
+            .replace(/[\u0300-\u036f]/g, "")
+            .toLowerCase();
+    }
+
     const filteredData = suratData.filter((surat) => {
-        const q = searchQuery.toLowerCase();
+        const q = normalizeText(searchQuery);
+
         return (
-            surat.nama.toLowerCase().includes(q) ||
-            surat.jenis_surat.toLowerCase().includes(q) ||
-            surat.tanggal.toLowerCase().includes(q) ||
-            surat.status.toLowerCase().includes(q) ||
-            surat.nik.toLowerCase().includes(q)
+            normalizeText(surat.nama).includes(q) ||
+            normalizeText(surat.jenis_surat).includes(q) ||
+            normalizeText(surat.tanggal).includes(q) ||
+            normalizeText(surat.status).includes(q) ||
+            normalizeText(surat.nik).includes(q)
         );
     });
 
