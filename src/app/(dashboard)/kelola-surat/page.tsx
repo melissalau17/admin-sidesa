@@ -178,7 +178,8 @@ export default function KelolaSuratPage() {
         }
     };
 
-    function normalizeText(text: string = "") {
+    function normalizeText(text?: string | null): string {
+        if (typeof text !== "string") return "";
         return text
             .normalize("NFD")
             .replace(/[\u0300-\u036f]/g, "")
